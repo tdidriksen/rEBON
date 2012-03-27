@@ -297,7 +297,8 @@ create
 %type <COMMAND_LIST> Command_list Optional_Command_list At_least_one_Command Optional_Commands
 %type <STRING> Command
 
-%type <CONSTRAINT_LIST> Constraint_list Optional_Constraint_list
+%type <CONSTRAINT_LIST> Constraint_list Optional_Constraint_list At_least_one_Constraint Optional_Constraints
+%type <STRING> Constraint
 
 %type <STRING_LIST> At_least_one_Manifest_string Optional_Manifest_strings
 
@@ -746,19 +747,31 @@ Command_list : At_least_one_Command
 
 -- @type like Command_list
 At_least_one_Command : Command Optional_Commands
-                       { create $$.make_optional_rest($1, $2) } ;
+                       { create $$.make_optional_rest ($1, $2) } ;
 
 -- @type like Command_list
 Optional_Commands: -- Empty
                 | Optional_Commands ',' Command
-                { create $$.make_optional_first($1, $3) } ;     
+                { create $$.make_optional_first ($1, $3) } ;     
 
 -- @type STRING
 Command : Manifest_string { $$ := $1 } ;
 
 -- @type CONSTRAINT_LIST
-Constraint_list : At_least_one_Manifest_string
+Constraint_list : At_least_one_Constraint
 						{ create $$.make_from_string_list ($1) } ;
+
+-- @type like Constraint_list
+At_least_one_Constraint : Constraint Optional_Constraints
+                          { create $$.make_optional_rest ($1, $2) } ;
+
+-- @type like Constraint_list
+Optional_Constraints : -- Empty
+                     | Optional_Constraints ',' Constraint
+                     { create $$.make_optional_first ($1, $3) } ;
+
+-- @type STRING
+Constraint : Manifest_string { $$ := $1 } ;
 
 -- @type STRING_LIST
 At_least_one_Manifest_string : Manifest_string Optional_Manifest_strings 

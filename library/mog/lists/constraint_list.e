@@ -5,21 +5,21 @@ class
 	CONSTRAINT_LIST
 
 inherit
-	STRING_LIST
-		redefine
-			to_set
-		end
+	MOG_LIST [STRING]
 
-creation
-	make, make_optional_rest, make_optional_first, make_from_list,
-	make_from_string_list
+create
+	make_list, make_optional_rest, make_optional_first,
+	make_from_list, make_from_set, make_from_string_list,
+	make_from_linear
 
-feature -- Conversion
+feature -- Initialization
 
-	to_set: CONSTRAINT_SET is
-			-- Convert `Current' into a constraint set.
+	make_from_string_list (a_list: CONSTRAINT_LIST)
+			-- Initialize `Current' to the contents of 'a_list'.
 		do
-			check false end
+			make_from_list (a_list)
+		ensure
+			is_equal (a_list)
 		end
 
 end -- class CONSTRAINT_LIST
