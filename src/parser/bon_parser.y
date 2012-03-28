@@ -1365,11 +1365,11 @@ Feature_name : FEATURE_NAME_TOKEN
 					{ $$ := $1
 					  -- add_feature_name($$)
 					}
-				 | ALL_CAPS_IDENTIFIER_TOKEN 
+				 | All_caps_identifier
 					{ $$ := $1
 					  -- add_feature_name($$)
 					}
-				 | IDENTIFIER_TOKEN 
+				 | Identifier
 					{ $$ := $1
 					  -- add_feature_name($$)
 					}

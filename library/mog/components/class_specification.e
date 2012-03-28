@@ -46,12 +46,23 @@ feature -- Initialization
 													a_classifier.is_equal ("EFFECTIVE"))
 			a_name /= Void
 		do
-			set_classifier (a_classifier)
-			set_generics (some_generics)
+			set_name (a_name)
+
+			if a_classifier /= Void then
+				set_classifier (a_classifier)
+			end
+
+			if some_generics /= Void then
+				set_generics (some_generics)
+			end
+
 			set_reused (a_reused_flag)
 			set_persistent (a_persistent_flag)
 			set_interfaced (an_interfaced_flag)
-			set_class_interface (a_class_interface)
+
+			if a_class_interface /= Void then
+				set_class_interface (a_class_interface)
+			end
 			-- last argument needs to be an instance of STATIC_COMPONENTS,
 			-- which is a deferred class inheriting from MOG_SET.
 			make_static_diagram (a_name, a_comment,

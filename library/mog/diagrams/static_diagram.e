@@ -183,7 +183,7 @@ feature {STATIC_DIAGRAM} -- Implementation
 invariant
 
 	my_name /= Void
-	my_comment /= Void
-	my_components /= Void
+	--my_comment /= Void
+	--my_components /= Void
 
 end -- class STATIC_DIAGRAM
