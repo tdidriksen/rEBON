@@ -14,9 +14,9 @@
 		<library name="gobo_structure" location="$ISE_LIBRARY\library\gobo\gobo_structure.ecf"/>
 		<library name="gobo_utility" location="$ISE_LIBRARY\library\gobo\gobo_utility.ecf"/>
 		<cluster name="bon_parser" location=".\">
-			<cluster name="mog" location="\Users\Thomas\Documents\ITU\6. semester\Bachelor\ebon\library\mog\" recursive="true">
-				<cluster name="bon_scanner" location="\Users\Thomas\Documents\ITU\6. semester\Bachelor\ebon\src\scanner\"/>
+			<cluster name="mog" location="$REBON\library\mog\" recursive="true">
 			</cluster>
 		</cluster>
+		<cluster name="bon_scanner" location="$REBON\src\scanner\"/>
 	</target>
 </system>
