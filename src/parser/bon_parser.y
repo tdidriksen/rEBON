@@ -1444,11 +1444,11 @@ Optional_Implies_Class_type : -- Empty
 									 ;
 
 -- @type STRING
-Formal_generic_name : ALL_CAPS_IDENTIFIER_TOKEN 
+Formal_generic_name : All_caps_identifier 
 							 { $$ := $1
 								-- add_formal_generic_name($$)
 							 } 
-						  | IDENTIFIER_TOKEN 
+						  | Identifier
 							 { $$ := $1
 								-- add_formal_generic_name($$)
 							 } ;

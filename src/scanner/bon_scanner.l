@@ -17,7 +17,7 @@
 -- $Id: bon_scanner.l,v 1.2 2005/12/21 14:11:10 kiniry Exp $
 --
 
-indexing
+note
 	title:       "The Extended BON Tool Suite"
 	description: "The BON Scanner."
 	copyright:   "Copyright (c) 2001-2002 Joseph R. Kiniry and others, %
@@ -34,7 +34,7 @@ inherit
 	BON_SCANNER_SKELETON
 		-- All core code for scanner is in the skeleton.
 
-creation
+create
 	make_scanner, scan_file
 %}
 

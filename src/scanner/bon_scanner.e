@@ -25,7 +25,7 @@ inherit
 	BON_SCANNER_SKELETON
 		-- All core code for scanner is in the skeleton.
 
-creation
+create
 	make_scanner, scan_file
 
 feature -- Status report

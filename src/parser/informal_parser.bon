@@ -1,0 +1,90 @@
+-- The Extended BON parser is constructed with Gobo geyacc, thus relies
+-- upon numerous classes in the Gobo library.
+
+
+-- Informal Charts
+
+system_chart EBON_PARSER_SYSTEM
+indexing
+  author: "Joseph Kiniry";
+  keywords: "parser", "Extended BON", "EBON", "BON"
+explanation
+  "The Extended BON parser."
+cluster PARSER
+description
+  "The Extended BON parser."
+cluster TEST_PARSER
+description
+  "The Extended BON parser unit test suite."
+cluster TEST_PARSER_BUILD
+description
+  "The automatically generated Extended BON parser unit test suite top-level."
+end
+
+
+cluster_chart PARSER
+indexing
+  author: "Joseph Kiniry";
+  keywords: "parser", "Extended BON", "EBON", "BON"
+explanation
+  "The Extended BON parser."
+class EBON_PARSER
+description
+  "A parser for the Extended BON specification language."
+class EBON_PARSER_SKELETON
+description
+  "A parser skeleton for the Extended BON specification language."
+class EBON_TOKENS
+description
+  "The automatically generated list of tokens in the EBON grammar."
+end
+
+
+cluster_chart TEST_PARSER
+indexing
+  author: "Joseph Kiniry";
+  keywords: "parser", "Extended BON", "EBON", "BON", "unit test"
+explanation
+  "A set of unit tests for the EBON parser."
+class TEST_
+description
+  ""
+end
+
+
+cluster_chart TEST_PARSER_BUILD
+indexing
+  author: "Joseph Kiniry";
+  keywords: "parser", "Extended BON", "EBON", "BON", "unit test"
+explanation
+  "The automatically generated Extended BON parser unit test suite top-level."
+class TEST_PARSER
+description
+  "The top-most, automatically generated, unit test suite harness."
+end
+
+
+class_chart EBON_PARSER
+indexing
+  author: "Joseph Kiniry";
+  in_cluster: "PARSER";
+  created: "2002-04-15 Joseph Kiniry";
+  revised: "$Id: parser.bon,v 1.1 2002/04/16 22:07:23 kiniry Exp $"
+explanation
+  "A parser for the Extended BON specification language."
+end
+
+
+class_chart EBON_PARSER_SKELETON
+indexing
+  author: "Joseph Kiniry";
+  in_cluster: "PARSER";
+  created: "2002-04-15 Joseph Kiniry";
+  revised: "$Id: parser.bon,v 1.1 2002/04/16 22:07:23 kiniry Exp $"
+explanation
+  "A parser skeleton for the Extended BON specification language."
+query
+    ""
+command
+    ""
+end

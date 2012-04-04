@@ -166,10 +166,13 @@ feature -- Parsed specification elements
 		do
 			create {LINKED_LIST[CLASS_CHART]} class_charts.make
 			create {LINKED_LIST[CLUSTER_CHART]} cluster_charts.make
+			create type_checker.make
 		end
 
 	process_specification_elements
 		do
+			io.put_boolean (type_checker.check_bon_specification (bon_specification))
+
 			from
 				class_charts.start
 			until
@@ -205,6 +208,8 @@ feature -- Parsed specification elements
 	class_charts: LIST[CLASS_CHART]
 
 	cluster_charts: LIST[CLUSTER_CHART]
+
+	type_checker: TEXTUAL_BON_TYPE_CHECKER;
 
 end -- class BON_PARSER_SKELETON
 
