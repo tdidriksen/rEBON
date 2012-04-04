@@ -42,7 +42,7 @@ feature -- Status report
 			end
 		end
 
-	is_model_equal alias "|=|" (other: TBON_TC_CLASS_TYPE): BOOLEAN
+	is_model_equal alias "|=|" (other: TBON_TC_TYPE): BOOLEAN
 			-- Is this model mathematically equal to `other'?
 		do
 			Result := name ~ other.name

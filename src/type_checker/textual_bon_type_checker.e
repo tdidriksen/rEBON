@@ -43,36 +43,24 @@ feature -- Initialization
 			create string_type.make
 
 			-- Add default value types to context
-			type_context := type_context.updated (boolean_type.name.as_upper, boolean_type)
-			type_context := type_context.updated (character_type.name.as_upper, character_type)
-			type_context := type_context.updated (integer_type.name.as_upper, integer_type)
-			type_context := type_context.updated (real_type.name.as_upper, real_type)
-			type_context := type_context.updated (string_type.name.as_upper, string_type)
+			add_to_type_context (boolean_type)
+			add_to_type_context (character_type)
+			add_to_type_context (integer_type)
+			add_to_type_context (real_type)
+			add_to_type_context (string_type)
 
 			create value_context.default_create
 		end
 
 
-feature -- Contexts
-	type_context: MML_MAP[STRING, TBON_TC_TYPE]
+feature {NONE} -- Contexts
+	type_context: MML_SET[TBON_TC_TYPE]
 			-- What is the current type context?
 
 	value_context: MML_SET[MML_RELATION[STRING, TBON_TC_TYPE]]
 			-- What is the current value context?
 
 feature -- Status report
-	class_exists_in_context (a_class_name: STRING): BOOLEAN
-			-- Does a class identified by `a_class_name' exist in the current context?
-		do
-			Result := type_context.domain.has (a_class_name.as_upper) and then attached {TBON_TC_CLASS_TYPE} type_context.item (a_class_name.as_upper)
-		end
-
-	cluster_exists_in_context (a_cluster_name: STRING): BOOLEAN
-			-- Does a cluster identified by `a_cluster_name' exist in the current context?
-		do
-			Result := type_context.domain.has (a_cluster_name.as_upper) and then attached {TBON_TC_CLUSTER_TYPE} type_context.item (a_cluster_name.as_upper)
-		end
-
 	first_phase: BOOLEAN
 			-- Is the type checker in the first phase?
 			-- During the first phase, the type context is built.
@@ -80,6 +68,48 @@ feature -- Status report
 	second_phase: BOOLEAN
 			-- Is the type checker in the second phase?
 			-- During the second phase, all elements and statements are checked.
+
+	name_exists_in_context (a_name: STRING): BOOLEAN
+			-- Does `a_name' exist in `type_context'?
+		require
+			name_not_void: a_name /= Void
+		do
+			Result := type_context.exists (agent names_are_equal (?, a_name))
+		end
+
+
+feature {NONE} -- Auxiliary features
+	add_to_type_context (a_type: TBON_TC_TYPE)
+			-- Add `a_type' to `type_context'.
+		require
+			type_not_void: a_type /= Void
+		do
+			type_context := type_context & a_type
+		end
+
+	type_with_name (a_name: STRING): TBON_TC_TYPE
+			-- What type in `type_context' has the name `a_name'?
+		require
+			name_exists: name_exists_in_context (a_name)
+		local
+			filtered_set: like type_context
+		do
+			filtered_set := type_context.filtered (agent names_are_equal (?, a_name))
+			check filtered_set.count = 1 end
+			Result := filtered_set.any_item
+		ensure
+			type_not_void: Result /= Void
+			names_are_equal: names_are_equal (Result, a_name)
+		end
+
+	names_are_equal (a_type: TBON_TC_TYPE; a_name: STRING): BOOLEAN
+			-- Is the name of `a_type' equal to `a_name'? (Object equality)
+		require
+			type_not_void: a_type /= Void
+			name_not_void: a_name /= Void
+		do
+			Result := a_type.name ~ a_name
+		end
 
 feature -- Error handling
 	error_messages: LIST[STRING]
@@ -150,13 +180,22 @@ feature -- Type checking, informal
 
 	check_class_chart (an_element: CLASS_CHART): BOOLEAN
 			-- Does `an_element' type check as a type CLASS_CHART?
+		require
+			second_phase implies name_exists_in_context (an_element.name)
 		local
 			class_type: TBON_TC_CLASS_TYPE
 		do
 			if first_phase then
 
-				create class_type.make (an_element.name)
-				type_context := type_context.updated (class_type.name.as_upper, class_type)
+				if not name_exists_in_context (an_element.name) then
+					create class_type.make (an_element.name.as_upper)
+					add_to_type_context (class_type)
+				else
+					error_messages.extend (err_class_exists (an_element.name))
+				end
+
+				Result := True
+					-- In the first phase, we cannot say anything about the correctness of the type, only that it exists.
 
 			elseif second_phase then
 
@@ -165,17 +204,29 @@ feature -- Type checking, informal
 			else
 				Result := False
 			end
+		ensure
+			first_phase implies name_exists_in_context (an_element.name)
+			--second_phase implies
 		end
 
 	check_cluster_chart (an_element: CLUSTER_CHART): BOOLEAN
 			-- Does `an_element' type check as a type CLUSTER_CHART?
+		require
+			second_phase implies name_exists_in_context (an_element.name)
 		local
 			cluster_type: TBON_TC_CLUSTER_TYPE
 		do
 			if first_phase then
 
-				create cluster_type.make (an_element.name)
-				type_context := type_context.updated (cluster_type.name.as_upper, cluster_type)
+				if not name_exists_in_context (an_element.name) then
+					create cluster_type.make (an_element.name.as_upper)
+					add_to_type_context (cluster_type)
+				else
+					error_messages.extend (err_cluster_exists (an_element.name))
+				end
+
+				Result := True
+					-- In the first phase, we cannot say anything about the correctness of the type, only that it exists.
 
 			elseif second_phase then
 
@@ -184,6 +235,8 @@ feature -- Type checking, informal
 			else
 				Result := False
 			end
+		ensure
+			first_phase implies name_exists_in_context (an_element.name)
 		end
 
 	check_comment (an_element: COMMENT): BOOLEAN
@@ -241,9 +294,11 @@ feature -- Type checking, informal
 
 	check_system_chart (an_element: SYSTEM_CHART): BOOLEAN
 			-- Does `an_element' type check as a type SYSTEM_CHART?
-			-- Rule:
-			-- 	In an environment where all the contained cluster charts in `an_element' is are type checked,
-			--	`an_element' is type checked.
+		note
+			rule: "[
+				In an environment where all the contained cluster charts in `an_element' is are type checked, 
+				`an_element' is type checked."
+				]"
  		local
  			clusters: CLUSTER_ENTRIES
  			cluster: CLUSTER_ENTRY
@@ -260,7 +315,7 @@ feature -- Type checking, informal
 				from clusters.start until clusters.after loop
 					cluster := clusters.item_for_iteration
 
-					if not cluster_exists_in_context (cluster.name) then
+					if not name_exists_in_context (cluster.name) then
 						error_messages.extend (err_cluster_does_not_exist (cluster.name))
 						Result := False
 					end
@@ -270,7 +325,7 @@ feature -- Type checking, informal
 				Result := False
 			end
 		ensure
-			all_clusters_exist: second_phase implies (not Result or (Result and an_element.clusters.for_all (agent (entry: CLUSTER_ENTRY): BOOLEAN do Result := cluster_exists_in_context (entry.name) end)))
+			all_clusters_exist: second_phase implies (not Result or (Result and an_element.clusters.for_all (agent (entry: CLUSTER_ENTRY): BOOLEAN do Result := name_exists_in_context (entry.name) end)))
 				-- for_all entry member_of clusters such_that entry: CLUSTER_ENTRY it_holds exists cluster member_of context such_that cluster: TBON_TC_CLUSTER_TYPE it_holds cluster.name = entry.name
 				-- If the type checker claims that the system chart is OK, all its clusters must exist.
 		end

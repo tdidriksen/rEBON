@@ -26,7 +26,7 @@ feature -- Access
 
 feature -- Element change
 	add_type (a_type: TBON_TC_TYPE)
-			-- Add `a_type' to `ypes'.
+			-- Add `a_type' to `types'.
 		do
 			types := types & a_type
 		end
@@ -38,7 +38,7 @@ feature -- Status report
 			Result := False
 		end
 
-	is_model_equal alias "|=|" (other: TBON_TC_CLUSTER_TYPE): BOOLEAN
+	is_model_equal alias "|=|" (other: TBON_TC_TYPE): BOOLEAN
 			-- Is this model mathematically equal to `other'?
 		do
 			Result := name ~ other.name
