@@ -32,14 +32,15 @@ feature -- Initialization
 				contains_only_valid_characters (a_class_or_cluster_name) and
 				not a_class_or_cluster_name.has ('.')
 			a_cluster_prefix /= Void implies
-				contains_only_valid_characters (a_cluster_prefix) and
-				no_bogus_dot_placement (a_cluster_prefix)
+				contains_only_valid_characters (a_cluster_prefix) --and
+				--no_bogus_dot_placement (a_cluster_prefix)
 		do
 			if a_class_or_cluster_name /= Void then
 				create my_class_name.make_from_string (a_class_or_cluster_name)
 			end
 			if a_cluster_prefix /= Void then
-				create my_cluster_prefix.make_from_string (a_cluster_prefix)
+				create my_cluster_prefix.make_from_string (a_cluster_prefix.substring (1, a_cluster_prefix.count-1))
+					--@changed didriksen - Using substring to strip last period character placed by parser.
 			end
 		end
 
@@ -88,15 +89,27 @@ feature -- Access
 
 	hash_code: INTEGER
 		do
+			Result := 0
+
 			if my_class_name /= Void then
-				Result := my_class_name.hash_code
+				Result := Result + (count_dots (my_class_name) + 1) * my_class_name.count
 			end
 			if my_cluster_prefix /= Void then
-				Result := Result + my_cluster_prefix.hash_code
+				Result := Result + (count_dots (my_cluster_prefix) + 1) * my_cluster_prefix.count
 			end
 			if my_ambiguous_value /= Void then
-				Result := Result + my_ambiguous_value.hash_code
+				Result := Result + (count_dots (my_ambiguous_value) + 1) * my_ambiguous_value.count
 			end
+--			if my_class_name /= Void then
+--				Result := Result + my_class_name.hash_code.abs
+--			end
+--			if my_cluster_prefix /= Void then
+--				Result := Result + my_cluster_prefix.hash_code.abs
+--			end
+--			if my_ambiguous_value /= Void then
+--				Result := Result + my_ambiguous_value.hash_code.abs
+--			end
+			--@changed didriksen - The old way of calculating hash codes gives way too many problems. No idea what causes 0 + abs(something) to be invalid.
 		end
 
 feature -- Measurement
@@ -190,13 +203,15 @@ feature -- Status Report
 			c: CHARACTER
 		do
 			Result := true
-			from i := 0
+			from i := 1
 			until i = a_string.count
 			loop
 				c := a_string @ i
-				if not (c.is_alpha or c.is_digit or c = '.') then
+				if not (c.is_alpha or c.is_digit or c = '.' or c = '_') then
 					Result := false
 				end
+
+				i := i + 1
 			end
 		end
 

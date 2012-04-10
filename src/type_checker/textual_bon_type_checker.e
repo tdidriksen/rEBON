@@ -296,7 +296,7 @@ feature -- Type checking, informal
 			-- Does `an_element' type check as a type SYSTEM_CHART?
 		note
 			rule: "[
-				In an environment where all the contained cluster charts in `an_element' is are type checked, 
+				In an environment where all the contained cluster charts in `an_element' are type checked, 
 				`an_element' is type checked."
 				]"
  		local
@@ -319,8 +319,9 @@ feature -- Type checking, informal
 						error_messages.extend (err_cluster_does_not_exist (cluster.name))
 						Result := False
 					end
-				end
 
+					clusters.forth
+				end
 			else
 				Result := False
 			end

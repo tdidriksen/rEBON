@@ -11,7 +11,7 @@ inherit
 	ELIDED
 
 creation
-	make, make_ellipses
+	make, make_ellipses, make_with_class_name, make_with_formal_generic_name
 
 feature -- Initialization
 
@@ -24,6 +24,18 @@ feature -- Initialization
 			named_indirection.is_equal (a_named_indirection)
 		end
 
+	make_with_class_name (a_class_name: STRING)
+			-- Initialize with a class name.
+		do
+			my_class_name := a_class_name.twin
+		end
+
+	make_with_formal_generic_name (a_formal_generic_name: STRING)
+			-- Initialize with a formal generic name.
+		do
+			my_formal_generic_name := a_formal_generic_name.twin
+		end
+
 feature -- Access
 
 	named_indirection: NAMED_INDIRECTION
@@ -31,6 +43,18 @@ feature -- Access
 			-- one has not been set.
 		do
 			Result := my_named_indirection.twin
+		end
+
+	class_name: STRING
+			-- The class name of the indirection element.
+		do
+			Result := my_class_name.twin
+		end
+
+	formal_generic_name: STRING
+			-- The class name of the indirection element.
+		do
+			Result := my_formal_generic_name.twin
 		end
 
 	hash_code: INTEGER
@@ -44,6 +68,11 @@ feature -- Access
 
 feature {INDIRECTION_ELEMENT} -- Implementation
 
+	my_class_name: STRING
+	my_formal_generic_name: STRING
 	my_named_indirection: NAMED_INDIRECTION
+
+invariant
+	my_named_indirection /= Void xor my_class_name /= Void xor my_formal_generic_name /= Void xor ellipses
 
 end -- class INDIRECTION_ELEMENT

@@ -10,7 +10,7 @@ inherit
 			bon_out
 		end
 
-creation
+create
 	make
 
 feature -- Initialization
@@ -26,21 +26,25 @@ feature -- Initialization
 			a_supplier /= Void
 		do
 			my_client := a_client.twin
---			if my_client_entities /= Void then
---				create my_client_entities.make (some_client_entities)
---			end
-			my_type_mark := a_type_mark.twin
+			if some_client_entities /= Void then
+				my_client_entities := some_client_entities
+			end
+			if a_type_mark /= Void then
+				my_type_mark := a_type_mark.twin
+			end
 			my_supplier := a_supplier.twin
-			my_semantic_label := a_semantic_label.twin
+			if a_semantic_label /= Void then
+				my_semantic_label := a_semantic_label.twin
+			end
 		ensure
 			client.is_equal (a_client)
---			some_client_entities /= Void implies client_entities.is_equal (some_client_entities)
---			some_client_entities = Void implies client_entities = Void
-			a_type_mark /= Void implies type_mark.is_equal (a_type_mark)
-			a_type_mark = Void implies type_mark = Void
+			some_client_entities /= Void implies my_client_entities.is_equal (some_client_entities)
+			some_client_entities = Void implies my_client_entities = Void
+			a_type_mark /= Void implies my_type_mark.is_equal (a_type_mark)
+			a_type_mark = Void implies my_type_mark = Void
 			supplier.is_equal (a_supplier)
-			a_semantic_label /= Void implies semantic_label.is_equal (a_semantic_label)
-			a_semantic_label = Void implies semantic_label = Void
+			a_semantic_label /= Void implies my_semantic_label.is_equal (a_semantic_label)
+			a_semantic_label = Void implies my_semantic_label = Void
 		end
 
 feature -- Access

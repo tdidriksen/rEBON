@@ -11,7 +11,7 @@ inherit
 
 	CANONICALIZABLE
 
-creation
+create
 	make
 
 feature -- Initialization
@@ -23,10 +23,12 @@ feature -- Initialization
 			a_name /= Void
 		do
 			my_name := a_name.twin
-			my_class_type := a_class_type.twin
+			if a_class_type /= Void then
+				my_class_type := a_class_type.twin
+			end
 		ensure
 			name.is_equal (a_name)
-			equal (class_type, a_class_type)
+			a_class_type /= Void implies equal (class_type, a_class_type)
 		end
 
 feature -- Access

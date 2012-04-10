@@ -25,14 +25,14 @@ inherit
 			bon_out
 		end
 
-creation
+create
 	make
 
 feature -- Initialization
 
 	make (a_classifier: STRING;
 			a_name: STRING;
-			some_generics: ANY;
+			some_generics: FORMAL_GENERIC_LIST;
 			a_reused_flag: BOOLEAN;
 			a_persistent_flag: BOOLEAN;
 			an_interfaced_flag: BOOLEAN;
@@ -68,11 +68,12 @@ feature -- Initialization
 			make_static_diagram (a_name, a_comment,
 													create {STATIC_COMPONENTS}.make_set (Current))
 		ensure
-			classifier.is_equal (a_classifier)
+			a_classifier /= Void implies classifier.is_equal (a_classifier)
 			reused = a_reused_flag
 			persistent = a_persistent_flag
 			interfaced = an_interfaced_flag
-			class_interface.is_equal (a_class_interface)
+			some_generics /= Void implies generics.is_equal (some_generics)
+			a_class_interface /= Void implies class_interface.is_equal (a_class_interface)
 		end
 
 feature -- Access
@@ -88,10 +89,10 @@ feature -- Access
 			Result := my_classifier.twin
 		end
 
-	generics: ANY
+	generics: FORMAL_GENERIC_LIST
 			-- The generic parameters of `Current'.
 		do
-			check false end
+			Result := my_generics.twin
 		end
 
 	reused: BOOLEAN
@@ -132,7 +133,7 @@ feature -- Element change
 			equal (classifier, a_classifier)
 		end
 
-	set_generics (some_generics: ANY)
+	set_generics (some_generics: FORMAL_GENERIC_LIST)
 			-- The generic parameters of `Current'.
 		do
 			my_generics := some_generics.twin
@@ -254,14 +255,14 @@ feature -- Basic operations
 feature {CLASS_SPECIFICATION} -- Implementation
 
 	my_classifier: STRING
-	my_generics: ANY
+	my_generics: FORMAL_GENERIC_LIST
 	my_reused_flag: BOOLEAN
 	my_persistent_flag: BOOLEAN
 	my_interfaced_flag: BOOLEAN
 	my_class_interface: CLASS_INTERFACE
 
 invariant
-	classifier /= Void implies (classifier.is_equal ("ROOT") or
+	my_classifier /= Void implies (classifier.is_equal ("ROOT") or
 										 classifier.is_equal ("DEFERRED") or
 										 classifier.is_equal ("EFFECTIVE"))
 

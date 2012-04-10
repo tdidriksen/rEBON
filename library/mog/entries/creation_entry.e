@@ -21,10 +21,10 @@ feature -- Initialization
 			-- Initialize `Current'.
 		do
 			create my_creator.make_from_string (a_creator)
-			create my_targets.make_from_list (some_targets)
+			set_targets (some_targets)
 		ensure
 			creator.is_equal (a_creator)
-			targets.to_list.contains (some_targets)
+			targets.contains (some_targets)
 		end
 
 feature -- Access
@@ -39,7 +39,7 @@ feature -- Access
 			Result := my_creator.twin
 		end
 
-	targets: CLASS_NAME_SET
+	targets: CLASS_NAME_LIST
 		do
 			Result := my_targets.twin
 		end
@@ -63,13 +63,14 @@ feature -- Element change
 			creator.is_equal (a_creator)
 		end
 
-	set_targets (some_targets: CLASS_NAME_SET)
+	set_targets (some_targets: CLASS_NAME_LIST)
 		require
 			some_targets /= Void
 		do
 			my_targets := some_targets.twin
 		ensure
 			targets.is_equal (some_targets)
+			targets.for_all (agent (target_name: STRING): BOOLEAN do Result := targets.occurrences (target_name) = 1 end)
 		end
 
 feature -- Removal
@@ -110,7 +111,7 @@ feature -- Output
 feature {CREATION_ENTRY} -- Implementation
 
 	my_creator: STRING
-	my_targets: CLASS_NAME_SET
+	my_targets: CLASS_NAME_LIST
 
 invariant
 

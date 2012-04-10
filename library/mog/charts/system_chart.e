@@ -32,7 +32,11 @@ feature -- Initialization
 			-- a_part /= Void --@changed didriksen - parts are optional
 		do
 			make_informal_chart (a_name, an_index, an_explanation, a_part)
-			create my_clusters.make_from_set (some_clusters)
+			if some_clusters /= Void then
+				create my_clusters.make_from_set (some_clusters)
+			else
+				create my_clusters.make
+			end
 		ensure
 			name.is_equal (a_name)
 			an_index /= Void implies index.is_equal (an_index)

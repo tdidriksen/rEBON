@@ -29,6 +29,8 @@ feature -- Initialization
 				i = size
 			loop
 				put_first (element)
+
+				i := i + 1
 			end
 		ensure
 			count = size
@@ -125,7 +127,7 @@ feature -- Status report
 
 	contains (other: like Current): BOOLEAN
 		do
-			check false end
+			Result := other.for_all (agent (other_item: G): BOOLEAN do Result := Current.occurrences (other_item) > 0 end)
 		end
 
 	is_disjoint (other: like Current): BOOLEAN

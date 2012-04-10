@@ -30,12 +30,14 @@ feature -- Initialization
 			my_child := a_child.twin
 			my_multiplicity := a_multiplicity
 			my_parent := a_parent.twin
-			my_label := a_label.twin
+			if a_label /= Void then
+				my_label := a_label.twin
+			end
 		ensure
 			child.is_equal (a_child)
 			multiplicity = a_multiplicity
 			parent.is_equal (a_parent)
-			label /= Void implies label.is_equal (a_label)
+			a_label /= Void implies label.is_equal (a_label)
 		end
 
 feature -- Access

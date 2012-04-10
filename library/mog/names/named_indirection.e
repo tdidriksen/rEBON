@@ -20,13 +20,15 @@ feature -- Initialization
 				an_indirection_list: INDIRECTION_LIST)
 			-- Initialize `Current'.
 		require
-			a_class_name /= Void and then not a_class_name.is_empty
+			a_class_name /= Void implies not a_class_name.is_empty
 			an_indirection_list /= Void and then not an_indirection_list.is_empty
 		do
-			my_class_name := a_class_name.twin
+			if my_class_name /= Void then
+				my_class_name := a_class_name.twin
+			end
 			my_indirection_list := an_indirection_list.twin
 		ensure
-			class_name.is_equal (a_class_name)
+			my_class_name /= Void implies class_name.is_equal (a_class_name)
 			indirection_list.is_equal (an_indirection_list)
 		end
 
@@ -50,7 +52,11 @@ feature -- Access
 
 	hash_code: INTEGER
 		do
-			Result := my_class_name.hash_code
+			if my_class_name /= Void then
+				Result := my_class_name.hash_code
+			else
+				Result := 0
+			end
 		end
 
 feature -- Output
@@ -70,7 +76,7 @@ feature {NAMED_INDIRECTION} -- Implementation
 
 invariant
 
-	my_class_name /= Void and then not my_class_name.is_empty
+	my_class_name /= Void implies not my_class_name.is_empty
 	my_indirection_list /= Void and then not my_indirection_list.is_empty
 
 end -- class NAMED_INDIRECTION

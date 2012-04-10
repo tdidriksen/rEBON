@@ -10,7 +10,7 @@ class CLIENT_ENTITY
 inherit
 	HASHABLE
 
-creation
+create
 	make_undefined, make_feature, make_supplier, make_parent
 
 feature -- Initialization
@@ -20,10 +20,10 @@ feature -- Initialization
 		once
 			my_undefined := true
 		ensure
-			undefined = true
+			undefined
 		end
 
-	make_feature (a_feature_name: STRING)
+	make_feature (a_feature_name: FEATURE_NAME)
 			-- Initialize `Current' as a feature name.
 		require
 			a_feature_name /= Void
@@ -64,7 +64,7 @@ feature -- Access
 			end
 		end
 
-	feature_name: STRING
+	feature_name: FEATURE_NAME
 			-- The feature name of `Current'.
 		do
 			Result := my_feature_name.twin
@@ -90,14 +90,14 @@ feature -- Access
 
 feature {CLIENT_ENTITY} -- Implementation
 
-	my_feature_name: STRING
+	my_feature_name: FEATURE_NAME
 	my_supplier_indirection: SUPPLIER_INDIRECTION
 	my_parent_indirection: PARENT_INDIRECTION
 	my_undefined: BOOLEAN
 
 invariant
 
-	(my_feature_name /= Void and then not my_feature_name.is_empty) xor
+	(my_feature_name /= Void and then not my_feature_name.feature_name.is_empty) xor
 	my_supplier_indirection /= Void xor
 	my_parent_indirection /= Void xor
 	my_undefined

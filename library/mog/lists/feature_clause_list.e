@@ -6,11 +6,11 @@ note
 
 class
 	FEATURE_CLAUSE_LIST
-	
+
 inherit
 	MOG_LIST [FEATURE_CLAUSE]
 
-creation
+create
 	make_list, make_optional_rest, make_optional_first
 
 end -- class FEATURE_CLAUSE_LIST

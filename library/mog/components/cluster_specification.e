@@ -38,6 +38,7 @@ feature -- Initialization
 		require
 			a_name /= Void
 		do
+			my_name := a_name
 			make_static_diagram (a_name, a_comment, some_components)
 
 			set_reused (a_reused_flag)
@@ -49,7 +50,7 @@ feature -- Access
 
 	hash_code: INTEGER
 		do
-			check false end
+			Result := my_name.hash_code
 		end
 
 	reused: BOOLEAN

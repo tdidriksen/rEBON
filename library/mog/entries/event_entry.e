@@ -24,7 +24,7 @@ feature -- Initialization
 			set_classes_involved (some_classes_involved)
 		ensure
 			name.is_equal (a_name)
-			classes_involved.to_list.contains (some_classes_involved)
+			classes_involved.contains (some_classes_involved)
 		end
 
 feature -- Access
@@ -39,7 +39,7 @@ feature -- Access
 			Result := my_name.twin
 		end
 
-	classes_involved: CLASS_NAME_SET
+	classes_involved: CLASS_NAME_LIST
 		do
 			Result := my_classes_involved.twin
 		end
@@ -67,9 +67,10 @@ feature -- Element change
 		require
 			some_classes_involved /= Void
 		do
-			-- my_classes_involved := some_classes_involved.to_set
+			my_classes_involved := some_classes_involved
 		ensure
-			classes_involved.to_list.contains (some_classes_involved)
+			classes_involved.contains (some_classes_involved)
+			classes_involved.for_all (agent (class_name: STRING): BOOLEAN do Result := classes_involved.occurrences (class_name) = 1 end)
 		end
 
 feature -- Removal
@@ -111,7 +112,7 @@ feature -- Output
 feature {EVENT_ENTRY} -- Implementation
 
 	my_name: STRING
-	my_classes_involved: CLASS_NAME_SET
+	my_classes_involved: CLASS_NAME_LIST
 
 invariant
 

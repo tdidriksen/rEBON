@@ -42,7 +42,10 @@ feature -- Access
 			-- The formal generic name of this generic indirection, or `Void' if
 			-- one has not been specified.
 		do
-			Result := my_formal_generic_name.twin
+			Result := Void
+			if my_formal_generic_name /= Void then
+				Result := my_formal_generic_name.twin
+			end
 		ensure
 			Result = Void or else not Result.is_empty
 		end
@@ -51,7 +54,10 @@ feature -- Access
 			-- The named indirection of this generic indirection, or `Void' if
 			-- one has not been specified.
 		do
-			Result := my_named_indirection.twin
+			Result := Void
+			if my_named_indirection /= Void then
+				Result := my_named_indirection.twin
+			end
 		end
 
 	hash_code: INTEGER

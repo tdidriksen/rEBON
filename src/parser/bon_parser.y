@@ -224,7 +224,7 @@ create
 %type <BOOLEAN>   Optional_Reused
 %type <CHARACTER> Character_constant
 %type <INTEGER>   Integer_constant
-%type <INTEGER>   Multiplicity         Optional_Multiplicity_clause
+%type <INTEGER>   Multiplicity         Optional_Multiplicity_clause     Integer
 %type <REAL>      Real_constant
 
 %type <STRING> Class_name             Optional_Class_name
@@ -232,7 +232,6 @@ create
 %type <STRING> Cluster_prefix
 %type <STRING> Dynamic_component_name
 %type <STRING> Extended_id            Optional_Extended_id
-%type <STRING> Feature_name
 %type <STRING> Formal_generic_name
 %type <STRING> Group_name
 %type <STRING> Identifier   All_caps_identifier
@@ -241,6 +240,7 @@ create
 %type <STRING> Manifest_string
 %type <STRING> Manifest_textblock
 %type <STRING> Object_name
+%type <STRING> Optional_Deferred_or_Effective_or_Redefined
 %type <STRING> Optional_Explanation_Manifest_string
 %type <STRING> Optional_Incoming_or_Outgoing_clause
 %type <STRING> Optional_Part_Manifest_string
@@ -341,8 +341,8 @@ create
 %type <FORMAL_GENERIC_LIST> Optional_Formal_generics_clause Formal_generics Formal_generic_list At_least_one_Formal_generic Optional_Formal_generics
 
 %type <CLASS_TYPE> Class_type Optional_Implies_Class_type
-%type <ACTUAL_GENERICS> Optional_Actual_generics Actual_generics
-%type <TYPE_LIST> Type_list At_least_one_Type Optional_types
+%type <ACTUAL_GENERICS> Optional_Actual_generics Actual_generics Type_list At_least_one_Type Optional_types
+--%type <TYPE_LIST> Type_list At_least_one_Type Optional_types
 %type <BON_TYPE> Type
 
 %type <TYPE_MARK> Type_mark Optional_Type_mark
@@ -370,7 +370,18 @@ create
 %type <CLASS_NAME_LIST> Optional_Selective_export Selective_export
 %type <FEATURE_CLAUSE_LIST> Features At_least_one_Feature_clause Optional_Feature_clauses
 %type <FEATURE_CLAUSE> Feature_clause
+%type <FEATURE_NAME> Feature_name Prefix_rule Infix_rule
+%type <OPERATOR> Prefix_operator Infix_operator
+%type <BINARY_OPERATOR> Binary
+%type <UNARY_OPERATOR> Unary
+%type <SIGN> Sign
+%type <RENAMING> Rename_clause Renaming
+%type <FEATURE_ARGUMENT_LIST> Feature_arguments At_least_one_Feature_argument Optional_Feature_arguments
+%type <FEATURE_ARGUMENT> Feature_argument
+%type <STRING_LIST> Identifier_list At_least_one_Identifier Optional_Identifier_list Optional_Identifiers
 %type <FEATURE_NAME_LIST> Feature_name_list At_least_one_Feature_name Optional_Feature_names
+%type <FEATURE_SPECIFICATION_LIST> Feature_specifications At_least_one_Feature_specification Optional_Feature_specifications
+%type <FEATURE_SPECIFICATION> Feature_specification
 
 -- A.7 FORMAL ASSERTIONS
 
@@ -907,7 +918,7 @@ Static_diagram_rule : STATIC_DIAGRAM_TOKEN
 							 COMPONENT_TOKEN 
 							 Static_block 
 							 END_TOKEN 
-							 { create $$.make_static_diagram ($2, $3, $5) } ;
+							 { io.put_string ("STATIC DIAGRAM!"); create $$.make_static_diagram ($2, $3, $5) } ;
 
 -- @type like Extended_id
 Optional_Extended_id : -- Empty
@@ -962,7 +973,7 @@ Static_block : Zero_or_more_Static_components
 -- @type STATIC_COMPONENTS
 Zero_or_more_Static_components : -- Empty
 										 | Zero_or_more_Static_components Static_component 
-											{ $$.make_optional_first ($1, $2) } ;
+											{ create $$.make_optional_first ($1, $2) } ;
 
 -- @type STATIC_COMPONENT
 Static_component : Cluster_rule
@@ -1049,13 +1060,15 @@ Static_relation : Inheritance_relation
 -- @type INHERITANCE_RELATION
 Inheritance_relation : Child INHERIT_TOKEN 
 							  Optional_Multiplicity_clause
-							  Parent Optional_Semantic_label
+							  Parent 
+							  Optional_Semantic_label
 							  { create $$.make ($1, $3, $4, $5) } ;
  
 -- @type like Multiplicity
 Optional_Multiplicity_clause : -- Empty
-									  | '{' Multiplicity '}'
-									  { $$ := $2 } ;
+                                { $$ := 0 }
+							 | '{' Multiplicity '}'
+								{ $$ := $2 } ;
 
 -- @type like Semantic_label
 Optional_Semantic_label : -- Empty
@@ -1135,7 +1148,7 @@ Parent_indirection : IMPLIES_TOKEN Generic_indirection
 							{ create $$.make ($2) } ;
 
 -- @type GENERIC_INDIRECTION
-Generic_indirection : Formal_generic_name 
+Generic_indirection : Formal_generic_name
 							 { create $$.make_direct ($1) }
 						  | Named_indirection
 							 { create $$.make_indirect ($1) } ;
@@ -1143,6 +1156,9 @@ Generic_indirection : Formal_generic_name
 -- Differs from BON grammar in text.  We have made the parameterization
 -- of the Named_indirection optional and, given the example in Figure B.9, 
 -- the Class_name is optional as well.
+--      @change Didriksen - Making both parameterization and class name optional for named indirections
+--                          leaves ambiguity between a formal generic name and a named indirection without
+--                          parameterization (i.e. with only a class name). Thus, parameterization has been made mandatory.
 -- @type NAMED_INDIRECTION
 Named_indirection : Optional_Class_name Optional_Indirection_list_clause
 						  { create $$.make ($1, $2) } ;
@@ -1153,8 +1169,10 @@ Optional_Class_name : -- Empty
 						  { $$ := $1 } ;
 
 -- @type like Indirection_list
-Optional_Indirection_list_clause : -- Empty
-											| '[' Indirection_list ']'
+--Optional_Indirection_list_clause : -- Empty
+--											| '[' Indirection_list ']'
+--											{ $$ := $2 } ;
+Optional_Indirection_list_clause : '[' Indirection_list ']'
 											{ $$ := $2 } ;
 
 -- @type INDIRECTION_LIST == MOG_LIST[like Indirection_element]
@@ -1174,7 +1192,12 @@ Optional_Indirection_elements : -- Empty
 Indirection_element : ELLIPSES_TOKEN
 							 { create $$.make_ellipses }
 						  | Named_indirection
-							 { create $$.make ($1) } ;
+							 { create $$.make ($1) }
+						  | Class_name
+						     { create $$.make_with_class_name ($1) }
+						  | Formal_generic_name
+						     { create $$.make_with_formal_generic_name ($1) }; 
+							 
 
 -- @type TYPE_MARK
 Type_mark : ':'
@@ -1208,18 +1231,18 @@ Supplier : Static_ref
 -- @type Zero_or_more_Cluster_prefixes :STRING /\ Static_component_name :STRING ==>
 --       Static_ref :STRING
 Static_ref : Zero_or_more_Cluster_prefixes Static_component_name
-				 { create $$.make_from_components ($1, $2) } ;
+				 { create $$.make_from_components ($2, $1) } ;
 
--- @type like Cluster_prefix
-Zero_or_more_Cluster_prefixes : -- Empty
-										| Zero_or_more_Cluster_prefixes Cluster_prefix
-										{ create $$.make_from_string ($2)
-										  $$.prepend_string ($1) } ;
+ -- @type like Cluster_prefix
+ Zero_or_more_Cluster_prefixes : -- Empty
+ 										| Zero_or_more_Cluster_prefixes Cluster_prefix
+ 										{ create $$.make_from_string ($2)
+ 										  $$.prepend_string ($1) } ;
 
--- @type Cluster_name :STRING /\ '.':CHARACTER ==> Cluster_prefix :STRING
-Cluster_prefix : Cluster_name '.'
-					  { create $$.make_from_string ($1)
-						 $$.append_character ('.') } ;
+ -- @type Cluster_name :STRING /\ '.':CHARACTER ==> Cluster_prefix :STRING
+ Cluster_prefix : Cluster_name '.'
+ 					  { create $$.make_from_string ($1)
+ 						 $$.append_character ('.') } ;
 
 -- @type Class_name :STRING /\ Cluster_name :STRING ==> Static_component_name :STRING
 Static_component_name : Class_name
@@ -1228,7 +1251,7 @@ Static_component_name : Class_name
 								{ $$ := $1 } ;
 
 -- @type INTEGER
-Multiplicity : INTEGER_TOKEN
+Multiplicity : Integer
 					{ $$ := $1 } ;
 
 -- @type like Manifest_string
@@ -1277,32 +1300,37 @@ Optional_Class_types : -- Empty
 							;
 
 -- @type like At_least_one_Feature_clause
-Features : At_least_one_Feature_clause ;
+Features : At_least_one_Feature_clause { $$ := $1 } ;
 
 -- @type like Optional_Feature_clause
-At_least_one_Feature_clause : Feature_clause Optional_Feature_clauses ;
+At_least_one_Feature_clause : Feature_clause Optional_Feature_clauses 
+                                { create $$.make_optional_rest ($1, $2) } ;
 
 -- @type FEATURE_CLAUSE_LIST
 Optional_Feature_clauses : -- Empty
-								 | Optional_Feature_clauses Feature_clause ;
+								 | Optional_Feature_clauses Feature_clause 
+								  { create $$.make_optional_first ($1, $2) } ;
 
 -- @type FEATURE_CLAUSE
 Feature_clause : FEATURE_TOKEN Optional_Selective_export
 					  Optional_Comment
-					  Feature_specifications ;
+					  Feature_specifications 
+					  { create $$.make ($2, $3, $4) } ;
 
+-- @type like Selective_export
 Optional_Selective_export : -- Empty
 								  | Selective_export
 									 { $$ := $1 }
 								  ;
 
-Feature_specifications :  At_least_one_Feature_specification ;
+Feature_specifications :  At_least_one_Feature_specification { $$ := $1 } ;
 
-At_least_one_Feature_specification : Feature_specification Optional_Feature_specifications ;
+At_least_one_Feature_specification : Feature_specification Optional_Feature_specifications 
+                                      { create $$.make_optional_rest ($1, $2) } ;
 
 Optional_Feature_specifications : -- Empty
-										  | Optional_Feature_specifications 
-											 Feature_specification ;
+										  | Optional_Feature_specifications Feature_specification
+											 { create $$.make_optional_first ($1, $2) } ;
 
 Feature_specification : Optional_Deferred_or_Effective_or_Redefined
 								Feature_name_list 
@@ -1314,23 +1342,26 @@ Feature_specification : Optional_Deferred_or_Effective_or_Redefined
 
 Optional_Deferred_or_Effective_or_Redefined : -- Empty
 														  | DEFERRED_TOKEN
+														    { $$ := "DEFERRED" }
 														  | EFFECTIVE_TOKEN
+														    { $$ := "EFFECTIVE" }
 														  | REDEFINED_TOKEN
+														    { $$ := "REDEFINED" }
 														  ;
 
 Optional_Type_mark_Type : -- Empty
 								| Type_mark Type ;
 
 Optional_Rename_clause : -- Empty
-							  | Rename_clause ;
+							  | Rename_clause { $$ := $1 } ;
 
 Optional_Feature_arguments_clause : -- Empty
-											 | Feature_arguments ;
+											 | Feature_arguments { $$ := $1 } ;
 
 Optional_Contract_clause : -- Empty
-								 | Contract_clause ;
+								 | Contract_clause { $$ := $1 } ;
 
-Contract_clause : Contracting_conditions END_TOKEN ;
+Contract_clause : Contracting_conditions END_TOKEN { $$ := $1 } ;
 
 Contracting_conditions : Precondition 
 							  | Postcondition 
@@ -1360,55 +1391,61 @@ Optional_Feature_names : -- Empty
 								 { create $$.make_optional_first ($1, $3) }
 							  ;
 
--- @type FEATURE_NAME == STRING
+-- @type FEATURE_NAME
 Feature_name : FEATURE_NAME_TOKEN
-					{ $$ := $1
+					{ create $$.make_feature_name (last_identifier)
 					  -- add_feature_name($$)
 					}
-				 | All_caps_identifier
-					{ $$ := $1
+				 | ALL_CAPS_IDENTIFIER_TOKEN
+					{ create $$.make_feature_name (last_identifier)
 					  -- add_feature_name($$)
 					}
-				 | Identifier
-					{ $$ := $1
+				 | IDENTIFIER_TOKEN
+					{ create $$.make_feature_name (last_identifier)
 					  -- add_feature_name($$)
 					}
-				 | Prefix_rule 
-				 | Infix_rule
+				 | Prefix_rule { $$ := $1 }
+				 | Infix_rule { $$ := $1 }
 				 ;
 
-Rename_clause : '{' Renaming '}' ;
+Rename_clause : '{' Renaming '}' { $$ := $2 } ;
 
-Renaming : '^' Class_name '.' Feature_name ;
+Renaming : '^' Class_name '.' Feature_name { create $$.make ($2, $4) } ;
 
-Feature_arguments : At_least_one_Feature_argument ;
+Feature_arguments : At_least_one_Feature_argument { $$ := $1 } ;
 
-At_least_one_Feature_argument : Feature_argument Optional_Feature_arguments ;
+At_least_one_Feature_argument : Feature_argument Optional_Feature_arguments
+                                { create $$.make_optional_rest ($1, $2) } ;
 
 Optional_Feature_arguments : -- Empty
-									| Optional_Feature_arguments Feature_argument ;
+									| Optional_Feature_arguments Feature_argument 
+									  { create $$.make_optional_first ($1, $2) } ;
 
-Feature_argument : IMPLIES_TOKEN Optional_Identifier_list Type ;
+Feature_argument : IMPLIES_TOKEN Optional_Identifier_list Type 
+                    { create $$.make ($2, $3) } ;
 
 Optional_Identifier_list : -- Empty
-								 | Identifier_list ':' ;
+								 | Identifier_list ':' 
+								    { $$ := $1 } ;
 
-Identifier_list : At_least_one_Identifier ;
+Identifier_list : At_least_one_Identifier { $$ := $1 } ;
 
-At_least_one_Identifier : IDENTIFIER_TOKEN Optional_Identifiers ;
+At_least_one_Identifier : Identifier Optional_Identifiers 
+                            { create $$.make_optional_rest ($1, $2) } ;
 
 Optional_Identifiers : -- Empty
-							| Optional_Identifiers ',' IDENTIFIER_TOKEN ;
+							| Optional_Identifiers ',' Identifier 
+							    { create $$.make_optional_first ($1, $3) } ;
 
-Prefix_rule : PREFIX_TOKEN '"' Prefix_operator '"' ;
+Prefix_rule : PREFIX_TOKEN '"' Prefix_operator '"'  { create $$.make_prefix ($3) } ;
 
-Infix_rule : INFIX_TOKEN '"' Infix_operator '"' ;
+Infix_rule : INFIX_TOKEN '"' Infix_operator '"'  { create $$.make_infix ($3) } ;
 
-Prefix_operator : Unary 
-					 | FREE_OPERATOR_TOKEN ;
+Prefix_operator : Unary { $$ := $1 }
+					 | FREE_OPERATOR_TOKEN { create $$.make_free_operator (last_free_operator) } ;
 
-Infix_operator : Binary 
-					| FREE_OPERATOR_TOKEN ;
+Infix_operator : Binary { $$ := $1 }
+					| FREE_OPERATOR_TOKEN { create $$.make_free_operator (last_free_operator) } ;
 
 -- @type like Formal_generics
 Optional_Formal_generics_clause : -- Empty
@@ -1465,8 +1502,8 @@ Optional_Actual_generics : -- Empty
 
 -- @type ACTUAL_GENERICS
 Actual_generics : '[' Type_list ']'
---						{ create $$.make_from_list ($2) } ;
-;
+						{ create $$.make_from_list ($2) } ;
+
 
 -- @type like At_least_one_Type
 Type_list : At_least_one_Type
@@ -1474,13 +1511,13 @@ Type_list : At_least_one_Type
 
 -- @type like Optional_Types
 At_least_one_Type : Type Optional_Types
---						  { create $$.make_optional_rest ($1, $2) } ;
-;
+						  { create $$.make_optional_rest ($1, $2) } ;
+
 
 -- @type TYPE_LIST == MOG_LIST [BON_TYPE]
 Optional_Types : -- Empty
 					| Optional_Types ',' Type
---					  { create $$.make_optional_first ($1, $3) }
+					  { create $$.make_optional_first ($1, $3) }
 					;
 
 -- @type BON_TYPE
@@ -1493,42 +1530,46 @@ Type : Class_type
 -- Both of these rules are slightly revised from the original grammar to
 -- collapse explicit listing of '+' and '-' tokens via the Sign rule.
 
-Unary : DELTA_TOKEN
-		| OLD_TOKEN 
-		| NOT_TOKEN
-		| Sign ; 
+Unary : DELTA_TOKEN                         { create $$.make_delta }
+		| OLD_TOKEN                         { create $$.make_old }
+		| NOT_TOKEN                         { create $$.make_not }
+		| Sign                              { $$ := $1; $$.set_unary } 
+; 
 
-Binary : Sign
-		 | '*' 
-		 | '/' 
-		 | '<' 
-		 | '>'
-		 | LESS_THAN_OR_EQUAL_TOKEN
-		 | GREATER_THAN_OR_EQUAL_TOKEN
-		 | '=' 
-		 | NOT_EQUAL_TOKEN
-		 | DOUBLE_SLASH_TOKEN
-		 | DOUBLE_BACKSLASH_TOKEN
-		 | '^'
-		 | OR_TOKEN
-		 | XOR_TOKEN 
-		 | AND_TOKEN 
-		 | IMPLIES_TOKEN
-		 | EQUIVALENT_TO_TOKEN
-		 | MEMBER_OF_TOKEN
-		 | ':' ;
+Binary : Sign                               { $$ := $1; $$.set_binary }
+		 | '*'                              { create $$.make_times }
+		 | '/'                              { create $$.make_division }
+		 | '<'                              { create $$.make_less_than }
+		 | '>'                              { create $$.make_greater_than }
+		 | LESS_THAN_OR_EQUAL_TOKEN         { create $$.make_less_than_equals }
+		 | GREATER_THAN_OR_EQUAL_TOKEN      { create $$.make_greater_than_equals }
+		 | '='                              { create $$.make_equals }
+		 | NOT_EQUAL_TOKEN                  { create $$.make_not_equals }
+		 | DOUBLE_SLASH_TOKEN               { create $$.make_integer_division }
+		 | DOUBLE_BACKSLASH_TOKEN           { create $$.make_modulo }
+		 | '^'                              { create $$.make_power }
+		 | OR_TOKEN                         { create $$.make_or }
+		 | XOR_TOKEN                        { create $$.make_xor }
+		 | AND_TOKEN                        { create $$.make_and }
+		 | IMPLIES_TOKEN                    { create $$.make_implies }
+		 | EQUIVALENT_TO_TOKEN              { create $$.make_logical_equivalence }
+		 | MEMBER_OF_TOKEN                  { create $$.make_member_of }
+		 | ':'                              { create $$.make_colon }
+;
 
 -- A.7 FORMAL ASSERTIONS 
 
 -- @type like At_least_one_Assertion_clause
-Assertion : At_least_one_Assertion_clause ;
+Assertion : At_least_one_Assertion_clause { $$ := $1 } ;
 
 -- @type like Optional_Assertion_clauses
-At_least_one_Assertion_clause : Assertion_clause Optional_Assertion_clauses ;
+At_least_one_Assertion_clause : Assertion_clause Optional_Assertion_clauses 
+                                { create $$.make_optional_rest ($1, $2) } ;
 
 -- @type ASSERTION_CLAUSE_LIST == MOG_LIST[ASSERTION_CLAUSE]
 Optional_Assertion_clauses : -- Empty
-									| Optional_Assertion_clauses ';' Assertion_clause ;
+									| Optional_Assertion_clauses ';' Assertion_clause 
+									  { create $$.make_optional_first ($1, $3) } ;
 
 -- @type ASSERTION_CLAUSE
 Assertion_clause : Boolean_expression 
@@ -1687,8 +1728,8 @@ Manifest_constant : Boolean_constant
 Optional_Sign : -- Empty
 				  | Sign ;
 
-Sign : '+' 
-	| '-' ; 
+Sign : '+' { create $$.make_plus }
+	 | '-' { create $$.make_minus } ; 
 
 -- @type BOOLEAN
 Boolean_constant : TRUE_TOKEN 
@@ -1707,10 +1748,10 @@ Real_constant : Optional_Sign REAL_TOKEN ;
 -- include multiple New_line separated string.
 
 -- @type STRING
-Manifest_textblock : String_begin SIMPLE_STRING_TOKEN String_end { $$ := last_string_constant };
+Manifest_textblock : String_begin SIMPLE_STRING_TOKEN String_end { create $$.make_from_string(last_string_constant) };
 
 -- @type STRING
-Manifest_string : String_begin SIMPLE_STRING_TOKEN String_end { $$ := last_string_constant };
+Manifest_string : String_begin SIMPLE_STRING_TOKEN String_end { create $$.make_from_string(last_string_constant) };
 
 String_begin : STRING_DELIMITER_TOKEN ;
 
@@ -1720,6 +1761,9 @@ String_end : STRING_DELIMITER_TOKEN ;
 Identifier : IDENTIFIER_TOKEN { $$ := last_identifier };
 
 All_caps_identifier : ALL_CAPS_IDENTIFIER_TOKEN { $$ := last_identifier };
+
+-- @type INTEGER
+Integer : INTEGER_TOKEN { $$ := last_integer };
 
 -- A.8 DYNAMIC DIAGRAMS 
 

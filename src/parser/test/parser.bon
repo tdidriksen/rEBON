@@ -92,78 +92,86 @@ end
 
 -- Static Structure
 
-static_diagram EBON_PARSER_STRUCTURE
+static_diagram
 component
-  root class EBON_PARSER
-  deferred class EBON_PARSER_SKELETON
-  effective class EBON_PARSER interfaced
-  class EBON_TOKENS
+    root class EBON_PARSER
+    deferred class EBON_PARSER_SKELETON
+    effective class EBON_PARSER interfaced
+    class EBON_TOKENS
 end
 
-
-static_diagram EBON_PARSER_REUSED
-component
-  class KL_SHARED_ARGUMENTS reused
-  class KL_STANDARD_FILES reused
-  class KL_SHARED_EXCEPTIONS reused
-  class YY_COMPRESSED_PARSER_SKELETON reused
-  class UT_CHARACTER_CODES reused
-end
+--static_diagram EBON_PARSER_STRUCTURE
+--component
+--  root class EBON_PARSER
+--  deferred class EBON_PARSER_SKELETON
+--  effective class EBON_PARSER interfaced
+--  class EBON_TOKENS
+--end
 
 
-static_diagram EBON_PARSER_INHERITANCE
-component
-  cluster PARSER component ... end
+--static_diagram EBON_PARSER_REUSED
+--component
+--  class KL_SHARED_ARGUMENTS reused
+--  class KL_STANDARD_FILES reused
+--  class KL_SHARED_EXCEPTIONS reused
+--  class YY_COMPRESSED_PARSER_SKELETON reused
+--  class UT_CHARACTER_CODES reused
+--end
 
-  EBON_PARSER inherit EBON_PARSER_SKELETON
 
-  EBON_PARSER_SKELETON inherit KL_SHARED_ARGUMENTS, KL_STANDARD_FILES,
-    KL_SHARED_EXCEPTIONS, YY_COMPRESSED_PARSER_SKELETON, UT_CHARACTER_CODES,
-    EBON_TOKENS
-end
+--static_diagram EBON_PARSER_INHERITANCE
+--component
+--  cluster PARSER component ... end
+--
+--  EBON_PARSER inherit EBON_PARSER_SKELETON
+
+--  EBON_PARSER_SKELETON inherit KL_SHARED_ARGUMENTS, KL_STANDARD_FILES,
+--    KL_SHARED_EXCEPTIONS, YY_COMPRESSED_PARSER_SKELETON, UT_CHARACTER_CODES,
+--    EBON_TOKENS
+--end
 
 
 -- Class Interface Description
 
-static_diagram
-  class EBON_PARSER_SKELETON
-  feature
-    reset_parser
-    last_token: INTEGER
-      -- Code of last token read.
-    text: STRING
-      -- Text of last token read.
+--static_diagram
+--  class EBON_PARSER_SKELETON
+--  feature
+--    reset_parser
+--    last_token: INTEGER
+--      -- Code of last token read.
+--    text: STRING
+--      -- Text of last token read.
 
-    last_string_constant: STRING
-    last_character_constant: CHARACTER
-    last_identifier: STRING
-    last_free_operator: STRING
-    last_integer: INTEGER
-    last_real: REAL
+--    last_string_constant: STRING
+--    last_character_constant: CHARACTER
+--    last_identifier: STRING
+--    last_free_operator: STRING
+--    last_integer: INTEGER
+--    last_real: REAL
 
-    ebon_buffer: STRING
-    ebon_lineno: INTEGER
-    ebon_error_message: STRING
+--    ebon_buffer: STRING
+--    ebon_lineno: INTEGER
+--    ebon_error_message: STRING
 
-    String_begin: CHARACTER
-    String_end: CHARACTER
+--    String_begin: CHARACTER
+--    String_end: CHARACTER
 
-    make_parser
-    default_action
-    scan_file
-    scan_string
-      -> s : STRING
-    require 
-      s /= Void
-    end
-  end
+--    make_parser
+--    default_action
+--    scan_file
+--    scan_string
+--      -> s : STRING
+--    require 
+--      s /= Void
+--    end
+--  end
 
-  class EBON_PARSER
-  feature
-    make_parser
-    scan_file
-  end
-end
+--  class EBON_PARSER
+--  feature
+--    make_parser
+--    scan_file
+--  end
+--end
 
 
 

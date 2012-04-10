@@ -1,0 +1,17 @@
+static_diagram THE_WORLD -- Static relations of the World
+component
+    cluster PEOPLE
+    component
+        class CITIZEN
+    end
+    
+    root class MOTHER_NATURE
+    deferred class HUMAN
+    effective class FEMALE
+    class MALE 
+
+    MALE inherit HUMAN
+    HAT.MALE inherit BEINGS.PEOPLE.CITIZEN
+    BEINGS.PEOPLE.CITIZEN inherit FISK.TUN.TOBIS.PARROT.CARROT.HUMAN
+    PEOPLE.CITIZEN inherit { 3 } HUMAN "A Citizen is of course human." 
+end

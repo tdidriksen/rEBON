@@ -1,0 +1,20 @@
+system_chart THE_WORLD
+end
+
+cluster_chart EARTH
+end
+
+class_chart CITIZEN
+end
+
+class_chart NOBLEPERSON
+end
+
+event_chart THE_WORLD
+end
+
+scenario_chart THE_WORLD
+end
+
+creation_chart THE_WORLD
+end

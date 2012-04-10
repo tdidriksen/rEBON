@@ -13,7 +13,7 @@ inherit
 			bon_out
 		end
 
-creation
+create
 	make_uniform_list, make_list, make_optional_rest, make_optional_first,
 	make_from_list
 

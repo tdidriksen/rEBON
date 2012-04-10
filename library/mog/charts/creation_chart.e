@@ -28,17 +28,21 @@ feature -- Initialization
 			-- Initialize `Current'.
 		require
 			a_name /= Void
-			an_explanation /= Void
-			a_part /= Void
+			--an_explanation /= Void
+			--a_part /= Void
 		do
 			make_informal_chart (a_name, an_index, an_explanation, a_part)
-			create my_entries.make_from_set (some_entries)
+			if some_entries /= Void then
+				create my_entries.make_from_set (some_entries)
+			else
+				create my_entries.make
+			end
 		ensure
 			name.is_equal (a_name)
-			index.is_equal (an_index)
-			explanation.is_equal (an_explanation)
-			part.is_equal (a_part)
-			entries.is_equal (some_entries)
+			an_index /= Void implies index.is_equal (an_index)
+			an_explanation /= Void implies explanation.is_equal (an_explanation)
+			a_part /= Void implies part.is_equal (a_part)
+			some_entries /= Void implies entries.is_equal (some_entries)
 		end
 
 feature -- Duplication

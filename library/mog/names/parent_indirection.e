@@ -21,8 +21,14 @@ feature -- Initialization
 	make (a_generic_indirection: GENERIC_INDIRECTION)
 			-- Initialize `Current' from the given generic indirection.
 		do
-			my_formal_generic_name := a_generic_indirection.formal_generic_name
-			my_named_indirection := a_generic_indirection.named_indirection
+			if a_generic_indirection.formal_generic_name /= Void then
+				my_formal_generic_name := a_generic_indirection.formal_generic_name
+			end
+			if a_generic_indirection.named_indirection /= Void then
+				my_named_indirection := a_generic_indirection.named_indirection
+			end
+		ensure
+			my_named_indirection /= Void xor my_formal_generic_name /= Void
 		end
 
 feature -- Output

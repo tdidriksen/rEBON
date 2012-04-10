@@ -15,10 +15,10 @@ creation
 
 feature -- Conversion
 
-	to_set: CLASS_NAME_SET is
+	to_set: CLASS_NAME_SET
 			-- Convert `Current' into a class name set.
 		do
-			check false end
+			Result := create {CLASS_NAME_SET}.make_from_list (Current)
 		end
 
 end -- class CLASS_NAME_LIST

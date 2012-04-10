@@ -6,54 +6,78 @@ class
 
 inherit
 	HASHABLE
-	
+
 feature -- Access
 
-	hash_code: INTEGER is
+	hash_code: INTEGER
 			-- Hash code value
 		do
-				check false end
+			Result := 0
+			from
+				my_feature_name_list.start
+			until
+				my_feature_name_list.after
+			loop
+				Result := Result + my_feature_name_list.item_for_iteration.hash_code
+				my_feature_name_list.forth
+			end
 		end
 
-feature -- Measurement
+	feature_names: FEATURE_NAME_LIST
+			-- What are the feature names of `Current'?
+		do
+			Result := my_feature_name_list.twin
+		end
 
-feature -- Status report
+	feature_status: STRING
+			-- What is the status of `Current'?
+		do
+			Result := my_feature_status.twin
+		end
 
-feature -- Status setting
+	type_mark: TYPE_MARK
+			-- What is the type mark of `Current'?
+		do
+			Result := my_type_mark.twin
+		end
 
-feature -- Cursor movement
+	type: BON_TYPE
+			-- What is the type of `Current'?
+		do
+			Result := my_type_information.twin
+		end
 
-feature -- Element change
+	rename_clause: RENAMING
+			-- What is the rename clause of `Current'?
+		do
+			Result := my_rename_clause.twin
+		end
 
-feature -- Removal
+	comment: COMMENT
+			-- What is the comment of `Current'?
+		do
+			Result := my_comment.twin
+		end
 
-feature -- Resizing
-
-feature -- Transformation
-
-feature -- Conversion
-
-feature -- Duplication
-
-feature -- Miscellaneous
-
-feature -- Basic operations
-
-feature -- Obsolete
-
-feature -- Inapplicable
+	arguments: FEATURE_ARGUMENT_LIST
+			-- What are the feature arguments of `Current'?
+		do
+			Result := my_arguments.twin
+		end
 
 feature {NONE} -- Implementation
 
-	feature_status: ANY -- enumeration of deferred, effective, redefined
-	feature_name_list: ANY -- MOG_LIST[STRING]?
-	type_information: ANY
-	rename_clause: ANY
-	comment: COMMENT
-	arguments: ANY
-	contract: ANY
+	my_feature_status: STRING -- enumeration of deferred, effective, redefined
+	my_feature_name_list: FEATURE_NAME_LIST
+	my_type_mark: TYPE_MARK
+	my_type_information: BON_TYPE
+	my_rename_clause: RENAMING
+	my_comment: COMMENT
+	my_arguments: FEATURE_ARGUMENT_LIST
+	my_contract: ANY
 
 invariant
-	invariant_clause: True -- Your invariant here
+	my_feature_status /= Void implies (my_feature_status.is_equal ("DEFERRED") xor my_feature_status.is_equal ("EFFECTIVE") xor my_feature_status.is_equal ("REDEFINED"))
+	my_feature_name_list /= Void and then not my_feature_name_list.is_empty
 
 end -- class FEATURE_SPECIFICATION

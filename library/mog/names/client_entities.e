@@ -12,7 +12,7 @@ class CLIENT_ENTITIES
 inherit
 	MOG_LIST [CLIENT_ENTITY]
 
-creation
+create
 	make_undefined,
 	make_list, make_optional_rest, make_optional_first, make_from_list
 
@@ -27,6 +27,7 @@ feature -- Initialization
 		do
 			create an_undefined_client_entity.make_undefined
 			make_uniform_list (an_undefined_client_entity, a_multiplicity)
+			my_undefined := True
 		ensure
 			count = a_multiplicity
 			undefined
@@ -52,26 +53,17 @@ feature -- Implementation
 
 	type_of_contents: BOOLEAN
 			-- Implements the invariant type_of_contents.
-		local
-			i: INTEGER
-			undefined_entity: CLIENT_ENTITY
 		do
-			create undefined_entity.make_undefined
-			Result := true
-			from
-				i := 0
-			until
-				i = count
-			loop
-				if undefined then
-					Result := Result and item(i) = undefined_entity
-				else
-					Result := Result and item(i) /= undefined_entity
-				end
-			end
+			Result := (for_all (agent is_undefined) and undefined)
+					  xor (not for_all (agent is_undefined) and not undefined)
 		end
 
 feature {CLIENT_ENTITIES} -- Implementation
+	is_undefined (entity: CLIENT_ENTITY): BOOLEAN
+			-- Is `entity' an undefined entity?
+		do
+			Result := entity.undefined
+		end
 
 	my_undefined: BOOLEAN
 

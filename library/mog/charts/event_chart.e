@@ -31,16 +31,25 @@ feature -- Initialization
 			-- Initialize `Current'.
 		require
 			a_name /= Void
-			valid_classifier (a_classifier)
-			an_explanation /= Void
-			a_part /= Void
+			a_classifier /= Void implies valid_classifier (a_classifier)
+			--an_explanation /= Void
+			--a_part /= Void
 		local
 			temp: STRING
 		do
 			make_informal_chart (a_name, an_index, an_explanation, a_part)
-			create my_entries.make_from_set (some_entries)
-			create temp.make_from_string (a_classifier)
-			temp.to_upper
+			if some_entries /= Void then
+				create my_entries.make_from_set (some_entries)
+				set_entries (some_entries)
+			else
+				create my_entries.make
+			end
+			if a_classifier /= Void then
+				create temp.make_from_string (a_classifier)
+				temp.to_upper
+			else
+				unclassify
+			end
 			if (temp /= Void) then
 				if temp.is_equal ("INCOMING") then
 					set_incoming
@@ -48,11 +57,10 @@ feature -- Initialization
 					set_outgoing
 				end
 			end
-			set_entries (some_entries)
 		ensure
-			entries.is_equal (some_entries)
-			a_classifier.as_upper.is_equal ("INCOMING") implies incoming
-			not a_classifier.as_upper.is_equal ("INCOMING") implies outgoing
+			some_entries /= Void implies entries.is_equal (some_entries)
+			a_classifier /= Void implies (a_classifier.as_upper.is_equal ("INCOMING") implies incoming)
+			a_classifier /= Void implies (not a_classifier.as_upper.is_equal ("INCOMING") implies outgoing)
 		end
 
 feature -- Access
@@ -362,6 +370,6 @@ invariant
 	my_classifier /= Void implies
 		my_classifier.is_equal ("INCOMING") xor my_classifier.is_equal ("OUTGOING")
 	my_entries /= Void
-	unclassified xor incoming xor outgoing
+	my_classifier = Void implies unclassified
 
 end -- class EVENT_CHART

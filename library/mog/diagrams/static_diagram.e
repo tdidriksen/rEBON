@@ -15,20 +15,29 @@ creation
 feature -- Initialization
 
 	make_static_diagram (a_name: STRING;
-											 a_comment: COMMENT;
-											 some_components: STATIC_COMPONENTS)
+						 a_comment: COMMENT;
+						 some_components: STATIC_COMPONENTS)
 			-- Initialize `Current'.
-		require
-			a_name /= Void
+		--require
+		--	a_name /= Void
 		do
-			create my_name.make_from_string (a_name)
-			create my_comment.make_from_list (a_comment)
+			if a_name /= Void then -- @changed didriksen - Names can be are optional
+				create my_name.make_from_string (a_name)
+			else
+				my_name := "empty name"
+			end
 
-			my_components := some_components.twin
+			if my_comment /= Void then -- @changed didriksen - Comments are optional
+				create my_comment.make_from_list (a_comment)
+			end
+
+			if some_components /= Void then
+				my_components := some_components.twin
+			end
 		ensure
-			name.is_equal (a_name)
-			comment.is_equal (a_comment)
-			components.is_equal (some_components)
+			a_name /= Void implies name.is_equal (a_name)
+			my_comment /= Void implies comment.is_equal (a_comment)
+			some_components /= Void implies components.is_equal (some_components)
 		end
 
 feature -- Access
@@ -182,7 +191,7 @@ feature {STATIC_DIAGRAM} -- Implementation
 
 invariant
 
-	my_name /= Void
+	--my_name /= Void
 	--my_comment /= Void
 	--my_components /= Void
 

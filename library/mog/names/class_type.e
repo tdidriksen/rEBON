@@ -22,7 +22,9 @@ feature -- Initialization
 			a_class_name /= Void and then not a_class_name.is_empty
 		do
 			my_class_name := a_class_name.twin
-			my_actual_generics := some_actual_generics.twin
+			if some_actual_generics /= Void then
+				my_actual_generics := some_actual_generics.twin
+			end
 		ensure
 			class_name.is_equal (a_class_name)
 			my_actual_generics /= Void implies
@@ -43,7 +45,10 @@ feature -- Access
 	actual_generics: ACTUAL_GENERICS
 			-- The actual generics of `Current'.
 		do
-			Result := my_actual_generics.twin
+			Result := Void
+			if my_actual_generics /= Void then
+				Result := my_actual_generics.twin
+			end
 		end
 
 	hash_code: INTEGER

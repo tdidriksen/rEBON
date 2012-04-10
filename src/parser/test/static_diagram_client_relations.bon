@@ -1,0 +1,39 @@
+static_diagram THE_WORLD -- Static relations of the World
+component
+    cluster PEOPLE
+    component
+        class CITIZEN
+    end
+    
+    root class MOTHER_NATURE
+    deferred class HUMAN
+    effective class FEMALE
+    class MALE 
+
+    MALE inherit HUMAN
+    HAT.MALE inherit BEINGS.PEOPLE.CITIZEN
+    BEINGS.PEOPLE.CITIZEN inherit FISK.TUN.TOBIS.PARROT.CARROT.HUMAN
+    PEOPLE.CITIZEN inherit { 3 } HUMAN "A Citizen is of course human."
+    
+    HUMAN client MOTHER_NATURE
+    MALE client { birth } : FEMALE "Every man has to be born."
+    CITIZEN client { wake_up, eat, socialize } :{ HUMAN
+    CITIZEN client { 3 } :{ HUMAN
+    
+    CITIZEN client { destroy, build_up: G } MOTHER_NATURE "Testing generic indirection"
+    CITIZEN client { destroy, (build_up, inhabit, tear_down): G } MOTHER_NATURE "Testing generic indirection with multiple features"
+    
+    CITIZEN client { build_home, make_children: SET [CHILD] } MOTHER_NATURE "Testing named indirection"
+    CITIZEN client { build_home, make_children: SET[..., ...] } :(3) MOTHER_NATURE "Testing named elided indirection"
+    CITIZEN client { build_home, make_children: SET[LIST[BOY], LIST[GIRL], ...], nurse_parents: SET[PARENTS] } :{ MOTHER_NATURE "Testing nested named indirection"
+    CITIZEN client { destroy, (build_up, inhabit, tear_down): SET[CHILD] } MOTHER_NATURE "Testing named indirection with multiple features"
+    CITIZEN client { build_home, (build_up, teach, tear_down): SET[LIST[BOY], ..., LIST[GIRL]]  } MOTHER_NATURE "Testing nested named indirection"
+    
+    CITIZEN client { -> SET [CHILD] } MOTHER_NATURE "Testing parent indirection"
+    CITIZEN client { -> G } MOTHER_NATURE "Testing parent generic indirection"
+    CITIZEN client { -> SET[..., ...] } :(3) MOTHER_NATURE "Testing parent elided indirection"
+    CITIZEN client { -> SET[LIST[BOY], LIST[GIRL], ...]  } MOTHER_NATURE "Testing nested parent indirection"
+    CITIZEN client { -> SET[CHILD] } MOTHER_NATURE "Testing parent indirection with multiple features"
+    CITIZEN client { -> SET[LIST[BOY], ..., LIST[GIRL]]  } MOTHER_NATURE "Testing nested parent indirection"
+    CITIZEN client { -> [LIST[BOY], ..., LIST[GIRL]]  } MOTHER_NATURE "Testing nested parent indirection with no class name"
+end

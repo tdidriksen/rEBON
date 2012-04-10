@@ -13,7 +13,7 @@ creation
 feature -- Initialization
 
 	make, make_singleton
-			-- Initialize `Current' to be an singleton type mark.
+			-- Initialize `Current' to be a singleton type mark.
 		do
 			singleton := true
 			aggregate := false
