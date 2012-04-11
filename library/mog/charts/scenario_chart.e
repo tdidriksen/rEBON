@@ -15,7 +15,7 @@ inherit
 			wipe_out
 		end
 
-creation
+create
 	make
 
 feature -- Initialization
@@ -73,6 +73,11 @@ feature -- Duplication
 		end
 
 feature -- Status report
+	has_entries: BOOLEAN
+			-- Does `Current' have any entries?
+		do
+			Result := my_entries /= Void and then not my_entries.is_empty
+		end
 
 	is_part_of (other: like Current): BOOLEAN
 		do

@@ -3,9 +3,17 @@ note
                % expression, or constant expression."
 
 deferred class
-  EXPRESSION
+ 	EXPRESSION
 
 inherit
 	HASHABLE
+		select
+			hash_code
+		end
+
+	ASSERTION_CLAUSE
+		rename
+			hash_code as assertion_hash_code
+		end
 
 end -- class EXPRESSION

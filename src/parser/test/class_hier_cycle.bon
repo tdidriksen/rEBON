@@ -11,12 +11,12 @@ end
 
 class_chart W
   inherit
-    Y
+    X
 end
 
 class_chart X
   inherit
-    W
+    Y
 end
 
 class_chart Y
@@ -26,5 +26,5 @@ end
 
 class_chart Z
   inherit
-     X
+    W
 end

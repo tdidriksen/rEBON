@@ -24,11 +24,28 @@ feature -- Type names
 			-- Type name for a STRING type.
 
 feature -- Error messages
-	err_cluster_does_not_exist (a_name: STRING): STRING
+	err_ancestor_does_not_exist (a_descendant_name, an_ancestor_name: STRING): STRING
 		do
-			Result := "Cluster "
+			Result := "Specified ancestor "
+			Result.append_string (an_ancestor_name.string)
+			Result.append_string (" of class ")
+			Result.append_string (a_descendant_name.string)
+			Result.append_string (" does not exist.")
+		end
+
+	err_class_already_in_cluster (a_name: STRING): STRING
+		do
+			Result := "Error defining cluster "
 			Result.append_string (a_name.string)
-			Result.append_string (": was specificed, but never defined.")
+			Result.append_string (": a class is specified more than once.")
+		end
+
+	err_class_does_not_exist (a_name: STRING): STRING
+			-- Error message for when a class does not exist.
+		do
+			Result := "Class "
+			Result.append_string (a_name.string)
+			Result.append_string (" was specified, but never defined.")
 		end
 
 	err_class_exists (a_name: STRING): STRING
@@ -39,12 +56,83 @@ feature -- Error messages
 			Result.append_string (": name already exists. Please check that all your elements have distinct names.")
 		end
 
+	err_class_inherits_from_itself (a_descendant_name, an_ancestor_name: STRING): STRING
+		do
+			Result := "Class "
+			Result.append_string (a_descendant_name.string)
+			Result.append_string (" inherits from itself via class ")
+			Result.append_string (an_ancestor_name.string)
+		end
+
+	err_class_not_in_cluster (a_name: STRING): STRING
+		do
+			Result := "Class "
+			Result.append_string (a_name.string)
+			Result.append_string (" is not in a cluster.")
+		end
+
+	err_cluster_already_in_cluster (a_name: STRING): STRING
+		do
+			Result := "Error defining cluster "
+			Result.append_string (a_name.string)
+			Result.append_string (": a subcluster is specified more than once.")
+		end
+
+	err_cluster_already_in_system_chart (a_name: STRING): STRING
+		do
+			Result := "Error specifying cluster "
+			Result.append_string (a_name.string)
+			Result.append_string (": cluster is already in a system chart.")
+		end
+
+	err_cluster_does_not_exist (a_name: STRING): STRING
+			-- Error message for when a cluster does not exist.
+		do
+			Result := "Cluster "
+			Result.append_string (a_name.string)
+			Result.append_string (" was specified, but never defined.")
+		end
+
 	err_cluster_exists (a_name: STRING): STRING
+			-- Error message for when a cluster already exists
 		do
 			Result := "Error defining cluster "
 			Result.append_string (a_name.string)
 			Result.append_string (": name already exists. Please check that all your elements have distinct names.")
 		end
 
+	err_cluster_contains_itself (a_name: STRING): STRING
+		do
+			Result := "Error defining cluster "
+			Result.append_string (a_name.string)
+			Result.append_string (": cluster is a subcluster of itself.")
+		end
+
+	err_cluster_in_both_cluster_and_system (a_name: STRING): STRING
+		do
+			Result := "Cluster "
+			Result.append_string (a_name.string)
+			Result.append_string (" is both in a system chart and is a subcluster of a cluster.")
+		end
+
+	err_cluster_not_in_cluster_or_system (a_name: STRING): STRING
+		do
+			Result := "Cluster "
+			Result.append_string (a_name.string)
+			Result.append_string (" is not in a system chart and is not a subcluster of any cluster.")
+		end
+
+	err_undefined (a_description: STRING): STRING
+		do
+			Result := "Undefined error: "
+			Result.append_string (a_description.string)
+		end
+
+feature -- Warnings
+	warn_duplicate_scenario_entry (a_name: STRING): STRING
+		do
+			Result := "Duplicate entries for scenario "
+			Result.append_string (a_name.string)
+		end
 
 end

@@ -1,0 +1,14 @@
+static_diagram THE_WORLD -- Static relations of the World
+component
+    cluster PEOPLE
+    component
+        class CITIZEN
+    end
+    
+    root class MOTHER_NATURE reused
+    deferred class HUMAN persistent
+    effective class FEMALE [E -> PARENT] interfaced
+    class MALE [U, V]
+    class ANIMAL [A -> LIST[GENDER, LIST[MATES, CHILDREN]]]
+
+end

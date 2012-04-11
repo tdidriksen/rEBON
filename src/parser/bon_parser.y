@@ -365,21 +365,23 @@ create
 -- A.6 CLASS INTERFACE DESCRIPTION
 
 %type <CLASS_INTERFACE> Class_interface Optional_Class_interface
-%type <CLASS_INVARIANT> Class_invariant Optional_Invariant_Class_invariant
+%type <ASSERTION_CLAUSE_LIST> Class_invariant Optional_Invariant_Class_invariant Precondition Postcondition
 %type <CLASS_TYPE_LIST> Parent_class_list At_least_one_Class_type Optional_Class_types Optional_Inherit_Parent_class_list
 %type <CLASS_NAME_LIST> Optional_Selective_export Selective_export
 %type <FEATURE_CLAUSE_LIST> Features At_least_one_Feature_clause Optional_Feature_clauses
 %type <FEATURE_CLAUSE> Feature_clause
 %type <FEATURE_NAME> Feature_name Prefix_rule Infix_rule
+%type <BON_TYPE> Optional_Type_mark_Type
 %type <OPERATOR> Prefix_operator Infix_operator
 %type <BINARY_OPERATOR> Binary
 %type <UNARY_OPERATOR> Unary
 %type <SIGN> Sign
-%type <RENAMING> Rename_clause Renaming
-%type <FEATURE_ARGUMENT_LIST> Feature_arguments At_least_one_Feature_argument Optional_Feature_arguments
+%type <RENAMING> Rename_clause Renaming Optional_Rename_clause
+%type <FEATURE_ARGUMENT_LIST> Feature_arguments At_least_one_Feature_argument Optional_Feature_arguments Optional_Feature_arguments_clause
 %type <FEATURE_ARGUMENT> Feature_argument
 %type <STRING_LIST> Identifier_list At_least_one_Identifier Optional_Identifier_list Optional_Identifiers
 %type <FEATURE_NAME_LIST> Feature_name_list At_least_one_Feature_name Optional_Feature_names
+%type <CONTRACT_CLAUSE> Contract_clause Optional_Contract_clause Contracting_conditions Pre_and_post 
 %type <FEATURE_SPECIFICATION_LIST> Feature_specifications At_least_one_Feature_specification Optional_Feature_specifications
 %type <FEATURE_SPECIFICATION> Feature_specification
 
@@ -387,12 +389,14 @@ create
 
 %type <ASSERTION_CLAUSE_LIST> Assertion At_least_one_Assertion_clause Optional_Assertion_clauses
 %type <ASSERTION_CLAUSE> Assertion_clause
-%type <BOOLEAN_EXPRESSION> Boolean_expression
-%type <EXPRESSION> Expression
+%type <ASSERTION_COMMENT> Assertion_comment
+%type <BOOLEAN_EXPRESSION> Boolean_expression Expression Optional_Restriction Restriction Proposition
+--%type <EXPRESSION> Expression
+%type <QUANTIFIER> Quantifier
 %type <QUANTIFICATION> Quantification
 %type <VARIABLE_RANGE_LIST> Range_expression At_least_one_Variable_range Optional_Variable_ranges
-%type <RESTRICTION> Optional_Restriction Restriction
-%type <PROPOSITION> Proposition
+--%type <RESTRICTION> Optional_Restriction Restriction
+--%type <PROPOSITION> Proposition
 %type <VARIABLE_RANGE> Variable_range
 %type <MEMBER_RANGE> Member_range
 %type <TYPE_RANGE> Type_range
@@ -1282,8 +1286,7 @@ Optional_Invariant_Class_invariant : -- Empty
 
 -- @type CLASS_INVARIANT
 Class_invariant : Assertion
---						{ $$ := $1 } ;
-;
+						{ $$ := $1 } ;
 
 -- @type like At_least_one_Class_type
 Parent_class_list :  At_least_one_Class_type
@@ -1322,24 +1325,30 @@ Optional_Selective_export : -- Empty
 								  | Selective_export
 									 { $$ := $1 }
 								  ;
-
+								  
+-- @type FEATURE_SPECIFICATION_LIST
 Feature_specifications :  At_least_one_Feature_specification { $$ := $1 } ;
 
+-- @type like Feature_specifications
 At_least_one_Feature_specification : Feature_specification Optional_Feature_specifications 
                                       { create $$.make_optional_rest ($1, $2) } ;
 
+-- @type like Feature_specifications
 Optional_Feature_specifications : -- Empty
 										  | Optional_Feature_specifications Feature_specification
 											 { create $$.make_optional_first ($1, $2) } ;
 
+-- @type FEATURE_SPECIFICATION
 Feature_specification : Optional_Deferred_or_Effective_or_Redefined
 								Feature_name_list 
 								Optional_Type_mark_Type
 								Optional_Rename_clause
 								Optional_Comment
 								Optional_Feature_arguments_clause
-								Optional_Contract_clause ;
+								Optional_Contract_clause 
+								{ create $$.make ($1, $2, $3, $4, $5, $6, $7) } ;
 
+-- @type STRING
 Optional_Deferred_or_Effective_or_Redefined : -- Empty
 														  | DEFERRED_TOKEN
 														    { $$ := "DEFERRED" }
@@ -1349,29 +1358,38 @@ Optional_Deferred_or_Effective_or_Redefined : -- Empty
 														    { $$ := "REDEFINED" }
 														  ;
 
+-- @type like Type
 Optional_Type_mark_Type : -- Empty
-								| Type_mark Type ;
+								| Type_mark Type { $$ := $2 } ;
 
+-- @type like Renaming
 Optional_Rename_clause : -- Empty
 							  | Rename_clause { $$ := $1 } ;
 
+-- @type like Feature_arguments
 Optional_Feature_arguments_clause : -- Empty
 											 | Feature_arguments { $$ := $1 } ;
 
+-- @type like Contract_clause
 Optional_Contract_clause : -- Empty
 								 | Contract_clause { $$ := $1 } ;
 
+-- @type CONTRACT_CLAUSE
 Contract_clause : Contracting_conditions END_TOKEN { $$ := $1 } ;
 
-Contracting_conditions : Precondition 
-							  | Postcondition 
-							  | Pre_and_post ;
+-- @type like Contract_clause
+Contracting_conditions : Precondition { create $$.make ($1, Void) }
+							  | Postcondition { create $$.make (Void, $1) }
+							  | Pre_and_post { $$ := $1 } ;
 
-Precondition : REQUIRE_TOKEN Assertion ;
+-- @type like Assertion
+Precondition : REQUIRE_TOKEN Assertion { $$ := $2 } ;
 
-Postcondition : ENSURE_TOKEN Assertion ;
+-- @type like Assertion
+Postcondition : ENSURE_TOKEN Assertion { $$ := $2 } ;
 
-Pre_and_post : Precondition Postcondition ;
+-- @type like Contract_clause
+Pre_and_post : Precondition Postcondition { create $$.make ($1, $2) } ;
 
 -- @type like Class_name_list
 Selective_export : '{' Class_name_list '}'
@@ -1408,42 +1426,56 @@ Feature_name : FEATURE_NAME_TOKEN
 				 | Infix_rule { $$ := $1 }
 				 ;
 
+-- @type like Renaming
 Rename_clause : '{' Renaming '}' { $$ := $2 } ;
 
+-- @type RENAMING
 Renaming : '^' Class_name '.' Feature_name { create $$.make ($2, $4) } ;
 
+-- @type FEATURE_ARGUMENT_LIST
 Feature_arguments : At_least_one_Feature_argument { $$ := $1 } ;
 
+-- @type like Feature_arguments
 At_least_one_Feature_argument : Feature_argument Optional_Feature_arguments
                                 { create $$.make_optional_rest ($1, $2) } ;
 
+-- @type like Feature_arguments
 Optional_Feature_arguments : -- Empty
 									| Optional_Feature_arguments Feature_argument 
 									  { create $$.make_optional_first ($1, $2) } ;
 
+-- @type FEATURE_ARGUMENT
 Feature_argument : IMPLIES_TOKEN Optional_Identifier_list Type 
                     { create $$.make ($2, $3) } ;
 
+-- @type like Identifier_list
 Optional_Identifier_list : -- Empty
 								 | Identifier_list ':' 
 								    { $$ := $1 } ;
 
+-- @type STRING_LIST
 Identifier_list : At_least_one_Identifier { $$ := $1 } ;
 
+-- @type like Identifier_list
 At_least_one_Identifier : Identifier Optional_Identifiers 
                             { create $$.make_optional_rest ($1, $2) } ;
 
+-- @type like Identifier_list
 Optional_Identifiers : -- Empty
 							| Optional_Identifiers ',' Identifier 
 							    { create $$.make_optional_first ($1, $3) } ;
 
+-- @type FEATURE_NAME
 Prefix_rule : PREFIX_TOKEN '"' Prefix_operator '"'  { create $$.make_prefix ($3) } ;
 
+-- @type FEATURE_NAME
 Infix_rule : INFIX_TOKEN '"' Infix_operator '"'  { create $$.make_infix ($3) } ;
 
+-- @type OPERATOR
 Prefix_operator : Unary { $$ := $1 }
 					 | FREE_OPERATOR_TOKEN { create $$.make_free_operator (last_free_operator) } ;
 
+-- @type OPERATOR
 Infix_operator : Binary { $$ := $1 }
 					| FREE_OPERATOR_TOKEN { create $$.make_free_operator (last_free_operator) } ;
 
@@ -1572,47 +1604,53 @@ Optional_Assertion_clauses : -- Empty
 									  { create $$.make_optional_first ($1, $3) } ;
 
 -- @type ASSERTION_CLAUSE
-Assertion_clause : Boolean_expression 
-					  | Comment ;
+Assertion_clause : Boolean_expression { $$ := $1 }
+				 | Assertion_comment { $$ := $1 } ;
+
+Assertion_comment : At_least_one_Line_comment { create $$.make_list ($1) } ;
 
 -- @type BOOLEAN_EXPRESSION
-Boolean_expression : Expression ;
+Boolean_expression : Expression { $$ := $1 } ;
 
--- @type EXPRESSION
-Expression : Quantification 
-			  | Call 
-			  | Operator_expression 
-			  | Constant ;
+-- @type like Boolean_expression
+Expression : Quantification { $$ := $1 }
+			  | Call { $$ := $1 }
+			  | Operator_expression { $$ := $1 }
+			  | Constant { $$ := $1 } ;
 
 -- @type QUANTIFICATION
-Quantification : Quantifier Range_expression Optional_Restriction Proposition ;
+Quantification : Quantifier Range_expression Optional_Restriction Proposition 
+                 { create $$.make ($1, $2, $3, $4) } ;
 
-Quantifier : FOR_ALL_TOKEN
-			  | EXISTS_TOKEN ;
+-- @type QUANTIFIER
+Quantifier : FOR_ALL_TOKEN { create $$.make_for_all }
+			  | EXISTS_TOKEN { create $$.make_exists } ;
 
 -- @type like At_least_one_Variable_range
-Range_expression : At_least_one_Variable_range ;
+Range_expression : At_least_one_Variable_range { $$ := $1 } ;
 
 -- @type like Optional_Variable_ranges
-At_least_one_Variable_range : Variable_range Optional_Variable_ranges ;
+At_least_one_Variable_range : Variable_range Optional_Variable_ranges 
+                              { create $$.make_optional_rest ($1, $2) } ;
 
 -- @type VARIABLE_RANGE_LIST == MOG_LIST [like Variable_range]
 Optional_Variable_ranges : -- Empty
-								 | Optional_Variable_ranges ';' Variable_range ;
+								 | Optional_Variable_ranges ';' Variable_range 
+							       { create $$.make_optional_first ($1, $3) } ;
 
 -- @type like Restriction
 Optional_Restriction : -- Empty
-							| Restriction ;
+							| Restriction { $$ := $1 } ;
 
 -- @type RESTRICTION <: BOOLEAN_EXPRESSION
-Restriction : SUCH_THAT_TOKEN Boolean_expression ;
+Restriction : SUCH_THAT_TOKEN Boolean_expression { $$ := $2 } ;
 
 -- @type PROPOSITION <: BOOLEAN_EXPRESSION
-Proposition : IT_HOLDS_TOKEN Boolean_expression ;
+Proposition : IT_HOLDS_TOKEN Boolean_expression { $$ := $2 } ;
 
 -- @type VARIABLE_RANGE
-Variable_range : Member_range 
-					| Type_range ;
+Variable_range : Member_range { $$ := $1 }
+					| Type_range { $$ := $1 } ;
 
 -- @type MEMBER_RANGE
 Member_range : Identifier_list MEMBER_OF_TOKEN Set_expression ;
@@ -1726,7 +1764,7 @@ Manifest_constant : Boolean_constant
 						| Manifest_string ;
 
 Optional_Sign : -- Empty
-				  | Sign ;
+				  | Sign { $$ := $1 } ;
 
 Sign : '+' { create $$.make_plus }
 	 | '-' { create $$.make_minus } ; 
@@ -1797,11 +1835,11 @@ Optional_Labeled_actions : -- Empty
 
 Labeled_action : Action_label Action_description ;
 
-Action_label : Manifest_string ;
+Action_label : Manifest_string { $$ := $1 } ;
 
-Action_description : Manifest_textblock ;
+Action_description : Manifest_textblock { $$ := $1 } ;
 
-Scenario_name : Manifest_string ;
+Scenario_name : Manifest_string { $$ := $1 } ;
 
 Object_group_rule : Optional_Nameless 
 						OBJECT_GROUP_TOKEN Group_name 
@@ -1859,7 +1897,7 @@ Group_name : Extended_id
 					-- add_group_name($$)
 				 } ;
 
-Message_label : Manifest_string ;
+Message_label : Manifest_string { $$ := $1 } ;
 
 -- A.9 NOTATIONAL TUNING 
 

@@ -10,4 +10,7 @@ class
 inherit
 	MOG_LIST [ASSERTION_CLAUSE]
 
+create
+	make_list, make_optional_rest, make_optional_first
+
 end -- class ASSERTION_CLAUSE_LIST

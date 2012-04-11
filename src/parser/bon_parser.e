@@ -162,7 +162,6 @@ feature {NONE} -- Implementation
 			yyvsp103 := -1
 			yyvsp104 := -1
 			yyvsp105 := -1
-			yyvsp106 := -1
 		end
 
 	yy_clear_value_stacks
@@ -232,7 +231,7 @@ feature {NONE} -- Implementation
 			l_yyvs61_default_item: INDIRECTION_ELEMENT
 			l_yyvs62_default_item: INDIRECTION_LIST
 			l_yyvs63_default_item: CLASS_INTERFACE
-			l_yyvs64_default_item: CLASS_INVARIANT
+			l_yyvs64_default_item: ASSERTION_CLAUSE_LIST
 			l_yyvs65_default_item: CLASS_TYPE_LIST
 			l_yyvs66_default_item: FEATURE_CLAUSE_LIST
 			l_yyvs67_default_item: FEATURE_CLAUSE
@@ -244,37 +243,36 @@ feature {NONE} -- Implementation
 			l_yyvs73_default_item: RENAMING
 			l_yyvs74_default_item: FEATURE_ARGUMENT_LIST
 			l_yyvs75_default_item: FEATURE_ARGUMENT
-			l_yyvs76_default_item: FEATURE_SPECIFICATION_LIST
-			l_yyvs77_default_item: FEATURE_SPECIFICATION
-			l_yyvs78_default_item: ASSERTION_CLAUSE_LIST
+			l_yyvs76_default_item: CONTRACT_CLAUSE
+			l_yyvs77_default_item: FEATURE_SPECIFICATION_LIST
+			l_yyvs78_default_item: FEATURE_SPECIFICATION
 			l_yyvs79_default_item: ASSERTION_CLAUSE
-			l_yyvs80_default_item: BOOLEAN_EXPRESSION
-			l_yyvs81_default_item: EXPRESSION
-			l_yyvs82_default_item: QUANTIFICATION
-			l_yyvs83_default_item: VARIABLE_RANGE_LIST
-			l_yyvs84_default_item: RESTRICTION
-			l_yyvs85_default_item: PROPOSITION
-			l_yyvs86_default_item: VARIABLE_RANGE
-			l_yyvs87_default_item: MEMBER_RANGE
-			l_yyvs88_default_item: TYPE_RANGE
-			l_yyvs89_default_item: CALL
-			l_yyvs90_default_item: PARENTHESIZED
-			l_yyvs91_default_item: UNQUALIFIED_CALLS
-			l_yyvs92_default_item: UNQUALIFIED_CALL
-			l_yyvs93_default_item: ACTUAL_ARGUMENTS
-			l_yyvs94_default_item: EXPRESSION_LIST
-			l_yyvs95_default_item: OPERATOR_EXPRESSION
-			l_yyvs96_default_item: UNARY_EXPRESSION
-			l_yyvs97_default_item: BINARY_EXPRESSION
-			l_yyvs98_default_item: SET_EXPRESSION
-			l_yyvs99_default_item: ENUMERATED_SET
-			l_yyvs100_default_item: ENUMERATION_LIST
-			l_yyvs101_default_item: ENUMERATION_ELEMENT
-			l_yyvs102_default_item: BON_INTERVAL
-			l_yyvs103_default_item: INTEGER_INTERVAL
-			l_yyvs104_default_item: CHARACTER_INTERVAL
-			l_yyvs105_default_item: CONSTANT
-			l_yyvs106_default_item: MANIFEST_CONSTANT
+			l_yyvs80_default_item: ASSERTION_COMMENT
+			l_yyvs81_default_item: BOOLEAN_EXPRESSION
+			l_yyvs82_default_item: QUANTIFIER
+			l_yyvs83_default_item: QUANTIFICATION
+			l_yyvs84_default_item: VARIABLE_RANGE_LIST
+			l_yyvs85_default_item: VARIABLE_RANGE
+			l_yyvs86_default_item: MEMBER_RANGE
+			l_yyvs87_default_item: TYPE_RANGE
+			l_yyvs88_default_item: CALL
+			l_yyvs89_default_item: PARENTHESIZED
+			l_yyvs90_default_item: UNQUALIFIED_CALLS
+			l_yyvs91_default_item: UNQUALIFIED_CALL
+			l_yyvs92_default_item: ACTUAL_ARGUMENTS
+			l_yyvs93_default_item: EXPRESSION_LIST
+			l_yyvs94_default_item: OPERATOR_EXPRESSION
+			l_yyvs95_default_item: UNARY_EXPRESSION
+			l_yyvs96_default_item: BINARY_EXPRESSION
+			l_yyvs97_default_item: SET_EXPRESSION
+			l_yyvs98_default_item: ENUMERATED_SET
+			l_yyvs99_default_item: ENUMERATION_LIST
+			l_yyvs100_default_item: ENUMERATION_ELEMENT
+			l_yyvs101_default_item: BON_INTERVAL
+			l_yyvs102_default_item: INTEGER_INTERVAL
+			l_yyvs103_default_item: CHARACTER_INTERVAL
+			l_yyvs104_default_item: CONSTANT
+			l_yyvs105_default_item: MANIFEST_CONSTANT
 		do
 			if yyvs1 /= Void then
 				yyvs1.fill_with (l_yyvs1_default_item, 0, yyvs1.upper)
@@ -590,9 +588,6 @@ feature {NONE} -- Implementation
 			end
 			if yyvs105 /= Void then
 				yyvs105.fill_with (l_yyvs105_default_item, 0, yyvs105.upper)
-			end
-			if yyvs106 /= Void then
-				yyvs106.fill_with (l_yyvs106_default_item, 0, yyvs106.upper)
 			end
 		end
 
@@ -950,8 +945,6 @@ feature {NONE} -- Implementation
 				yyvsp104 := yyvsp104 - 1
 			when 105 then
 				yyvsp105 := yyvsp105 - 1
-			when 106 then
-				yyvsp106 := yyvsp106 - 1
 			else
 				debug ("GEYACC")
 					std.error.put_string ("Error in parser: unknown type id: ")
@@ -1023,62 +1016,61 @@ feature {NONE} -- Semantic actions
 			yyval61: INDIRECTION_ELEMENT
 			yyval7: STATIC_REF
 			yyval65: CLASS_TYPE_LIST
-			yyval64: CLASS_INVARIANT
+			yyval64: ASSERTION_CLAUSE_LIST
 			yyval66: FEATURE_CLAUSE_LIST
 			yyval67: FEATURE_CLAUSE
-			yyval76: FEATURE_SPECIFICATION_LIST
-			yyval77: FEATURE_SPECIFICATION
-			yyval1: ANY
-			yyval68: FEATURE_NAME
+			yyval77: FEATURE_SPECIFICATION_LIST
+			yyval78: FEATURE_SPECIFICATION
+			yyval52: BON_TYPE
 			yyval73: RENAMING
 			yyval74: FEATURE_ARGUMENT_LIST
+			yyval76: CONTRACT_CLAUSE
+			yyval68: FEATURE_NAME
 			yyval75: FEATURE_ARGUMENT
 			yyval69: OPERATOR
 			yyval49: FORMAL_GENERIC_LIST
 			yyval48: FORMAL_GENERIC
 			yyval50: CLASS_TYPE
 			yyval51: ACTUAL_GENERICS
-			yyval52: BON_TYPE
 			yyval71: UNARY_OPERATOR
 			yyval70: BINARY_OPERATOR
-			yyval78: ASSERTION_CLAUSE_LIST
 			yyval79: ASSERTION_CLAUSE
-			yyval80: BOOLEAN_EXPRESSION
-			yyval81: EXPRESSION
-			yyval82: QUANTIFICATION
-			yyval83: VARIABLE_RANGE_LIST
-			yyval84: RESTRICTION
-			yyval85: PROPOSITION
-			yyval86: VARIABLE_RANGE
-			yyval87: MEMBER_RANGE
-			yyval88: TYPE_RANGE
-			yyval89: CALL
-			yyval90: PARENTHESIZED
-			yyval91: UNQUALIFIED_CALLS
-			yyval92: UNQUALIFIED_CALL
-			yyval93: ACTUAL_ARGUMENTS
-			yyval94: EXPRESSION_LIST
-			yyval95: OPERATOR_EXPRESSION
-			yyval96: UNARY_EXPRESSION
-			yyval97: BINARY_EXPRESSION
-			yyval98: SET_EXPRESSION
-			yyval99: ENUMERATED_SET
-			yyval100: ENUMERATION_LIST
-			yyval101: ENUMERATION_ELEMENT
-			yyval102: BON_INTERVAL
-			yyval103: INTEGER_INTERVAL
-			yyval104: CHARACTER_INTERVAL
-			yyval105: CONSTANT
-			yyval106: MANIFEST_CONSTANT
+			yyval80: ASSERTION_COMMENT
+			yyval81: BOOLEAN_EXPRESSION
+			yyval83: QUANTIFICATION
+			yyval82: QUANTIFIER
+			yyval84: VARIABLE_RANGE_LIST
+			yyval85: VARIABLE_RANGE
+			yyval86: MEMBER_RANGE
+			yyval87: TYPE_RANGE
+			yyval88: CALL
+			yyval89: PARENTHESIZED
+			yyval90: UNQUALIFIED_CALLS
+			yyval91: UNQUALIFIED_CALL
+			yyval92: ACTUAL_ARGUMENTS
+			yyval93: EXPRESSION_LIST
+			yyval94: OPERATOR_EXPRESSION
+			yyval95: UNARY_EXPRESSION
+			yyval96: BINARY_EXPRESSION
+			yyval97: SET_EXPRESSION
+			yyval98: ENUMERATED_SET
+			yyval99: ENUMERATION_LIST
+			yyval100: ENUMERATION_ELEMENT
+			yyval101: BON_INTERVAL
+			yyval102: INTEGER_INTERVAL
+			yyval103: CHARACTER_INTERVAL
+			yyval104: CONSTANT
+			yyval105: MANIFEST_CONSTANT
+			yyval1: ANY
 			yyval72: SIGN
 			yyval3: CHARACTER
 			yyval5: REAL
 		do
 			inspect yy_act
 when 1 then
---|#line 500 "bon_parser.y"
+--|#line 504 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 500")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 504")
 end
 
 create yyval8.make_from_elements (yyvs10.item (yyvsp10)); bon_specification := yyval8; io.put_string("BON SPEC CREATED!") 
@@ -1105,9 +1097,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs8.put (yyval8, yyvsp8)
 end
 when 2 then
---|#line 504 "bon_parser.y"
+--|#line 508 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 504")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 508")
 end
 
 create yyval10.make_optional_rest (yyvs9.item (yyvsp9), yyvs10.item (yyvsp10)) 
@@ -1117,9 +1109,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs10.put (yyval10, yyvsp10)
 end
 when 3 then
---|#line 508 "bon_parser.y"
+--|#line 512 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 508")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 512")
 end
 
 
@@ -1145,9 +1137,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs10.put (yyval10, yyvsp10)
 end
 when 4 then
---|#line 509 "bon_parser.y"
+--|#line 513 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 509")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 513")
 end
 
 create yyval10.make_optional_first (yyvs10.item (yyvsp10), yyvs9.item (yyvsp9)) 
@@ -1157,9 +1149,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs10.put (yyval10, yyvsp10)
 end
 when 5 then
---|#line 513 "bon_parser.y"
+--|#line 517 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 513")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 517")
 end
 
 yyval9 := yyvs39.item (yyvsp39) 
@@ -1186,9 +1178,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs9.put (yyval9, yyvsp9)
 end
 when 6 then
---|#line 514 "bon_parser.y"
+--|#line 518 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 514")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 518")
 end
 
 yyval9 := yyvs11.item (yyvsp11) 
@@ -1215,9 +1207,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs9.put (yyval9, yyvsp9)
 end
 when 7 then
---|#line 516 "bon_parser.y"
+--|#line 520 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 516")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 520")
 end
 
 yyval9 := yyvs12.item (yyvsp12) 
@@ -1244,9 +1236,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs9.put (yyval9, yyvsp9)
 end
 when 8 then
---|#line 518 "bon_parser.y"
+--|#line 522 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 518")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 522")
 end
 
 yyval9 := yyvs38.item (yyvsp38) 
@@ -1273,9 +1265,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs9.put (yyval9, yyvsp9)
 end
 when 9 then
---|#line 522 "bon_parser.y"
+--|#line 526 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 522")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 526")
 end
 
 
@@ -1302,9 +1294,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs9.put (yyval9, yyvsp9)
 end
 when 10 then
---|#line 527 "bon_parser.y"
+--|#line 531 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 527")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 531")
 end
 
 yyval11 := yyvs15.item (yyvsp15) 
@@ -1331,9 +1323,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs11.put (yyval11, yyvsp11)
 end
 when 11 then
---|#line 529 "bon_parser.y"
+--|#line 533 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 529")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 533")
 end
 
 yyval11 := yyvs21.item (yyvsp21) 
@@ -1360,9 +1352,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs11.put (yyval11, yyvsp11)
 end
 when 12 then
---|#line 531 "bon_parser.y"
+--|#line 535 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 531")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 535")
 end
 
 yyval11 := yyvs24.item (yyvsp24) 
@@ -1389,9 +1381,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs11.put (yyval11, yyvsp11)
 end
 when 13 then
---|#line 533 "bon_parser.y"
+--|#line 537 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 533")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 537")
 end
 
 yyval11 := yyvs29.item (yyvsp29) 
@@ -1418,9 +1410,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs11.put (yyval11, yyvsp11)
 end
 when 14 then
---|#line 535 "bon_parser.y"
+--|#line 539 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 535")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 539")
 end
 
 yyval11 := yyvs32.item (yyvsp32) 
@@ -1447,9 +1439,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs11.put (yyval11, yyvsp11)
 end
 when 15 then
---|#line 537 "bon_parser.y"
+--|#line 541 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 537")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 541")
 end
 
 yyval11 := yyvs35.item (yyvsp35) 
@@ -1476,9 +1468,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs11.put (yyval11, yyvsp11)
 end
 when 16 then
---|#line 541 "bon_parser.y"
+--|#line 545 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 541")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 545")
 end
 
 create yyval12.make (yyvs2.item (yyvsp2), yyvs14.item (yyvsp14)) 
@@ -1507,9 +1499,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs12.put (yyval12, yyvsp12)
 end
 when 17 then
---|#line 547 "bon_parser.y"
+--|#line 551 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 547")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 551")
 end
 
 create yyval14.make_optional_rest (yyvs13.item (yyvsp13), yyvs14.item (yyvsp14)) 
@@ -1519,9 +1511,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs14.put (yyval14, yyvsp14)
 end
 when 18 then
---|#line 551 "bon_parser.y"
+--|#line 555 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 551")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 555")
 end
 
 
@@ -1547,9 +1539,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs14.put (yyval14, yyvsp14)
 end
 when 19 then
---|#line 552 "bon_parser.y"
+--|#line 556 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 552")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 556")
 end
 
 create yyval14.make_optional_first (yyvs14.item (yyvsp14), yyvs13.item (yyvsp13)) 
@@ -1559,9 +1551,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs14.put (yyval14, yyvsp14)
 end
 when 20 then
---|#line 556 "bon_parser.y"
+--|#line 560 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 556")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 560")
 end
 
 -- add_class_name ($2) 
@@ -1591,9 +1583,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs13.put (yyval13, yyvsp13)
 end
 when 21 then
---|#line 564 "bon_parser.y"
+--|#line 568 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 564")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 568")
 end
 
 create yyval15.make (yyvs2.item (yyvsp2 - 2), yyvs17.item (yyvsp17), yyvs2.item (yyvsp2 - 1), yyvs2.item (yyvsp2), yyvs20.item (yyvsp20)) 
@@ -1623,9 +1615,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs15.put (yyval15, yyvsp15)
 end
 when 22 then
---|#line 573 "bon_parser.y"
+--|#line 577 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 573")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 577")
 end
 
 
@@ -1651,9 +1643,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs17.put (yyval17, yyvsp17)
 end
 when 23 then
---|#line 574 "bon_parser.y"
+--|#line 578 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 574")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 578")
 end
 
 yyval17 := yyvs17.item (yyvsp17) 
@@ -1662,9 +1654,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs17.put (yyval17, yyvsp17)
 end
 when 24 then
---|#line 578 "bon_parser.y"
+--|#line 582 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 578")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 582")
 end
 
 yyval17 := yyvs17.item (yyvsp17) 
@@ -1674,9 +1666,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs17.put (yyval17, yyvsp17)
 end
 when 25 then
---|#line 582 "bon_parser.y"
+--|#line 586 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 582")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 586")
 end
 
 
@@ -1702,9 +1694,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs2.put (yyval2, yyvsp2)
 end
 when 26 then
---|#line 583 "bon_parser.y"
+--|#line 587 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 583")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 587")
 end
 
 yyval2 := yyvs2.item (yyvsp2) 
@@ -1714,9 +1706,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs2.put (yyval2, yyvsp2)
 end
 when 27 then
---|#line 587 "bon_parser.y"
+--|#line 591 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 587")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 591")
 end
 
 
@@ -1742,9 +1734,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs2.put (yyval2, yyvsp2)
 end
 when 28 then
---|#line 588 "bon_parser.y"
+--|#line 592 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 588")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 592")
 end
 
 yyval2 := yyvs2.item (yyvsp2) 
@@ -1754,9 +1746,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs2.put (yyval2, yyvsp2)
 end
 when 29 then
---|#line 592 "bon_parser.y"
+--|#line 596 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 592")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 596")
 end
 
 
@@ -1782,17 +1774,6 @@ if yy_parsing_status >= yyContinue then
 	yyvs20.put (yyval20, yyvsp20)
 end
 when 30 then
---|#line 593 "bon_parser.y"
-debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 593")
-end
-
-yyval20 := yyvs20.item (yyvsp20) 
-if yy_parsing_status >= yyContinue then
-	yyssp := yyssp - 1
-	yyvs20.put (yyval20, yyvsp20)
-end
-when 31 then
 --|#line 597 "bon_parser.y"
 debug ("GEYACC")
 	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 597")
@@ -1803,10 +1784,21 @@ if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvs20.put (yyval20, yyvsp20)
 end
-when 32 then
+when 31 then
 --|#line 601 "bon_parser.y"
 debug ("GEYACC")
 	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 601")
+end
+
+yyval20 := yyvs20.item (yyvsp20) 
+if yy_parsing_status >= yyContinue then
+	yyssp := yyssp - 1
+	yyvs20.put (yyval20, yyvsp20)
+end
+when 32 then
+--|#line 605 "bon_parser.y"
+debug ("GEYACC")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 605")
 end
 
 create yyval20.make_optional_rest (yyvs19.item (yyvsp19), yyvs20.item (yyvsp20)) 
@@ -1816,9 +1808,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs20.put (yyval20, yyvsp20)
 end
 when 33 then
---|#line 605 "bon_parser.y"
+--|#line 609 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 605")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 609")
 end
 
 
@@ -1844,9 +1836,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs20.put (yyval20, yyvsp20)
 end
 when 34 then
---|#line 606 "bon_parser.y"
+--|#line 610 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 606")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 610")
 end
 
 create yyval20.make_optional_first (yyvs20.item (yyvsp20), yyvs19.item (yyvsp19)) 
@@ -1856,9 +1848,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs20.put (yyval20, yyvsp20)
 end
 when 35 then
---|#line 610 "bon_parser.y"
+--|#line 614 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 610")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 614")
 end
 
 -- add_cluster_name ($2) 
@@ -1887,19 +1879,6 @@ if yy_parsing_status >= yyContinue then
 	yyvs19.put (yyval19, yyvsp19)
 end
 when 36 then
---|#line 616 "bon_parser.y"
-debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 616")
-end
-
-yyval2 := yyvs2.item (yyvsp2)
-					 -- add_system_name($$)
-				  
-if yy_parsing_status >= yyContinue then
-	yyssp := yyssp - 1
-	yyvs2.put (yyval2, yyvsp2)
-end
-when 37 then
 --|#line 620 "bon_parser.y"
 debug ("GEYACC")
 	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 620")
@@ -1912,10 +1891,23 @@ if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvs2.put (yyval2, yyvsp2)
 end
-when 38 then
---|#line 626 "bon_parser.y"
+when 37 then
+--|#line 624 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 626")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 624")
+end
+
+yyval2 := yyvs2.item (yyvsp2)
+					 -- add_system_name($$)
+				  
+if yy_parsing_status >= yyContinue then
+	yyssp := yyssp - 1
+	yyvs2.put (yyval2, yyvsp2)
+end
+when 38 then
+--|#line 630 "bon_parser.y"
+debug ("GEYACC")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 630")
 end
 
 yyval17 := yyvs17.item (yyvsp17) 
@@ -1924,9 +1916,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs17.put (yyval17, yyvsp17)
 end
 when 39 then
---|#line 630 "bon_parser.y"
+--|#line 634 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 630")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 634")
 end
 
 create yyval17.make_optional_rest (yyvs16.item (yyvsp16), yyvs17.item (yyvsp17)) 
@@ -1936,9 +1928,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs17.put (yyval17, yyvsp17)
 end
 when 40 then
---|#line 634 "bon_parser.y"
+--|#line 638 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 634")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 638")
 end
 
 
@@ -1964,9 +1956,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs17.put (yyval17, yyvsp17)
 end
 when 41 then
---|#line 635 "bon_parser.y"
+--|#line 639 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 635")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 639")
 end
 
 create yyval17.make_optional_first (yyvs17.item (yyvsp17), yyvs16.item (yyvsp16)) 
@@ -1977,9 +1969,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs17.put (yyval17, yyvsp17)
 end
 when 42 then
---|#line 639 "bon_parser.y"
+--|#line 643 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 639")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 643")
 end
 
 -- Index_clause
@@ -2009,9 +2001,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs16.put (yyval16, yyvsp16)
 end
 when 43 then
---|#line 644 "bon_parser.y"
+--|#line 648 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 644")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 648")
 end
 
 yyval18 := yyvs18.item (yyvsp18) 
@@ -2020,9 +2012,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs18.put (yyval18, yyvsp18)
 end
 when 44 then
---|#line 648 "bon_parser.y"
+--|#line 652 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 648")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 652")
 end
 
 create yyval18.make_optional_rest (yyvs2.item (yyvsp2), yyvs18.item (yyvsp18)) 
@@ -2032,9 +2024,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs18.put (yyval18, yyvsp18)
 end
 when 45 then
---|#line 651 "bon_parser.y"
+--|#line 655 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 651")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 655")
 end
 
 
@@ -2060,9 +2052,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs18.put (yyval18, yyvsp18)
 end
 when 46 then
---|#line 652 "bon_parser.y"
+--|#line 656 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 652")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 656")
 end
 
 create yyval18.make_optional_first (yyvs18.item (yyvsp18), yyvs2.item (yyvsp2)); 
@@ -2073,9 +2065,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs18.put (yyval18, yyvsp18)
 end
 when 47 then
---|#line 656 "bon_parser.y"
+--|#line 660 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 656")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 660")
 end
 
 yyval2 := yyvs2.item (yyvsp2) 
@@ -2084,9 +2076,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs2.put (yyval2, yyvsp2)
 end
 when 48 then
---|#line 660 "bon_parser.y"
+--|#line 664 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 660")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 664")
 end
 
 create yyval21.make (yyvs2.item (yyvsp2 - 2), yyvs17.item (yyvsp17), yyvs2.item (yyvsp2 - 1), yyvs2.item (yyvsp2), yyvs23.item (yyvsp23), yyvs20.item (yyvsp20)); cluster_charts.extend (yyval21) 
@@ -2117,9 +2109,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs21.put (yyval21, yyvsp21)
 end
 when 49 then
---|#line 670 "bon_parser.y"
+--|#line 674 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 670")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 674")
 end
 
 
@@ -2145,17 +2137,6 @@ if yy_parsing_status >= yyContinue then
 	yyvs23.put (yyval23, yyvsp23)
 end
 when 50 then
---|#line 671 "bon_parser.y"
-debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 671")
-end
-
-yyval23 := yyvs23.item (yyvsp23) 
-if yy_parsing_status >= yyContinue then
-	yyssp := yyssp - 1
-	yyvs23.put (yyval23, yyvsp23)
-end
-when 51 then
 --|#line 675 "bon_parser.y"
 debug ("GEYACC")
 	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 675")
@@ -2166,10 +2147,21 @@ if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvs23.put (yyval23, yyvsp23)
 end
-when 52 then
+when 51 then
 --|#line 679 "bon_parser.y"
 debug ("GEYACC")
 	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 679")
+end
+
+yyval23 := yyvs23.item (yyvsp23) 
+if yy_parsing_status >= yyContinue then
+	yyssp := yyssp - 1
+	yyvs23.put (yyval23, yyvsp23)
+end
+when 52 then
+--|#line 683 "bon_parser.y"
+debug ("GEYACC")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 683")
 end
 
 create yyval23.make_optional_rest (yyvs22.item (yyvsp22), yyvs23.item (yyvsp23)) 
@@ -2179,9 +2171,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs23.put (yyval23, yyvsp23)
 end
 when 53 then
---|#line 683 "bon_parser.y"
+--|#line 687 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 683")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 687")
 end
 
 
@@ -2207,9 +2199,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs23.put (yyval23, yyvsp23)
 end
 when 54 then
---|#line 684 "bon_parser.y"
+--|#line 688 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 684")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 688")
 end
 
 create yyval23.make_optional_first (yyvs23.item (yyvsp23), yyvs22.item (yyvsp22)) 
@@ -2219,9 +2211,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs23.put (yyval23, yyvsp23)
 end
 when 55 then
---|#line 688 "bon_parser.y"
+--|#line 692 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 688")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 692")
 end
 
 -- add_class_name ($2)
@@ -2250,9 +2242,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs22.put (yyval22, yyvsp22)
 end
 when 56 then
---|#line 694 "bon_parser.y"
+--|#line 698 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 694")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 698")
 end
 
 yyval2 := last_identifier
@@ -2263,19 +2255,6 @@ if yy_parsing_status >= yyContinue then
 	yyvs2.put (yyval2, yyvsp2)
 end
 when 57 then
---|#line 698 "bon_parser.y"
-debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 698")
-end
-
-yyval2 := yyvs2.item (yyvsp2)
-					  -- add_cluster_name($$)
-					
-if yy_parsing_status >= yyContinue then
-	yyssp := yyssp - 1
-	yyvs2.put (yyval2, yyvsp2)
-end
-when 58 then
 --|#line 702 "bon_parser.y"
 debug ("GEYACC")
 	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 702")
@@ -2288,10 +2267,23 @@ if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvs2.put (yyval2, yyvsp2)
 end
-when 59 then
---|#line 708 "bon_parser.y"
+when 58 then
+--|#line 706 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 708")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 706")
+end
+
+yyval2 := yyvs2.item (yyvsp2)
+					  -- add_cluster_name($$)
+					
+if yy_parsing_status >= yyContinue then
+	yyssp := yyssp - 1
+	yyvs2.put (yyval2, yyvsp2)
+end
+when 59 then
+--|#line 712 "bon_parser.y"
+debug ("GEYACC")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 712")
 end
 
 create yyval24.make (yyvs2.item (yyvsp2 - 2), yyvs17.item (yyvsp17), yyvs2.item (yyvsp2 - 1), yyvs2.item (yyvsp2), yyvs25.item (yyvsp25), yyvs26.item (yyvsp26), yyvs27.item (yyvsp27), yyvs28.item (yyvsp28)); class_charts.extend (yyval24) 
@@ -2324,9 +2316,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs24.put (yyval24, yyvsp24)
 end
 when 60 then
---|#line 720 "bon_parser.y"
+--|#line 724 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 720")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 724")
 end
 
 
@@ -2352,9 +2344,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs25.put (yyval25, yyvsp25)
 end
 when 61 then
---|#line 721 "bon_parser.y"
+--|#line 725 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 721")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 725")
 end
 
 yyval25 := yyvs25.item (yyvsp25) 
@@ -2364,9 +2356,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs25.put (yyval25, yyvsp25)
 end
 when 62 then
---|#line 725 "bon_parser.y"
+--|#line 729 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 725")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 729")
 end
 
 
@@ -2392,9 +2384,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs26.put (yyval26, yyvsp26)
 end
 when 63 then
---|#line 726 "bon_parser.y"
+--|#line 730 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 726")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 730")
 end
 
 yyval26 := yyvs26.item (yyvsp26) 
@@ -2404,9 +2396,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs26.put (yyval26, yyvsp26)
 end
 when 64 then
---|#line 730 "bon_parser.y"
+--|#line 734 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 730")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 734")
 end
 
 
@@ -2432,9 +2424,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs27.put (yyval27, yyvsp27)
 end
 when 65 then
---|#line 731 "bon_parser.y"
+--|#line 735 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 731")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 735")
 end
 
 yyval27 := yyvs27.item (yyvsp27) 
@@ -2444,9 +2436,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs27.put (yyval27, yyvsp27)
 end
 when 66 then
---|#line 735 "bon_parser.y"
+--|#line 739 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 735")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 739")
 end
 
 
@@ -2472,9 +2464,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs28.put (yyval28, yyvsp28)
 end
 when 67 then
---|#line 736 "bon_parser.y"
+--|#line 740 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 736")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 740")
 end
 
 yyval28 := yyvs28.item (yyvsp28) 
@@ -2484,9 +2476,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs28.put (yyval28, yyvsp28)
 end
 when 68 then
---|#line 740 "bon_parser.y"
+--|#line 744 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 740")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 744")
 end
 
 create yyval26.make_from_string_list (yyvs26.item (yyvsp26)) 
@@ -2495,9 +2487,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs26.put (yyval26, yyvsp26)
 end
 when 69 then
---|#line 744 "bon_parser.y"
+--|#line 748 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 744")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 748")
 end
 
 create yyval26.make_optional_rest (yyvs2.item (yyvsp2), yyvs26.item (yyvsp26)) 
@@ -2507,9 +2499,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs26.put (yyval26, yyvsp26)
 end
 when 70 then
---|#line 748 "bon_parser.y"
+--|#line 752 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 748")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 752")
 end
 
 
@@ -2535,9 +2527,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs26.put (yyval26, yyvsp26)
 end
 when 71 then
---|#line 749 "bon_parser.y"
+--|#line 753 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 749")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 753")
 end
 
 create yyval26.make_optional_first(yyvs26.item (yyvsp26), yyvs2.item (yyvsp2)) 
@@ -2548,9 +2540,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs26.put (yyval26, yyvsp26)
 end
 when 72 then
---|#line 753 "bon_parser.y"
+--|#line 757 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 753")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 757")
 end
 
 yyval2 := yyvs2.item (yyvsp2) 
@@ -2559,9 +2551,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs2.put (yyval2, yyvsp2)
 end
 when 73 then
---|#line 756 "bon_parser.y"
+--|#line 760 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 756")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 760")
 end
 
 create yyval27.make_from_string_list (yyvs27.item (yyvsp27)) 
@@ -2570,9 +2562,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs27.put (yyval27, yyvsp27)
 end
 when 74 then
---|#line 760 "bon_parser.y"
+--|#line 764 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 760")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 764")
 end
 
 create yyval27.make_optional_rest (yyvs2.item (yyvsp2), yyvs27.item (yyvsp27)) 
@@ -2582,9 +2574,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs27.put (yyval27, yyvsp27)
 end
 when 75 then
---|#line 764 "bon_parser.y"
+--|#line 768 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 764")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 768")
 end
 
 
@@ -2610,9 +2602,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs27.put (yyval27, yyvsp27)
 end
 when 76 then
---|#line 765 "bon_parser.y"
+--|#line 769 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 765")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 769")
 end
 
 create yyval27.make_optional_first (yyvs27.item (yyvsp27), yyvs2.item (yyvsp2)) 
@@ -2623,9 +2615,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs27.put (yyval27, yyvsp27)
 end
 when 77 then
---|#line 769 "bon_parser.y"
+--|#line 773 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 769")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 773")
 end
 
 yyval2 := yyvs2.item (yyvsp2) 
@@ -2634,9 +2626,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs2.put (yyval2, yyvsp2)
 end
 when 78 then
---|#line 772 "bon_parser.y"
+--|#line 776 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 772")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 776")
 end
 
 create yyval28.make_from_string_list (yyvs28.item (yyvsp28)) 
@@ -2645,9 +2637,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs28.put (yyval28, yyvsp28)
 end
 when 79 then
---|#line 776 "bon_parser.y"
+--|#line 780 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 776")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 780")
 end
 
 create yyval28.make_optional_rest (yyvs2.item (yyvsp2), yyvs28.item (yyvsp28)) 
@@ -2657,9 +2649,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs28.put (yyval28, yyvsp28)
 end
 when 80 then
---|#line 780 "bon_parser.y"
+--|#line 784 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 780")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 784")
 end
 
 
@@ -2685,9 +2677,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs28.put (yyval28, yyvsp28)
 end
 when 81 then
---|#line 781 "bon_parser.y"
+--|#line 785 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 781")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 785")
 end
 
 create yyval28.make_optional_first (yyvs28.item (yyvsp28), yyvs2.item (yyvsp2)) 
@@ -2698,9 +2690,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs28.put (yyval28, yyvsp28)
 end
 when 82 then
---|#line 785 "bon_parser.y"
+--|#line 789 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 785")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 789")
 end
 
 yyval2 := yyvs2.item (yyvsp2) 
@@ -2709,9 +2701,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs2.put (yyval2, yyvsp2)
 end
 when 83 then
---|#line 797 "bon_parser.y"
+--|#line 801 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 797")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 801")
 end
 
 yyval25 := yyvs25.item (yyvsp25) 
@@ -2720,9 +2712,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs25.put (yyval25, yyvsp25)
 end
 when 84 then
---|#line 801 "bon_parser.y"
+--|#line 805 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 801")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 805")
 end
 
 create yyval25.make_optional_rest (yyvs2.item (yyvsp2), yyvs25.item (yyvsp25)) 
@@ -2732,9 +2724,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs25.put (yyval25, yyvsp25)
 end
 when 85 then
---|#line 805 "bon_parser.y"
+--|#line 809 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 805")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 809")
 end
 
 
@@ -2760,9 +2752,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs25.put (yyval25, yyvsp25)
 end
 when 86 then
---|#line 806 "bon_parser.y"
+--|#line 810 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 806")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 810")
 end
 
 create yyval25.make_optional_first (yyvs25.item (yyvsp25), yyvs2.item (yyvsp2)) 
@@ -2773,9 +2765,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs25.put (yyval25, yyvsp25)
 end
 when 87 then
---|#line 810 "bon_parser.y"
+--|#line 814 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 810")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 814")
 end
 
 yyval2 := last_identifier
@@ -2786,19 +2778,6 @@ if yy_parsing_status >= yyContinue then
 	yyvs2.put (yyval2, yyvsp2)
 end
 when 88 then
---|#line 814 "bon_parser.y"
-debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 814")
-end
-
-yyval2 := yyvs2.item (yyvsp2)
-					-- add_class_name($$)
-				 
-if yy_parsing_status >= yyContinue then
-	yyssp := yyssp - 1
-	yyvs2.put (yyval2, yyvsp2)
-end
-when 89 then
 --|#line 818 "bon_parser.y"
 debug ("GEYACC")
 	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 818")
@@ -2811,10 +2790,23 @@ if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvs2.put (yyval2, yyvsp2)
 end
-when 90 then
---|#line 824 "bon_parser.y"
+when 89 then
+--|#line 822 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 824")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 822")
+end
+
+yyval2 := yyvs2.item (yyvsp2)
+					-- add_class_name($$)
+				 
+if yy_parsing_status >= yyContinue then
+	yyssp := yyssp - 1
+	yyvs2.put (yyval2, yyvsp2)
+end
+when 90 then
+--|#line 828 "bon_parser.y"
+debug ("GEYACC")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 828")
 end
 
 create yyval29.make (yyvs2.item (yyvsp2 - 3), yyvs2.item (yyvsp2 - 2), yyvs17.item (yyvsp17), yyvs2.item (yyvsp2 - 1), yyvs2.item (yyvsp2), yyvs31.item (yyvsp31)) 
@@ -2844,9 +2836,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs29.put (yyval29, yyvsp29)
 end
 when 91 then
---|#line 834 "bon_parser.y"
+--|#line 838 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 834")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 838")
 end
 
 
@@ -2872,9 +2864,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs2.put (yyval2, yyvsp2)
 end
 when 92 then
---|#line 835 "bon_parser.y"
+--|#line 839 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 835")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 839")
 end
 
 yyval2 := "INCOMING" 
@@ -2901,9 +2893,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs2.put (yyval2, yyvsp2)
 end
 when 93 then
---|#line 837 "bon_parser.y"
+--|#line 841 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 837")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 841")
 end
 
 yyval2 := "OUTGOING" 
@@ -2930,9 +2922,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs2.put (yyval2, yyvsp2)
 end
 when 94 then
---|#line 841 "bon_parser.y"
+--|#line 845 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 841")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 845")
 end
 
 
@@ -2958,17 +2950,6 @@ if yy_parsing_status >= yyContinue then
 	yyvs31.put (yyval31, yyvsp31)
 end
 when 95 then
---|#line 842 "bon_parser.y"
-debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 842")
-end
-
-yyval31 := yyvs31.item (yyvsp31) 
-if yy_parsing_status >= yyContinue then
-	yyssp := yyssp - 1
-	yyvs31.put (yyval31, yyvsp31)
-end
-when 96 then
 --|#line 846 "bon_parser.y"
 debug ("GEYACC")
 	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 846")
@@ -2979,10 +2960,21 @@ if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvs31.put (yyval31, yyvsp31)
 end
-when 97 then
+when 96 then
 --|#line 850 "bon_parser.y"
 debug ("GEYACC")
 	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 850")
+end
+
+yyval31 := yyvs31.item (yyvsp31) 
+if yy_parsing_status >= yyContinue then
+	yyssp := yyssp - 1
+	yyvs31.put (yyval31, yyvsp31)
+end
+when 97 then
+--|#line 854 "bon_parser.y"
+debug ("GEYACC")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 854")
 end
 
 create yyval31.make_optional_rest (yyvs30.item (yyvsp30), yyvs31.item (yyvsp31)) 
@@ -2992,9 +2984,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs31.put (yyval31, yyvsp31)
 end
 when 98 then
---|#line 854 "bon_parser.y"
+--|#line 858 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 854")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 858")
 end
 
 
@@ -3020,9 +3012,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs31.put (yyval31, yyvsp31)
 end
 when 99 then
---|#line 855 "bon_parser.y"
+--|#line 859 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 855")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 859")
 end
 
 create yyval31.make_optional_first (yyvs31.item (yyvsp31), yyvs30.item (yyvsp30)) 
@@ -3032,9 +3024,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs31.put (yyval31, yyvsp31)
 end
 when 100 then
---|#line 859 "bon_parser.y"
+--|#line 863 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 859")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 863")
 end
 
 create yyval30.make (yyvs2.item (yyvsp2), yyvs25.item (yyvsp25)) 
@@ -3063,9 +3055,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs30.put (yyval30, yyvsp30)
 end
 when 101 then
---|#line 863 "bon_parser.y"
+--|#line 867 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 863")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 867")
 end
 
 create yyval32.make (yyvs2.item (yyvsp2 - 2), yyvs17.item (yyvsp17), yyvs2.item (yyvsp2 - 1), yyvs2.item (yyvsp2), yyvs34.item (yyvsp34)) 
@@ -3095,9 +3087,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs32.put (yyval32, yyvsp32)
 end
 when 102 then
---|#line 872 "bon_parser.y"
+--|#line 876 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 872")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 876")
 end
 
 
@@ -3123,17 +3115,6 @@ if yy_parsing_status >= yyContinue then
 	yyvs34.put (yyval34, yyvsp34)
 end
 when 103 then
---|#line 873 "bon_parser.y"
-debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 873")
-end
-
-yyval34 := yyvs34.item (yyvsp34) 
-if yy_parsing_status >= yyContinue then
-	yyssp := yyssp - 1
-	yyvs34.put (yyval34, yyvsp34)
-end
-when 104 then
 --|#line 877 "bon_parser.y"
 debug ("GEYACC")
 	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 877")
@@ -3144,10 +3125,21 @@ if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvs34.put (yyval34, yyvsp34)
 end
-when 105 then
+when 104 then
 --|#line 881 "bon_parser.y"
 debug ("GEYACC")
 	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 881")
+end
+
+yyval34 := yyvs34.item (yyvsp34) 
+if yy_parsing_status >= yyContinue then
+	yyssp := yyssp - 1
+	yyvs34.put (yyval34, yyvsp34)
+end
+when 105 then
+--|#line 885 "bon_parser.y"
+debug ("GEYACC")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 885")
 end
 
 create yyval34.make_optional_rest (yyvs33.item (yyvsp33), yyvs34.item (yyvsp34)) 
@@ -3157,9 +3149,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs34.put (yyval34, yyvsp34)
 end
 when 106 then
---|#line 885 "bon_parser.y"
+--|#line 889 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 885")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 889")
 end
 
 
@@ -3185,9 +3177,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs34.put (yyval34, yyvsp34)
 end
 when 107 then
---|#line 886 "bon_parser.y"
+--|#line 890 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 886")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 890")
 end
 
 create yyval34.make_optional_first (yyvs34.item (yyvsp34), yyvs33.item (yyvsp33)) 
@@ -3197,9 +3189,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs34.put (yyval34, yyvsp34)
 end
 when 108 then
---|#line 890 "bon_parser.y"
+--|#line 894 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 890")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 894")
 end
 
 create yyval33.make (yyvs2.item (yyvsp2 - 1), yyvs2.item (yyvsp2)) 
@@ -3227,9 +3219,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs33.put (yyval33, yyvsp33)
 end
 when 109 then
---|#line 895 "bon_parser.y"
+--|#line 899 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 895")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 899")
 end
 
 create yyval35.make (yyvs2.item (yyvsp2 - 2), yyvs17.item (yyvsp17), yyvs2.item (yyvsp2 - 1), yyvs2.item (yyvsp2), yyvs37.item (yyvsp37)) 
@@ -3259,9 +3251,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs35.put (yyval35, yyvsp35)
 end
 when 110 then
---|#line 904 "bon_parser.y"
+--|#line 908 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 904")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 908")
 end
 
 
@@ -3287,9 +3279,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs37.put (yyval37, yyvsp37)
 end
 when 111 then
---|#line 905 "bon_parser.y"
+--|#line 909 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 905")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 909")
 end
 
 create yyval37.make_optional_first (yyvs37.item (yyvsp37), yyvs36.item (yyvsp36)) 
@@ -3299,9 +3291,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs37.put (yyval37, yyvsp37)
 end
 when 112 then
---|#line 909 "bon_parser.y"
+--|#line 913 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 909")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 913")
 end
 
 create yyval36.make (yyvs2.item (yyvsp2), yyvs25.item (yyvsp25)) 
@@ -3330,9 +3322,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs36.put (yyval36, yyvsp36)
 end
 when 113 then
---|#line 915 "bon_parser.y"
+--|#line 919 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 915")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 919")
 end
 
 io.put_string ("STATIC DIAGRAM!"); create yyval38.make_static_diagram (yyvs2.item (yyvsp2), yyvs39.item (yyvsp39), yyvs42.item (yyvsp42)) 
@@ -3362,9 +3354,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs38.put (yyval38, yyvsp38)
 end
 when 114 then
---|#line 924 "bon_parser.y"
+--|#line 928 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 924")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 928")
 end
 
 
@@ -3390,17 +3382,6 @@ if yy_parsing_status >= yyContinue then
 	yyvs2.put (yyval2, yyvsp2)
 end
 when 115 then
---|#line 925 "bon_parser.y"
-debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 925")
-end
-
-yyval2 := yyvs2.item (yyvsp2) 
-if yy_parsing_status >= yyContinue then
-	yyssp := yyssp - 1
-	yyvs2.put (yyval2, yyvsp2)
-end
-when 116 then
 --|#line 929 "bon_parser.y"
 debug ("GEYACC")
 	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 929")
@@ -3411,10 +3392,21 @@ if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvs2.put (yyval2, yyvsp2)
 end
-when 117 then
---|#line 931 "bon_parser.y"
+when 116 then
+--|#line 933 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 931")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 933")
+end
+
+yyval2 := yyvs2.item (yyvsp2) 
+if yy_parsing_status >= yyContinue then
+	yyssp := yyssp - 1
+	yyvs2.put (yyval2, yyvsp2)
+end
+when 117 then
+--|#line 935 "bon_parser.y"
+debug ("GEYACC")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 935")
 end
 
 yyval2 := yyvs2.item (yyvsp2) 
@@ -3423,9 +3415,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs2.put (yyval2, yyvsp2)
 end
 when 118 then
---|#line 933 "bon_parser.y"
+--|#line 937 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 933")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 937")
 end
 
 yyval2 := yyvs4.item (yyvsp4).out 
@@ -3452,9 +3444,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs2.put (yyval2, yyvsp2)
 end
 when 119 then
---|#line 937 "bon_parser.y"
+--|#line 941 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 937")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 941")
 end
 
 
@@ -3480,9 +3472,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs39.put (yyval39, yyvsp39)
 end
 when 120 then
---|#line 938 "bon_parser.y"
+--|#line 942 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 938")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 942")
 end
 
 yyval39 := yyvs39.item (yyvsp39) 
@@ -3491,9 +3483,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs39.put (yyval39, yyvsp39)
 end
 when 121 then
---|#line 944 "bon_parser.y"
+--|#line 948 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 944")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 948")
 end
 
 create yyval39.make_list (yyvs2.item (yyvsp2)) 
@@ -3520,9 +3512,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs39.put (yyval39, yyvsp39)
 end
 when 122 then
---|#line 948 "bon_parser.y"
+--|#line 952 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 948")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 952")
 end
 
 create yyval2.make_from_string (yyvs2.item (yyvsp2 - 1))
@@ -3533,9 +3525,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs2.put (yyval2, yyvsp2)
 end
 when 123 then
---|#line 953 "bon_parser.y"
+--|#line 957 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 953")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 957")
 end
 
 
@@ -3561,9 +3553,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs2.put (yyval2, yyvsp2)
 end
 when 124 then
---|#line 954 "bon_parser.y"
+--|#line 958 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 954")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 958")
 end
 
 create yyval2.make_from_string (yyvs2.item (yyvsp2));
@@ -3574,9 +3566,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs2.put (yyval2, yyvsp2)
 end
 when 125 then
---|#line 959 "bon_parser.y"
+--|#line 963 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 959")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 963")
 end
 
 yyval2 := last_string_constant 
@@ -3586,9 +3578,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs2.put (yyval2, yyvsp2)
 end
 when 126 then
---|#line 970 "bon_parser.y"
+--|#line 974 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 970")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 974")
 end
 
 yyval42 := yyvs42.item (yyvsp42) 
@@ -3597,9 +3589,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs42.put (yyval42, yyvsp42)
 end
 when 127 then
---|#line 974 "bon_parser.y"
+--|#line 978 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 974")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 978")
 end
 
 
@@ -3625,9 +3617,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs42.put (yyval42, yyvsp42)
 end
 when 128 then
---|#line 975 "bon_parser.y"
+--|#line 979 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 975")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 979")
 end
 
 create yyval42.make_optional_first (yyvs42.item (yyvsp42), yyvs40.item (yyvsp40)) 
@@ -3637,9 +3629,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs42.put (yyval42, yyvsp42)
 end
 when 129 then
---|#line 979 "bon_parser.y"
+--|#line 983 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 979")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 983")
 end
 
 yyval40 := yyvs43.item (yyvsp43) 
@@ -3666,9 +3658,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs40.put (yyval40, yyvsp40)
 end
 when 130 then
---|#line 981 "bon_parser.y"
+--|#line 985 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 981")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 985")
 end
 
 yyval40 := yyvs44.item (yyvsp44) 
@@ -3695,9 +3687,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs40.put (yyval40, yyvsp40)
 end
 when 131 then
---|#line 983 "bon_parser.y"
+--|#line 987 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 983")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 987")
 end
 
 yyval40 := yyvs45.item (yyvsp45) 
@@ -3724,9 +3716,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs40.put (yyval40, yyvsp40)
 end
 when 132 then
---|#line 985 "bon_parser.y"
+--|#line 989 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 985")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 989")
 end
 
 yyval40 := yyvs41.item (yyvsp41) 
@@ -3753,9 +3745,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs40.put (yyval40, yyvsp40)
 end
 when 133 then
---|#line 988 "bon_parser.y"
+--|#line 992 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 988")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 992")
 end
 
 create yyval41.make_unspecified 
@@ -3782,9 +3774,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs41.put (yyval41, yyvsp41)
 end
 when 134 then
---|#line 992 "bon_parser.y"
+--|#line 996 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 992")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 996")
 end
 
 create yyval43.make (yyvs2.item (yyvsp2), yyvs6.item (yyvsp6), yyvs39.item (yyvsp39), yyvs42.item (yyvsp42))
@@ -3817,9 +3809,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs43.put (yyval43, yyvsp43)
 end
 when 135 then
---|#line 1001 "bon_parser.y"
+--|#line 1005 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1001")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1005")
 end
 
 yyval6 := False 
@@ -3845,9 +3837,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs6.put (yyval6, yyvsp6)
 end
 when 136 then
---|#line 1003 "bon_parser.y"
+--|#line 1007 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1003")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1007")
 end
 
 yyval6 := True 
@@ -3874,9 +3866,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs6.put (yyval6, yyvsp6)
 end
 when 137 then
---|#line 1007 "bon_parser.y"
+--|#line 1011 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1007")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1011")
 end
 
 
@@ -3902,9 +3894,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs42.put (yyval42, yyvsp42)
 end
 when 138 then
---|#line 1008 "bon_parser.y"
+--|#line 1012 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1008")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1012")
 end
 
 yyval42 := yyvs42.item (yyvsp42) 
@@ -3913,9 +3905,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs42.put (yyval42, yyvsp42)
 end
 when 139 then
---|#line 1012 "bon_parser.y"
+--|#line 1016 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1012")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1016")
 end
 
 yyval42 := yyvs42.item (yyvsp42) 
@@ -3925,9 +3917,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs42.put (yyval42, yyvsp42)
 end
 when 140 then
---|#line 1016 "bon_parser.y"
+--|#line 1020 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1016")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1020")
 end
 
 create yyval44.make (yyvs2.item (yyvsp2 - 1), yyvs2.item (yyvsp2), yyvs49.item (yyvsp49), yyvs6.item (yyvsp6 - 2), yyvs6.item (yyvsp6 - 1), yyvs6.item (yyvsp6), yyvs39.item (yyvsp39), yyvs63.item (yyvsp63))
@@ -3961,9 +3953,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs44.put (yyval44, yyvsp44)
 end
 when 141 then
---|#line 1029 "bon_parser.y"
+--|#line 1033 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1029")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1033")
 end
 
 
@@ -3989,9 +3981,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs2.put (yyval2, yyvsp2)
 end
 when 142 then
---|#line 1030 "bon_parser.y"
+--|#line 1034 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1030")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1034")
 end
 
 yyval2 := "ROOT" 
@@ -4018,9 +4010,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs2.put (yyval2, yyvsp2)
 end
 when 143 then
---|#line 1032 "bon_parser.y"
+--|#line 1036 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1032")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1036")
 end
 
 yyval2 := "DEFERRED" 
@@ -4047,9 +4039,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs2.put (yyval2, yyvsp2)
 end
 when 144 then
---|#line 1034 "bon_parser.y"
+--|#line 1038 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1034")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1038")
 end
 
 yyval2 := "EFFECTIVE" 
@@ -4076,9 +4068,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs2.put (yyval2, yyvsp2)
 end
 when 145 then
---|#line 1038 "bon_parser.y"
+--|#line 1042 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1038")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1042")
 end
 
 yyval6 := False 
@@ -4104,9 +4096,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs6.put (yyval6, yyvsp6)
 end
 when 146 then
---|#line 1040 "bon_parser.y"
+--|#line 1044 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1040")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1044")
 end
 
 yyval6 := True 
@@ -4133,9 +4125,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs6.put (yyval6, yyvsp6)
 end
 when 147 then
---|#line 1044 "bon_parser.y"
+--|#line 1048 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1044")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1048")
 end
 
 yyval6 := False 
@@ -4161,9 +4153,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs6.put (yyval6, yyvsp6)
 end
 when 148 then
---|#line 1046 "bon_parser.y"
+--|#line 1050 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1046")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1050")
 end
 
 yyval6 := True 
@@ -4190,9 +4182,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs6.put (yyval6, yyvsp6)
 end
 when 149 then
---|#line 1050 "bon_parser.y"
+--|#line 1054 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1050")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1054")
 end
 
 
@@ -4218,9 +4210,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs63.put (yyval63, yyvsp63)
 end
 when 150 then
---|#line 1051 "bon_parser.y"
+--|#line 1055 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1051")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1055")
 end
 
 yyval63 := yyvs63.item (yyvsp63) 
@@ -4229,9 +4221,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs63.put (yyval63, yyvsp63)
 end
 when 151 then
---|#line 1055 "bon_parser.y"
+--|#line 1059 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1055")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1059")
 end
 
 yyval45 := yyvs46.item (yyvsp46) 
@@ -4258,9 +4250,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs45.put (yyval45, yyvsp45)
 end
 when 152 then
---|#line 1057 "bon_parser.y"
+--|#line 1061 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1057")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1061")
 end
 
 yyval45 := yyvs47.item (yyvsp47) 
@@ -4287,9 +4279,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs45.put (yyval45, yyvsp45)
 end
 when 153 then
---|#line 1061 "bon_parser.y"
+--|#line 1065 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1061")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1065")
 end
 
 create yyval46.make (yyvs7.item (yyvsp7 - 1), yyvs4.item (yyvsp4), yyvs7.item (yyvsp7), yyvs2.item (yyvsp2)) 
@@ -4319,9 +4311,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs46.put (yyval46, yyvsp46)
 end
 when 154 then
---|#line 1068 "bon_parser.y"
+--|#line 1072 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1068")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1072")
 end
 
 yyval4 := 0 
@@ -4347,9 +4339,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs4.put (yyval4, yyvsp4)
 end
 when 155 then
---|#line 1070 "bon_parser.y"
+--|#line 1074 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1070")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1074")
 end
 
 yyval4 := yyvs4.item (yyvsp4) 
@@ -4359,9 +4351,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs4.put (yyval4, yyvsp4)
 end
 when 156 then
---|#line 1074 "bon_parser.y"
+--|#line 1078 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1074")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1078")
 end
 
 
@@ -4387,9 +4379,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs2.put (yyval2, yyvsp2)
 end
 when 157 then
---|#line 1075 "bon_parser.y"
+--|#line 1079 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1075")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1079")
 end
 
 yyval2 := yyvs2.item (yyvsp2) 
@@ -4398,9 +4390,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs2.put (yyval2, yyvsp2)
 end
 when 158 then
---|#line 1079 "bon_parser.y"
+--|#line 1083 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1079")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1083")
 end
 
 create yyval47.make (yyvs7.item (yyvsp7 - 1), yyvs55.item (yyvsp55), yyvs53.item (yyvsp53), yyvs7.item (yyvsp7), yyvs2.item (yyvsp2)) 
@@ -4431,9 +4423,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs47.put (yyval47, yyvsp47)
 end
 when 159 then
---|#line 1087 "bon_parser.y"
+--|#line 1091 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1087")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1091")
 end
 
 
@@ -4459,9 +4451,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs53.put (yyval53, yyvsp53)
 end
 when 160 then
---|#line 1088 "bon_parser.y"
+--|#line 1092 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1088")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1092")
 end
 
 yyval53 := yyvs53.item (yyvsp53) 
@@ -4470,9 +4462,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs53.put (yyval53, yyvsp53)
 end
 when 161 then
---|#line 1092 "bon_parser.y"
+--|#line 1096 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1092")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1096")
 end
 
 
@@ -4498,9 +4490,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs55.put (yyval55, yyvsp55)
 end
 when 162 then
---|#line 1093 "bon_parser.y"
+--|#line 1097 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1093")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1097")
 end
 
 yyval55 := yyvs55.item (yyvsp55) 
@@ -4509,9 +4501,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs55.put (yyval55, yyvsp55)
 end
 when 163 then
---|#line 1097 "bon_parser.y"
+--|#line 1101 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1097")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1101")
 end
 
 yyval55 := yyvs55.item (yyvsp55) 
@@ -4521,9 +4513,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs55.put (yyval55, yyvsp55)
 end
 when 164 then
---|#line 1101 "bon_parser.y"
+--|#line 1105 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1101")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1105")
 end
 
 yyval55 := yyvs55.item (yyvsp55) 
@@ -4532,9 +4524,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs55.put (yyval55, yyvsp55)
 end
 when 165 then
---|#line 1103 "bon_parser.y"
+--|#line 1107 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1103")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1107")
 end
 
 create yyval55.make_undefined (yyvs4.item (yyvsp4)) 
@@ -4561,9 +4553,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs55.put (yyval55, yyvsp55)
 end
 when 166 then
---|#line 1107 "bon_parser.y"
+--|#line 1111 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1107")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1111")
 end
 
 yyval55 := yyvs55.item (yyvsp55) 
@@ -4572,9 +4564,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs55.put (yyval55, yyvsp55)
 end
 when 167 then
---|#line 1111 "bon_parser.y"
+--|#line 1115 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1111")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1115")
 end
 
 create yyval55.make_optional_rest (yyvs54.item (yyvsp54), yyvs55.item (yyvsp55)) 
@@ -4584,9 +4576,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs55.put (yyval55, yyvsp55)
 end
 when 168 then
---|#line 1115 "bon_parser.y"
+--|#line 1119 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1115")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1119")
 end
 
 
@@ -4612,9 +4604,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs55.put (yyval55, yyvsp55)
 end
 when 169 then
---|#line 1116 "bon_parser.y"
+--|#line 1120 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1116")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1120")
 end
 
 create yyval55.make_optional_first (yyvs55.item (yyvsp55), yyvs54.item (yyvsp54)) 
@@ -4625,9 +4617,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs55.put (yyval55, yyvsp55)
 end
 when 170 then
---|#line 1120 "bon_parser.y"
+--|#line 1124 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1120")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1124")
 end
 
 create yyval54.make_feature (yyvs68.item (yyvsp68)) 
@@ -4654,9 +4646,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs54.put (yyval54, yyvsp54)
 end
 when 171 then
---|#line 1122 "bon_parser.y"
+--|#line 1126 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1122")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1126")
 end
 
 create yyval54.make_supplier (yyvs56.item (yyvsp56)) 
@@ -4683,9 +4675,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs54.put (yyval54, yyvsp54)
 end
 when 172 then
---|#line 1124 "bon_parser.y"
+--|#line 1128 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1124")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1128")
 end
 
 create yyval54.make_parent (yyvs59.item (yyvsp59)) 
@@ -4712,9 +4704,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs54.put (yyval54, yyvsp54)
 end
 when 173 then
---|#line 1128 "bon_parser.y"
+--|#line 1132 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1128")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1132")
 end
 
 create yyval56.make (yyvs57.item (yyvsp57), yyvs58.item (yyvsp58)) 
@@ -4742,9 +4734,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs56.put (yyval56, yyvsp56)
 end
 when 174 then
---|#line 1132 "bon_parser.y"
+--|#line 1136 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1132")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1136")
 end
 
 
@@ -4770,9 +4762,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs57.put (yyval57, yyvsp57)
 end
 when 175 then
---|#line 1133 "bon_parser.y"
+--|#line 1137 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1133")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1137")
 end
 
 yyval57 := yyvs57.item (yyvsp57) 
@@ -4782,9 +4774,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs57.put (yyval57, yyvsp57)
 end
 when 176 then
---|#line 1137 "bon_parser.y"
+--|#line 1141 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1137")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1141")
 end
 
 create yyval57.make_list (yyvs68.item (yyvsp68)) 
@@ -4811,9 +4803,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs57.put (yyval57, yyvsp57)
 end
 when 177 then
---|#line 1139 "bon_parser.y"
+--|#line 1143 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1139")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1143")
 end
 
 yyval57 := yyvs57.item (yyvsp57) 
@@ -4822,9 +4814,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs57.put (yyval57, yyvsp57)
 end
 when 178 then
---|#line 1143 "bon_parser.y"
+--|#line 1147 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1143")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1147")
 end
 
 yyval57 := yyvs57.item (yyvsp57) 
@@ -4834,9 +4826,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs57.put (yyval57, yyvsp57)
 end
 when 179 then
---|#line 1147 "bon_parser.y"
+--|#line 1151 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1147")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1151")
 end
 
 create yyval59.make (yyvs58.item (yyvsp58)) 
@@ -4864,9 +4856,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs59.put (yyval59, yyvsp59)
 end
 when 180 then
---|#line 1151 "bon_parser.y"
+--|#line 1155 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1151")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1155")
 end
 
 create yyval58.make_direct (yyvs2.item (yyvsp2)) 
@@ -4893,9 +4885,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs58.put (yyval58, yyvsp58)
 end
 when 181 then
---|#line 1153 "bon_parser.y"
+--|#line 1157 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1153")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1157")
 end
 
 create yyval58.make_indirect (yyvs60.item (yyvsp60)) 
@@ -4922,9 +4914,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs58.put (yyval58, yyvsp58)
 end
 when 182 then
---|#line 1163 "bon_parser.y"
+--|#line 1167 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1163")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1167")
 end
 
 create yyval60.make (yyvs2.item (yyvsp2), yyvs62.item (yyvsp62)) 
@@ -4952,9 +4944,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs60.put (yyval60, yyvsp60)
 end
 when 183 then
---|#line 1167 "bon_parser.y"
+--|#line 1171 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1167")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1171")
 end
 
 
@@ -4980,9 +4972,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs2.put (yyval2, yyvsp2)
 end
 when 184 then
---|#line 1168 "bon_parser.y"
+--|#line 1172 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1168")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1172")
 end
 
 yyval2 := yyvs2.item (yyvsp2) 
@@ -4991,9 +4983,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs2.put (yyval2, yyvsp2)
 end
 when 185 then
---|#line 1175 "bon_parser.y"
+--|#line 1179 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1175")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1179")
 end
 
 yyval62 := yyvs62.item (yyvsp62) 
@@ -5003,9 +4995,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs62.put (yyval62, yyvsp62)
 end
 when 186 then
---|#line 1179 "bon_parser.y"
+--|#line 1183 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1179")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1183")
 end
 
 yyval62 := yyvs62.item (yyvsp62) 
@@ -5014,9 +5006,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs62.put (yyval62, yyvsp62)
 end
 when 187 then
---|#line 1183 "bon_parser.y"
+--|#line 1187 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1183")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1187")
 end
 
 create yyval62.make_optional_rest (yyvs61.item (yyvsp61), yyvs62.item (yyvsp62)) 
@@ -5026,9 +5018,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs62.put (yyval62, yyvsp62)
 end
 when 188 then
---|#line 1187 "bon_parser.y"
+--|#line 1191 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1187")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1191")
 end
 
 
@@ -5054,9 +5046,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs62.put (yyval62, yyvsp62)
 end
 when 189 then
---|#line 1188 "bon_parser.y"
+--|#line 1192 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1188")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1192")
 end
 
 create yyval62.make_optional_first (yyvs62.item (yyvsp62), yyvs61.item (yyvsp61)) 
@@ -5067,9 +5059,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs62.put (yyval62, yyvsp62)
 end
 when 190 then
---|#line 1192 "bon_parser.y"
+--|#line 1196 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1192")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1196")
 end
 
 create yyval61.make_ellipses 
@@ -5096,9 +5088,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs61.put (yyval61, yyvsp61)
 end
 when 191 then
---|#line 1194 "bon_parser.y"
+--|#line 1198 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1194")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1198")
 end
 
 create yyval61.make (yyvs60.item (yyvsp60)) 
@@ -5125,9 +5117,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs61.put (yyval61, yyvsp61)
 end
 when 192 then
---|#line 1196 "bon_parser.y"
+--|#line 1200 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1196")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1200")
 end
 
 create yyval61.make_with_class_name (yyvs2.item (yyvsp2)) 
@@ -5154,9 +5146,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs61.put (yyval61, yyvsp61)
 end
 when 193 then
---|#line 1198 "bon_parser.y"
+--|#line 1202 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1198")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1202")
 end
 
 create yyval61.make_with_formal_generic_name (yyvs2.item (yyvsp2)) 
@@ -5183,9 +5175,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs61.put (yyval61, yyvsp61)
 end
 when 194 then
---|#line 1203 "bon_parser.y"
+--|#line 1207 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1203")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1207")
 end
 
 create yyval53.make 
@@ -5212,9 +5204,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs53.put (yyval53, yyvsp53)
 end
 when 195 then
---|#line 1205 "bon_parser.y"
+--|#line 1209 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1205")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1209")
 end
 
 create yyval53.make_aggregate 
@@ -5241,9 +5233,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs53.put (yyval53, yyvsp53)
 end
 when 196 then
---|#line 1207 "bon_parser.y"
+--|#line 1211 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1207")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1211")
 end
 
 create yyval53.make_shared (yyvs4.item (yyvsp4)) 
@@ -5270,9 +5262,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs53.put (yyval53, yyvsp53)
 end
 when 197 then
---|#line 1212 "bon_parser.y"
+--|#line 1216 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1212")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1216")
 end
 
 yyval4 := yyvs4.item (yyvsp4) 
@@ -5282,17 +5274,6 @@ if yy_parsing_status >= yyContinue then
 	yyvs4.put (yyval4, yyvsp4)
 end
 when 198 then
---|#line 1216 "bon_parser.y"
-debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1216")
-end
-
-yyval7 := yyvs7.item (yyvsp7) 
-if yy_parsing_status >= yyContinue then
-	yyssp := yyssp - 1
-	yyvs7.put (yyval7, yyvsp7)
-end
-when 199 then
 --|#line 1220 "bon_parser.y"
 debug ("GEYACC")
 	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1220")
@@ -5303,7 +5284,7 @@ if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvs7.put (yyval7, yyvsp7)
 end
-when 200 then
+when 199 then
 --|#line 1224 "bon_parser.y"
 debug ("GEYACC")
 	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1224")
@@ -5314,7 +5295,7 @@ if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvs7.put (yyval7, yyvsp7)
 end
-when 201 then
+when 200 then
 --|#line 1228 "bon_parser.y"
 debug ("GEYACC")
 	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1228")
@@ -5325,10 +5306,21 @@ if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvs7.put (yyval7, yyvsp7)
 end
-when 202 then
---|#line 1233 "bon_parser.y"
+when 201 then
+--|#line 1232 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1233")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1232")
+end
+
+yyval7 := yyvs7.item (yyvsp7) 
+if yy_parsing_status >= yyContinue then
+	yyssp := yyssp - 1
+	yyvs7.put (yyval7, yyvsp7)
+end
+when 202 then
+--|#line 1237 "bon_parser.y"
+debug ("GEYACC")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1237")
 end
 
 create yyval7.make_from_components (yyvs2.item (yyvsp2), yyvs2.item (yyvsp2 - 1)) 
@@ -5355,9 +5347,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs7.put (yyval7, yyvsp7)
 end
 when 203 then
---|#line 1237 "bon_parser.y"
+--|#line 1241 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1237")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1241")
 end
 
 
@@ -5383,9 +5375,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs2.put (yyval2, yyvsp2)
 end
 when 204 then
---|#line 1238 "bon_parser.y"
+--|#line 1242 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1238")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1242")
 end
 
 create yyval2.make_from_string (yyvs2.item (yyvsp2))
@@ -5396,9 +5388,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs2.put (yyval2, yyvsp2)
 end
 when 205 then
---|#line 1243 "bon_parser.y"
+--|#line 1247 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1243")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1247")
 end
 
 create yyval2.make_from_string (yyvs2.item (yyvsp2))
@@ -5409,9 +5401,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs2.put (yyval2, yyvsp2)
 end
 when 206 then
---|#line 1248 "bon_parser.y"
+--|#line 1252 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1248")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1252")
 end
 
 yyval2 := yyvs2.item (yyvsp2) 
@@ -5420,9 +5412,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs2.put (yyval2, yyvsp2)
 end
 when 207 then
---|#line 1250 "bon_parser.y"
+--|#line 1254 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1250")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1254")
 end
 
 yyval2 := yyvs2.item (yyvsp2) 
@@ -5431,9 +5423,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs2.put (yyval2, yyvsp2)
 end
 when 208 then
---|#line 1254 "bon_parser.y"
+--|#line 1258 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1254")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1258")
 end
 
 yyval4 := yyvs4.item (yyvsp4) 
@@ -5442,9 +5434,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs4.put (yyval4, yyvsp4)
 end
 when 209 then
---|#line 1258 "bon_parser.y"
+--|#line 1262 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1258")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1262")
 end
 
 yyval2 := yyvs2.item (yyvsp2) 
@@ -5453,9 +5445,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs2.put (yyval2, yyvsp2)
 end
 when 210 then
---|#line 1264 "bon_parser.y"
+--|#line 1268 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1264")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1268")
 end
 
 create yyval63.make (yyvs17.item (yyvsp17), yyvs65.item (yyvsp65), yyvs66.item (yyvsp66), yyvs64.item (yyvsp64)) 
@@ -5486,9 +5478,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs63.put (yyval63, yyvsp63)
 end
 when 211 then
---|#line 1272 "bon_parser.y"
+--|#line 1276 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1272")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1276")
 end
 
 
@@ -5514,9 +5506,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs65.put (yyval65, yyvsp65)
 end
 when 212 then
---|#line 1273 "bon_parser.y"
+--|#line 1277 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1273")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1277")
 end
 
 yyval65 := yyvs65.item (yyvsp65) 
@@ -5526,9 +5518,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs65.put (yyval65, yyvsp65)
 end
 when 213 then
---|#line 1278 "bon_parser.y"
+--|#line 1282 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1278")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1282")
 end
 
 
@@ -5554,9 +5546,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs64.put (yyval64, yyvsp64)
 end
 when 214 then
---|#line 1279 "bon_parser.y"
+--|#line 1283 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1279")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1283")
 end
 
 yyval64 := yyvs64.item (yyvsp64) 
@@ -5566,38 +5558,20 @@ if yy_parsing_status >= yyContinue then
 	yyvs64.put (yyval64, yyvsp64)
 end
 when 215 then
---|#line 1284 "bon_parser.y"
+--|#line 1288 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1284")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1288")
 end
 
-
+yyval64 := yyvs64.item (yyvsp64) 
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
-	yyvsp64 := yyvsp64 + 1
-	yyvsp78 := yyvsp78 -1
-	if yyvsp64 >= yyvsc64 then
-		if yyvs64 = Void then
-			debug ("GEYACC")
-				std.error.put_line ("Create yyvs64")
-			end
-			create yyspecial_routines64
-			yyvsc64 := yyInitial_yyvs_size
-			yyvs64 := yyspecial_routines64.make (yyvsc64)
-		else
-			debug ("GEYACC")
-				std.error.put_line ("Resize yyvs64")
-			end
-			yyvsc64 := yyvsc64 + yyInitial_yyvs_size
-			yyvs64 := yyspecial_routines64.resize (yyvs64, yyvsc64)
-		end
-	end
 	yyvs64.put (yyval64, yyvsp64)
 end
 when 216 then
---|#line 1289 "bon_parser.y"
+--|#line 1292 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1289")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1292")
 end
 
 yyval65 := yyvs65.item (yyvsp65) 
@@ -5606,9 +5580,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs65.put (yyval65, yyvsp65)
 end
 when 217 then
---|#line 1293 "bon_parser.y"
+--|#line 1296 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1293")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1296")
 end
 
 create yyval65.make_optional_rest (yyvs50.item (yyvsp50), yyvs65.item (yyvsp65)) 
@@ -5618,9 +5592,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs65.put (yyval65, yyvsp65)
 end
 when 218 then
---|#line 1297 "bon_parser.y"
+--|#line 1300 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1297")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1300")
 end
 
 
@@ -5646,9 +5620,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs65.put (yyval65, yyvsp65)
 end
 when 219 then
---|#line 1298 "bon_parser.y"
+--|#line 1301 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1298")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1301")
 end
 
 create yyval65.make_optional_first (yyvs65.item (yyvsp65), yyvs50.item (yyvsp50)) 
@@ -5659,9 +5633,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs65.put (yyval65, yyvsp65)
 end
 when 220 then
---|#line 1303 "bon_parser.y"
+--|#line 1306 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1303")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1306")
 end
 
 yyval66 := yyvs66.item (yyvsp66) 
@@ -5670,9 +5644,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs66.put (yyval66, yyvsp66)
 end
 when 221 then
---|#line 1306 "bon_parser.y"
+--|#line 1309 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1306")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1309")
 end
 
 create yyval66.make_optional_rest (yyvs67.item (yyvsp67), yyvs66.item (yyvsp66)) 
@@ -5682,9 +5656,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs66.put (yyval66, yyvsp66)
 end
 when 222 then
---|#line 1310 "bon_parser.y"
+--|#line 1313 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1310")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1313")
 end
 
 
@@ -5710,9 +5684,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs66.put (yyval66, yyvsp66)
 end
 when 223 then
---|#line 1311 "bon_parser.y"
+--|#line 1314 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1311")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1314")
 end
 
 create yyval66.make_optional_first (yyvs66.item (yyvsp66), yyvs67.item (yyvsp67)) 
@@ -5722,19 +5696,19 @@ if yy_parsing_status >= yyContinue then
 	yyvs66.put (yyval66, yyvsp66)
 end
 when 224 then
---|#line 1315 "bon_parser.y"
+--|#line 1318 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1315")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1318")
 end
 
-create yyval67.make (yyvs25.item (yyvsp25), yyvs39.item (yyvsp39), yyvs76.item (yyvsp76)) 
+create yyval67.make (yyvs25.item (yyvsp25), yyvs39.item (yyvsp39), yyvs77.item (yyvsp77)) 
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 4
 	yyvsp67 := yyvsp67 + 1
 	yyvsp1 := yyvsp1 -1
 	yyvsp25 := yyvsp25 -1
 	yyvsp39 := yyvsp39 -1
-	yyvsp76 := yyvsp76 -1
+	yyvsp77 := yyvsp77 -1
 	if yyvsp67 >= yyvsc67 then
 		if yyvs67 = Void then
 			debug ("GEYACC")
@@ -5754,9 +5728,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs67.put (yyval67, yyvsp67)
 end
 when 225 then
---|#line 1321 "bon_parser.y"
+--|#line 1324 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1321")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1324")
 end
 
 
@@ -5782,9 +5756,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs25.put (yyval25, yyvsp25)
 end
 when 226 then
---|#line 1322 "bon_parser.y"
+--|#line 1325 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1322")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1325")
 end
 
 yyval25 := yyvs25.item (yyvsp25) 
@@ -5793,82 +5767,38 @@ if yy_parsing_status >= yyContinue then
 	yyvs25.put (yyval25, yyvsp25)
 end
 when 227 then
---|#line 1326 "bon_parser.y"
+--|#line 1330 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1326")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1330")
 end
 
-yyval76 := yyvs76.item (yyvsp76) 
+yyval77 := yyvs77.item (yyvsp77) 
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
-	yyvs76.put (yyval76, yyvsp76)
+	yyvs77.put (yyval77, yyvsp77)
 end
 when 228 then
---|#line 1328 "bon_parser.y"
+--|#line 1333 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1328")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1333")
 end
 
-create yyval76.make_optional_rest (yyvs77.item (yyvsp77), yyvs76.item (yyvsp76)) 
+create yyval77.make_optional_rest (yyvs78.item (yyvsp78), yyvs77.item (yyvsp77)) 
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 2
-	yyvsp77 := yyvsp77 -1
-	yyvs76.put (yyval76, yyvsp76)
+	yyvsp78 := yyvsp78 -1
+	yyvs77.put (yyval77, yyvsp77)
 end
 when 229 then
---|#line 1331 "bon_parser.y"
+--|#line 1337 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1331")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1337")
 end
 
 
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 0
-	yyvsp76 := yyvsp76 + 1
-	if yyvsp76 >= yyvsc76 then
-		if yyvs76 = Void then
-			debug ("GEYACC")
-				std.error.put_line ("Create yyvs76")
-			end
-			create yyspecial_routines76
-			yyvsc76 := yyInitial_yyvs_size
-			yyvs76 := yyspecial_routines76.make (yyvsc76)
-		else
-			debug ("GEYACC")
-				std.error.put_line ("Resize yyvs76")
-			end
-			yyvsc76 := yyvsc76 + yyInitial_yyvs_size
-			yyvs76 := yyspecial_routines76.resize (yyvs76, yyvsc76)
-		end
-	end
-	yyvs76.put (yyval76, yyvsp76)
-end
-when 230 then
---|#line 1332 "bon_parser.y"
-debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1332")
-end
-
-create yyval76.make_optional_first (yyvs76.item (yyvsp76), yyvs77.item (yyvsp77)) 
-if yy_parsing_status >= yyContinue then
-	yyssp := yyssp - 2
-	yyvsp77 := yyvsp77 -1
-	yyvs76.put (yyval76, yyvsp76)
-end
-when 231 then
---|#line 1335 "bon_parser.y"
-debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1335")
-end
-
-
-if yy_parsing_status >= yyContinue then
-	yyssp := yyssp - 7
 	yyvsp77 := yyvsp77 + 1
-	yyvsp2 := yyvsp2 -1
-	yyvsp57 := yyvsp57 -1
-	yyvsp1 := yyvsp1 -4
-	yyvsp39 := yyvsp39 -1
 	if yyvsp77 >= yyvsc77 then
 		if yyvs77 = Void then
 			debug ("GEYACC")
@@ -5887,10 +5817,57 @@ if yy_parsing_status >= yyContinue then
 	end
 	yyvs77.put (yyval77, yyvsp77)
 end
-when 232 then
---|#line 1343 "bon_parser.y"
+when 230 then
+--|#line 1338 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1343")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1338")
+end
+
+create yyval77.make_optional_first (yyvs77.item (yyvsp77), yyvs78.item (yyvsp78)) 
+if yy_parsing_status >= yyContinue then
+	yyssp := yyssp - 2
+	yyvsp78 := yyvsp78 -1
+	yyvs77.put (yyval77, yyvsp77)
+end
+when 231 then
+--|#line 1342 "bon_parser.y"
+debug ("GEYACC")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1342")
+end
+
+create yyval78.make (yyvs2.item (yyvsp2), yyvs57.item (yyvsp57), yyvs52.item (yyvsp52), yyvs73.item (yyvsp73), yyvs39.item (yyvsp39), yyvs74.item (yyvsp74), yyvs76.item (yyvsp76)) 
+if yy_parsing_status >= yyContinue then
+	yyssp := yyssp - 7
+	yyvsp78 := yyvsp78 + 1
+	yyvsp2 := yyvsp2 -1
+	yyvsp57 := yyvsp57 -1
+	yyvsp52 := yyvsp52 -1
+	yyvsp73 := yyvsp73 -1
+	yyvsp39 := yyvsp39 -1
+	yyvsp74 := yyvsp74 -1
+	yyvsp76 := yyvsp76 -1
+	if yyvsp78 >= yyvsc78 then
+		if yyvs78 = Void then
+			debug ("GEYACC")
+				std.error.put_line ("Create yyvs78")
+			end
+			create yyspecial_routines78
+			yyvsc78 := yyInitial_yyvs_size
+			yyvs78 := yyspecial_routines78.make (yyvsc78)
+		else
+			debug ("GEYACC")
+				std.error.put_line ("Resize yyvs78")
+			end
+			yyvsc78 := yyvsc78 + yyInitial_yyvs_size
+			yyvs78 := yyspecial_routines78.resize (yyvs78, yyvsc78)
+		end
+	end
+	yyvs78.put (yyval78, yyvsp78)
+end
+when 232 then
+--|#line 1352 "bon_parser.y"
+debug ("GEYACC")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1352")
 end
 
 
@@ -5916,9 +5893,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs2.put (yyval2, yyvsp2)
 end
 when 233 then
---|#line 1344 "bon_parser.y"
+--|#line 1353 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1344")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1353")
 end
 
 yyval2 := "DEFERRED" 
@@ -5945,9 +5922,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs2.put (yyval2, yyvsp2)
 end
 when 234 then
---|#line 1346 "bon_parser.y"
+--|#line 1355 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1346")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1355")
 end
 
 yyval2 := "EFFECTIVE" 
@@ -5974,9 +5951,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs2.put (yyval2, yyvsp2)
 end
 when 235 then
---|#line 1348 "bon_parser.y"
+--|#line 1357 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1348")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1357")
 end
 
 yyval2 := "REDEFINED" 
@@ -6003,229 +5980,46 @@ if yy_parsing_status >= yyContinue then
 	yyvs2.put (yyval2, yyvsp2)
 end
 when 236 then
---|#line 1352 "bon_parser.y"
-debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1352")
-end
-
-
-if yy_parsing_status >= yyContinue then
-	yyssp := yyssp - 0
-	yyvsp1 := yyvsp1 + 1
-	if yyvsp1 >= yyvsc1 then
-		if yyvs1 = Void then
-			debug ("GEYACC")
-				std.error.put_line ("Create yyvs1")
-			end
-			create yyspecial_routines1
-			yyvsc1 := yyInitial_yyvs_size
-			yyvs1 := yyspecial_routines1.make (yyvsc1)
-		else
-			debug ("GEYACC")
-				std.error.put_line ("Resize yyvs1")
-			end
-			yyvsc1 := yyvsc1 + yyInitial_yyvs_size
-			yyvs1 := yyspecial_routines1.resize (yyvs1, yyvsc1)
-		end
-	end
-	yyvs1.put (yyval1, yyvsp1)
-end
-when 237 then
---|#line 1353 "bon_parser.y"
-debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1353")
-end
-
-
-if yy_parsing_status >= yyContinue then
-	yyssp := yyssp - 2
-	yyvsp1 := yyvsp1 + 1
-	yyvsp53 := yyvsp53 -1
-	yyvsp52 := yyvsp52 -1
-	if yyvsp1 >= yyvsc1 then
-		if yyvs1 = Void then
-			debug ("GEYACC")
-				std.error.put_line ("Create yyvs1")
-			end
-			create yyspecial_routines1
-			yyvsc1 := yyInitial_yyvs_size
-			yyvs1 := yyspecial_routines1.make (yyvsc1)
-		else
-			debug ("GEYACC")
-				std.error.put_line ("Resize yyvs1")
-			end
-			yyvsc1 := yyvsc1 + yyInitial_yyvs_size
-			yyvs1 := yyspecial_routines1.resize (yyvs1, yyvsc1)
-		end
-	end
-	yyvs1.put (yyval1, yyvsp1)
-end
-when 238 then
---|#line 1355 "bon_parser.y"
-debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1355")
-end
-
-
-if yy_parsing_status >= yyContinue then
-	yyssp := yyssp - 0
-	yyvsp1 := yyvsp1 + 1
-	if yyvsp1 >= yyvsc1 then
-		if yyvs1 = Void then
-			debug ("GEYACC")
-				std.error.put_line ("Create yyvs1")
-			end
-			create yyspecial_routines1
-			yyvsc1 := yyInitial_yyvs_size
-			yyvs1 := yyspecial_routines1.make (yyvsc1)
-		else
-			debug ("GEYACC")
-				std.error.put_line ("Resize yyvs1")
-			end
-			yyvsc1 := yyvsc1 + yyInitial_yyvs_size
-			yyvs1 := yyspecial_routines1.resize (yyvs1, yyvsc1)
-		end
-	end
-	yyvs1.put (yyval1, yyvsp1)
-end
-when 239 then
---|#line 1356 "bon_parser.y"
-debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1356")
-end
-
-yyval1 := yyvs73.item (yyvsp73) 
-if yy_parsing_status >= yyContinue then
-	yyssp := yyssp - 1
-	yyvsp1 := yyvsp1 + 1
-	yyvsp73 := yyvsp73 -1
-	if yyvsp1 >= yyvsc1 then
-		if yyvs1 = Void then
-			debug ("GEYACC")
-				std.error.put_line ("Create yyvs1")
-			end
-			create yyspecial_routines1
-			yyvsc1 := yyInitial_yyvs_size
-			yyvs1 := yyspecial_routines1.make (yyvsc1)
-		else
-			debug ("GEYACC")
-				std.error.put_line ("Resize yyvs1")
-			end
-			yyvsc1 := yyvsc1 + yyInitial_yyvs_size
-			yyvs1 := yyspecial_routines1.resize (yyvs1, yyvsc1)
-		end
-	end
-	yyvs1.put (yyval1, yyvsp1)
-end
-when 240 then
---|#line 1358 "bon_parser.y"
-debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1358")
-end
-
-
-if yy_parsing_status >= yyContinue then
-	yyssp := yyssp - 0
-	yyvsp1 := yyvsp1 + 1
-	if yyvsp1 >= yyvsc1 then
-		if yyvs1 = Void then
-			debug ("GEYACC")
-				std.error.put_line ("Create yyvs1")
-			end
-			create yyspecial_routines1
-			yyvsc1 := yyInitial_yyvs_size
-			yyvs1 := yyspecial_routines1.make (yyvsc1)
-		else
-			debug ("GEYACC")
-				std.error.put_line ("Resize yyvs1")
-			end
-			yyvsc1 := yyvsc1 + yyInitial_yyvs_size
-			yyvs1 := yyspecial_routines1.resize (yyvs1, yyvsc1)
-		end
-	end
-	yyvs1.put (yyval1, yyvsp1)
-end
-when 241 then
---|#line 1359 "bon_parser.y"
-debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1359")
-end
-
-yyval1 := yyvs74.item (yyvsp74) 
-if yy_parsing_status >= yyContinue then
-	yyssp := yyssp - 1
-	yyvsp1 := yyvsp1 + 1
-	yyvsp74 := yyvsp74 -1
-	if yyvsp1 >= yyvsc1 then
-		if yyvs1 = Void then
-			debug ("GEYACC")
-				std.error.put_line ("Create yyvs1")
-			end
-			create yyspecial_routines1
-			yyvsc1 := yyInitial_yyvs_size
-			yyvs1 := yyspecial_routines1.make (yyvsc1)
-		else
-			debug ("GEYACC")
-				std.error.put_line ("Resize yyvs1")
-			end
-			yyvsc1 := yyvsc1 + yyInitial_yyvs_size
-			yyvs1 := yyspecial_routines1.resize (yyvs1, yyvsc1)
-		end
-	end
-	yyvs1.put (yyval1, yyvsp1)
-end
-when 242 then
---|#line 1361 "bon_parser.y"
-debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1361")
-end
-
-
-if yy_parsing_status >= yyContinue then
-	yyssp := yyssp - 0
-	yyvsp1 := yyvsp1 + 1
-	if yyvsp1 >= yyvsc1 then
-		if yyvs1 = Void then
-			debug ("GEYACC")
-				std.error.put_line ("Create yyvs1")
-			end
-			create yyspecial_routines1
-			yyvsc1 := yyInitial_yyvs_size
-			yyvs1 := yyspecial_routines1.make (yyvsc1)
-		else
-			debug ("GEYACC")
-				std.error.put_line ("Resize yyvs1")
-			end
-			yyvsc1 := yyvsc1 + yyInitial_yyvs_size
-			yyvs1 := yyspecial_routines1.resize (yyvs1, yyvsc1)
-		end
-	end
-	yyvs1.put (yyval1, yyvsp1)
-end
-when 243 then
 --|#line 1362 "bon_parser.y"
 debug ("GEYACC")
 	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1362")
 end
 
-yyval1 := yyvs1.item (yyvsp1) 
+
 if yy_parsing_status >= yyContinue then
-	yyssp := yyssp - 1
-	yyvs1.put (yyval1, yyvsp1)
+	yyssp := yyssp - 0
+	yyvsp52 := yyvsp52 + 1
+	if yyvsp52 >= yyvsc52 then
+		if yyvs52 = Void then
+			debug ("GEYACC")
+				std.error.put_line ("Create yyvs52")
+			end
+			create yyspecial_routines52
+			yyvsc52 := yyInitial_yyvs_size
+			yyvs52 := yyspecial_routines52.make (yyvsc52)
+		else
+			debug ("GEYACC")
+				std.error.put_line ("Resize yyvs52")
+			end
+			yyvsc52 := yyvsc52 + yyInitial_yyvs_size
+			yyvs52 := yyspecial_routines52.resize (yyvs52, yyvsc52)
+		end
+	end
+	yyvs52.put (yyval52, yyvsp52)
 end
-when 244 then
---|#line 1364 "bon_parser.y"
+when 237 then
+--|#line 1363 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1364")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1363")
 end
 
-
+yyval52 := yyvs52.item (yyvsp52) 
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 2
-	yyvsp1 := yyvsp1 -1
-	yyvs1.put (yyval1, yyvsp1)
+	yyvsp53 := yyvsp53 -1
+	yyvs52.put (yyval52, yyvsp52)
 end
-when 245 then
+when 238 then
 --|#line 1366 "bon_parser.y"
 debug ("GEYACC")
 	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1366")
@@ -6233,32 +6027,38 @@ end
 
 
 if yy_parsing_status >= yyContinue then
-	yyssp := yyssp - 1
-	yyvs1.put (yyval1, yyvsp1)
+	yyssp := yyssp - 0
+	yyvsp73 := yyvsp73 + 1
+	if yyvsp73 >= yyvsc73 then
+		if yyvs73 = Void then
+			debug ("GEYACC")
+				std.error.put_line ("Create yyvs73")
+			end
+			create yyspecial_routines73
+			yyvsc73 := yyInitial_yyvs_size
+			yyvs73 := yyspecial_routines73.make (yyvsc73)
+		else
+			debug ("GEYACC")
+				std.error.put_line ("Resize yyvs73")
+			end
+			yyvsc73 := yyvsc73 + yyInitial_yyvs_size
+			yyvs73 := yyspecial_routines73.resize (yyvs73, yyvsc73)
+		end
+	end
+	yyvs73.put (yyval73, yyvsp73)
 end
-when 246 then
+when 239 then
 --|#line 1367 "bon_parser.y"
 debug ("GEYACC")
 	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1367")
 end
 
-
+yyval73 := yyvs73.item (yyvsp73) 
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
-	yyvs1.put (yyval1, yyvsp1)
+	yyvs73.put (yyval73, yyvsp73)
 end
-when 247 then
---|#line 1368 "bon_parser.y"
-debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1368")
-end
-
-
-if yy_parsing_status >= yyContinue then
-	yyssp := yyssp - 1
-	yyvs1.put (yyval1, yyvsp1)
-end
-when 248 then
+when 240 then
 --|#line 1370 "bon_parser.y"
 debug ("GEYACC")
 	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1370")
@@ -6266,23 +6066,38 @@ end
 
 
 if yy_parsing_status >= yyContinue then
-	yyssp := yyssp - 2
-	yyvsp78 := yyvsp78 -1
-	yyvs1.put (yyval1, yyvsp1)
+	yyssp := yyssp - 0
+	yyvsp74 := yyvsp74 + 1
+	if yyvsp74 >= yyvsc74 then
+		if yyvs74 = Void then
+			debug ("GEYACC")
+				std.error.put_line ("Create yyvs74")
+			end
+			create yyspecial_routines74
+			yyvsc74 := yyInitial_yyvs_size
+			yyvs74 := yyspecial_routines74.make (yyvsc74)
+		else
+			debug ("GEYACC")
+				std.error.put_line ("Resize yyvs74")
+			end
+			yyvsc74 := yyvsc74 + yyInitial_yyvs_size
+			yyvs74 := yyspecial_routines74.resize (yyvs74, yyvsc74)
+		end
+	end
+	yyvs74.put (yyval74, yyvsp74)
 end
-when 249 then
---|#line 1372 "bon_parser.y"
+when 241 then
+--|#line 1371 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1372")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1371")
 end
 
-
+yyval74 := yyvs74.item (yyvsp74) 
 if yy_parsing_status >= yyContinue then
-	yyssp := yyssp - 2
-	yyvsp78 := yyvsp78 -1
-	yyvs1.put (yyval1, yyvsp1)
+	yyssp := yyssp - 1
+	yyvs74.put (yyval74, yyvsp74)
 end
-when 250 then
+when 242 then
 --|#line 1374 "bon_parser.y"
 debug ("GEYACC")
 	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1374")
@@ -6290,14 +6105,175 @@ end
 
 
 if yy_parsing_status >= yyContinue then
+	yyssp := yyssp - 0
+	yyvsp76 := yyvsp76 + 1
+	if yyvsp76 >= yyvsc76 then
+		if yyvs76 = Void then
+			debug ("GEYACC")
+				std.error.put_line ("Create yyvs76")
+			end
+			create yyspecial_routines76
+			yyvsc76 := yyInitial_yyvs_size
+			yyvs76 := yyspecial_routines76.make (yyvsc76)
+		else
+			debug ("GEYACC")
+				std.error.put_line ("Resize yyvs76")
+			end
+			yyvsc76 := yyvsc76 + yyInitial_yyvs_size
+			yyvs76 := yyspecial_routines76.resize (yyvs76, yyvsc76)
+		end
+	end
+	yyvs76.put (yyval76, yyvsp76)
+end
+when 243 then
+--|#line 1375 "bon_parser.y"
+debug ("GEYACC")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1375")
+end
+
+yyval76 := yyvs76.item (yyvsp76) 
+if yy_parsing_status >= yyContinue then
+	yyssp := yyssp - 1
+	yyvs76.put (yyval76, yyvsp76)
+end
+when 244 then
+--|#line 1378 "bon_parser.y"
+debug ("GEYACC")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1378")
+end
+
+yyval76 := yyvs76.item (yyvsp76) 
+if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 2
 	yyvsp1 := yyvsp1 -1
-	yyvs1.put (yyval1, yyvsp1)
+	yyvs76.put (yyval76, yyvsp76)
+end
+when 245 then
+--|#line 1381 "bon_parser.y"
+debug ("GEYACC")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1381")
+end
+
+create yyval76.make (yyvs64.item (yyvsp64), Void) 
+if yy_parsing_status >= yyContinue then
+	yyssp := yyssp - 1
+	yyvsp76 := yyvsp76 + 1
+	yyvsp64 := yyvsp64 -1
+	if yyvsp76 >= yyvsc76 then
+		if yyvs76 = Void then
+			debug ("GEYACC")
+				std.error.put_line ("Create yyvs76")
+			end
+			create yyspecial_routines76
+			yyvsc76 := yyInitial_yyvs_size
+			yyvs76 := yyspecial_routines76.make (yyvsc76)
+		else
+			debug ("GEYACC")
+				std.error.put_line ("Resize yyvs76")
+			end
+			yyvsc76 := yyvsc76 + yyInitial_yyvs_size
+			yyvs76 := yyspecial_routines76.resize (yyvs76, yyvsc76)
+		end
+	end
+	yyvs76.put (yyval76, yyvsp76)
+end
+when 246 then
+--|#line 1382 "bon_parser.y"
+debug ("GEYACC")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1382")
+end
+
+create yyval76.make (Void, yyvs64.item (yyvsp64)) 
+if yy_parsing_status >= yyContinue then
+	yyssp := yyssp - 1
+	yyvsp76 := yyvsp76 + 1
+	yyvsp64 := yyvsp64 -1
+	if yyvsp76 >= yyvsc76 then
+		if yyvs76 = Void then
+			debug ("GEYACC")
+				std.error.put_line ("Create yyvs76")
+			end
+			create yyspecial_routines76
+			yyvsc76 := yyInitial_yyvs_size
+			yyvs76 := yyspecial_routines76.make (yyvsc76)
+		else
+			debug ("GEYACC")
+				std.error.put_line ("Resize yyvs76")
+			end
+			yyvsc76 := yyvsc76 + yyInitial_yyvs_size
+			yyvs76 := yyspecial_routines76.resize (yyvs76, yyvsc76)
+		end
+	end
+	yyvs76.put (yyval76, yyvsp76)
+end
+when 247 then
+--|#line 1383 "bon_parser.y"
+debug ("GEYACC")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1383")
+end
+
+yyval76 := yyvs76.item (yyvsp76) 
+if yy_parsing_status >= yyContinue then
+	yyssp := yyssp - 1
+	yyvs76.put (yyval76, yyvsp76)
+end
+when 248 then
+--|#line 1386 "bon_parser.y"
+debug ("GEYACC")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1386")
+end
+
+yyval64 := yyvs64.item (yyvsp64) 
+if yy_parsing_status >= yyContinue then
+	yyssp := yyssp - 2
+	yyvsp1 := yyvsp1 -1
+	yyvs64.put (yyval64, yyvsp64)
+end
+when 249 then
+--|#line 1389 "bon_parser.y"
+debug ("GEYACC")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1389")
+end
+
+yyval64 := yyvs64.item (yyvsp64) 
+if yy_parsing_status >= yyContinue then
+	yyssp := yyssp - 2
+	yyvsp1 := yyvsp1 -1
+	yyvs64.put (yyval64, yyvsp64)
+end
+when 250 then
+--|#line 1392 "bon_parser.y"
+debug ("GEYACC")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1392")
+end
+
+create yyval76.make (yyvs64.item (yyvsp64 - 1), yyvs64.item (yyvsp64)) 
+if yy_parsing_status >= yyContinue then
+	yyssp := yyssp - 2
+	yyvsp76 := yyvsp76 + 1
+	yyvsp64 := yyvsp64 -2
+	if yyvsp76 >= yyvsc76 then
+		if yyvs76 = Void then
+			debug ("GEYACC")
+				std.error.put_line ("Create yyvs76")
+			end
+			create yyspecial_routines76
+			yyvsc76 := yyInitial_yyvs_size
+			yyvs76 := yyspecial_routines76.make (yyvsc76)
+		else
+			debug ("GEYACC")
+				std.error.put_line ("Resize yyvs76")
+			end
+			yyvsc76 := yyvsc76 + yyInitial_yyvs_size
+			yyvs76 := yyspecial_routines76.resize (yyvs76, yyvsc76)
+		end
+	end
+	yyvs76.put (yyval76, yyvsp76)
 end
 when 251 then
---|#line 1377 "bon_parser.y"
+--|#line 1395 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1377")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1395")
 end
 
 yyval25 := yyvs25.item (yyvsp25) 
@@ -6307,9 +6283,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs25.put (yyval25, yyvsp25)
 end
 when 252 then
---|#line 1381 "bon_parser.y"
+--|#line 1399 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1381")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1399")
 end
 
 yyval57 := yyvs57.item (yyvsp57) 
@@ -6318,9 +6294,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs57.put (yyval57, yyvsp57)
 end
 when 253 then
---|#line 1385 "bon_parser.y"
+--|#line 1403 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1385")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1403")
 end
 
 create yyval57.make_optional_rest (yyvs68.item (yyvsp68), yyvs57.item (yyvsp57)) 
@@ -6330,9 +6306,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs57.put (yyval57, yyvsp57)
 end
 when 254 then
---|#line 1389 "bon_parser.y"
+--|#line 1407 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1389")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1407")
 end
 
 
@@ -6358,9 +6334,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs57.put (yyval57, yyvsp57)
 end
 when 255 then
---|#line 1390 "bon_parser.y"
+--|#line 1408 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1390")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1408")
 end
 
 create yyval57.make_optional_first (yyvs57.item (yyvsp57), yyvs68.item (yyvsp68)) 
@@ -6371,9 +6347,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs57.put (yyval57, yyvsp57)
 end
 when 256 then
---|#line 1395 "bon_parser.y"
+--|#line 1413 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1395")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1413")
 end
 
 create yyval68.make_feature_name (last_identifier)
@@ -6402,9 +6378,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs68.put (yyval68, yyvsp68)
 end
 when 257 then
---|#line 1399 "bon_parser.y"
+--|#line 1417 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1399")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1417")
 end
 
 create yyval68.make_feature_name (last_identifier)
@@ -6433,9 +6409,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs68.put (yyval68, yyvsp68)
 end
 when 258 then
---|#line 1403 "bon_parser.y"
+--|#line 1421 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1403")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1421")
 end
 
 create yyval68.make_feature_name (last_identifier)
@@ -6464,9 +6440,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs68.put (yyval68, yyvsp68)
 end
 when 259 then
---|#line 1407 "bon_parser.y"
+--|#line 1425 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1407")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1425")
 end
 
 yyval68 := yyvs68.item (yyvsp68) 
@@ -6475,9 +6451,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs68.put (yyval68, yyvsp68)
 end
 when 260 then
---|#line 1408 "bon_parser.y"
+--|#line 1426 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1408")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1426")
 end
 
 yyval68 := yyvs68.item (yyvsp68) 
@@ -6486,9 +6462,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs68.put (yyval68, yyvsp68)
 end
 when 261 then
---|#line 1411 "bon_parser.y"
+--|#line 1430 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1411")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1430")
 end
 
 yyval73 := yyvs73.item (yyvsp73) 
@@ -6498,9 +6474,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs73.put (yyval73, yyvsp73)
 end
 when 262 then
---|#line 1413 "bon_parser.y"
+--|#line 1433 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1413")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1433")
 end
 
 create yyval73.make (yyvs2.item (yyvsp2), yyvs68.item (yyvsp68)) 
@@ -6529,9 +6505,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs73.put (yyval73, yyvsp73)
 end
 when 263 then
---|#line 1415 "bon_parser.y"
+--|#line 1436 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1415")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1436")
 end
 
 yyval74 := yyvs74.item (yyvsp74) 
@@ -6540,9 +6516,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs74.put (yyval74, yyvsp74)
 end
 when 264 then
---|#line 1417 "bon_parser.y"
+--|#line 1439 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1417")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1439")
 end
 
 create yyval74.make_optional_rest (yyvs75.item (yyvsp75), yyvs74.item (yyvsp74)) 
@@ -6552,9 +6528,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs74.put (yyval74, yyvsp74)
 end
 when 265 then
---|#line 1420 "bon_parser.y"
+--|#line 1443 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1420")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1443")
 end
 
 
@@ -6580,9 +6556,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs74.put (yyval74, yyvsp74)
 end
 when 266 then
---|#line 1421 "bon_parser.y"
+--|#line 1444 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1421")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1444")
 end
 
 create yyval74.make_optional_first (yyvs74.item (yyvsp74), yyvs75.item (yyvsp75)) 
@@ -6592,9 +6568,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs74.put (yyval74, yyvsp74)
 end
 when 267 then
---|#line 1424 "bon_parser.y"
+--|#line 1448 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1424")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1448")
 end
 
 create yyval75.make (yyvs18.item (yyvsp18), yyvs52.item (yyvsp52)) 
@@ -6623,9 +6599,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs75.put (yyval75, yyvsp75)
 end
 when 268 then
---|#line 1427 "bon_parser.y"
+--|#line 1452 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1427")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1452")
 end
 
 
@@ -6651,9 +6627,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs18.put (yyval18, yyvsp18)
 end
 when 269 then
---|#line 1428 "bon_parser.y"
+--|#line 1453 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1428")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1453")
 end
 
 yyval18 := yyvs18.item (yyvsp18) 
@@ -6663,9 +6639,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs18.put (yyval18, yyvsp18)
 end
 when 270 then
---|#line 1431 "bon_parser.y"
+--|#line 1457 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1431")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1457")
 end
 
 yyval18 := yyvs18.item (yyvsp18) 
@@ -6674,9 +6650,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs18.put (yyval18, yyvsp18)
 end
 when 271 then
---|#line 1433 "bon_parser.y"
+--|#line 1460 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1433")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1460")
 end
 
 create yyval18.make_optional_rest (yyvs2.item (yyvsp2), yyvs18.item (yyvsp18)) 
@@ -6686,9 +6662,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs18.put (yyval18, yyvsp18)
 end
 when 272 then
---|#line 1436 "bon_parser.y"
+--|#line 1464 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1436")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1464")
 end
 
 
@@ -6714,9 +6690,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs18.put (yyval18, yyvsp18)
 end
 when 273 then
---|#line 1437 "bon_parser.y"
+--|#line 1465 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1437")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1465")
 end
 
 create yyval18.make_optional_first (yyvs18.item (yyvsp18), yyvs2.item (yyvsp2)) 
@@ -6727,9 +6703,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs18.put (yyval18, yyvsp18)
 end
 when 274 then
---|#line 1440 "bon_parser.y"
+--|#line 1469 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1440")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1469")
 end
 
 create yyval68.make_prefix (yyvs69.item (yyvsp69)) 
@@ -6757,9 +6733,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs68.put (yyval68, yyvsp68)
 end
 when 275 then
---|#line 1442 "bon_parser.y"
+--|#line 1472 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1442")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1472")
 end
 
 create yyval68.make_infix (yyvs69.item (yyvsp69)) 
@@ -6787,9 +6763,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs68.put (yyval68, yyvsp68)
 end
 when 276 then
---|#line 1444 "bon_parser.y"
+--|#line 1475 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1444")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1475")
 end
 
 yyval69 := yyvs71.item (yyvsp71) 
@@ -6816,9 +6792,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs69.put (yyval69, yyvsp69)
 end
 when 277 then
---|#line 1445 "bon_parser.y"
+--|#line 1476 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1445")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1476")
 end
 
 create yyval69.make_free_operator (last_free_operator) 
@@ -6845,9 +6821,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs69.put (yyval69, yyvsp69)
 end
 when 278 then
---|#line 1447 "bon_parser.y"
+--|#line 1479 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1447")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1479")
 end
 
 yyval69 := yyvs70.item (yyvsp70) 
@@ -6874,9 +6850,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs69.put (yyval69, yyvsp69)
 end
 when 279 then
---|#line 1448 "bon_parser.y"
+--|#line 1480 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1448")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1480")
 end
 
 create yyval69.make_free_operator (last_free_operator) 
@@ -6903,9 +6879,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs69.put (yyval69, yyvsp69)
 end
 when 280 then
---|#line 1451 "bon_parser.y"
+--|#line 1483 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1451")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1483")
 end
 
 
@@ -6931,9 +6907,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs49.put (yyval49, yyvsp49)
 end
 when 281 then
---|#line 1452 "bon_parser.y"
+--|#line 1484 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1452")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1484")
 end
 
 yyval49 := yyvs49.item (yyvsp49) 
@@ -6942,9 +6918,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs49.put (yyval49, yyvsp49)
 end
 when 282 then
---|#line 1456 "bon_parser.y"
+--|#line 1488 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1456")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1488")
 end
 
 yyval49 := yyvs49.item (yyvsp49) 
@@ -6954,9 +6930,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs49.put (yyval49, yyvsp49)
 end
 when 283 then
---|#line 1460 "bon_parser.y"
+--|#line 1492 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1460")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1492")
 end
 
 yyval49 := yyvs49.item (yyvsp49) 
@@ -6965,9 +6941,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs49.put (yyval49, yyvsp49)
 end
 when 284 then
---|#line 1464 "bon_parser.y"
+--|#line 1496 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1464")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1496")
 end
 
 create yyval49.make_optional_rest (yyvs48.item (yyvsp48), yyvs49.item (yyvsp49)) 
@@ -6977,9 +6953,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs49.put (yyval49, yyvsp49)
 end
 when 285 then
---|#line 1469 "bon_parser.y"
+--|#line 1501 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1469")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1501")
 end
 
 
@@ -7005,9 +6981,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs49.put (yyval49, yyvsp49)
 end
 when 286 then
---|#line 1470 "bon_parser.y"
+--|#line 1502 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1470")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1502")
 end
 
 create yyval49.make_optional_first (yyvs49.item (yyvsp49), yyvs48.item (yyvsp48)) 
@@ -7018,9 +6994,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs49.put (yyval49, yyvsp49)
 end
 when 287 then
---|#line 1474 "bon_parser.y"
+--|#line 1506 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1474")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1506")
 end
 
 create yyval48.make (yyvs2.item (yyvsp2), yyvs50.item (yyvsp50)) 
@@ -7048,9 +7024,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs48.put (yyval48, yyvsp48)
 end
 when 288 then
---|#line 1478 "bon_parser.y"
+--|#line 1510 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1478")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1510")
 end
 
 
@@ -7076,9 +7052,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs50.put (yyval50, yyvsp50)
 end
 when 289 then
---|#line 1479 "bon_parser.y"
+--|#line 1511 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1479")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1511")
 end
 
 yyval50 := yyvs50.item (yyvsp50) 
@@ -7088,9 +7064,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs50.put (yyval50, yyvsp50)
 end
 when 290 then
---|#line 1484 "bon_parser.y"
+--|#line 1516 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1484")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1516")
 end
 
 yyval2 := yyvs2.item (yyvsp2)
@@ -7101,9 +7077,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs2.put (yyval2, yyvsp2)
 end
 when 291 then
---|#line 1488 "bon_parser.y"
+--|#line 1520 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1488")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1520")
 end
 
 yyval2 := yyvs2.item (yyvsp2)
@@ -7114,9 +7090,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs2.put (yyval2, yyvsp2)
 end
 when 292 then
---|#line 1494 "bon_parser.y"
+--|#line 1526 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1494")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1526")
 end
 
 create yyval50.make (yyvs2.item (yyvsp2), yyvs51.item (yyvsp51)) 
@@ -7144,9 +7120,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs50.put (yyval50, yyvsp50)
 end
 when 293 then
---|#line 1498 "bon_parser.y"
+--|#line 1530 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1498")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1530")
 end
 
 
@@ -7172,9 +7148,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs51.put (yyval51, yyvsp51)
 end
 when 294 then
---|#line 1499 "bon_parser.y"
+--|#line 1531 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1499")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1531")
 end
 
 yyval51 := yyvs51.item (yyvsp51) 
@@ -7183,9 +7159,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs51.put (yyval51, yyvsp51)
 end
 when 295 then
---|#line 1504 "bon_parser.y"
+--|#line 1536 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1504")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1536")
 end
 
 create yyval51.make_from_list (yyvs51.item (yyvsp51)) 
@@ -7195,9 +7171,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs51.put (yyval51, yyvsp51)
 end
 when 296 then
---|#line 1509 "bon_parser.y"
+--|#line 1541 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1509")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1541")
 end
 
 yyval51 := yyvs51.item (yyvsp51) 
@@ -7206,9 +7182,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs51.put (yyval51, yyvsp51)
 end
 when 297 then
---|#line 1513 "bon_parser.y"
+--|#line 1545 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1513")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1545")
 end
 
 create yyval51.make_optional_rest (yyvs52.item (yyvsp52), yyvs51.item (yyvsp51)) 
@@ -7218,9 +7194,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs51.put (yyval51, yyvsp51)
 end
 when 298 then
---|#line 1518 "bon_parser.y"
+--|#line 1550 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1518")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1550")
 end
 
 
@@ -7246,9 +7222,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs51.put (yyval51, yyvsp51)
 end
 when 299 then
---|#line 1519 "bon_parser.y"
+--|#line 1551 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1519")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1551")
 end
 
 create yyval51.make_optional_first (yyvs51.item (yyvsp51), yyvs52.item (yyvsp52)) 
@@ -7259,9 +7235,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs51.put (yyval51, yyvsp51)
 end
 when 300 then
---|#line 1524 "bon_parser.y"
+--|#line 1556 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1524")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1556")
 end
 
 create yyval52.make_class_type (yyvs50.item (yyvsp50)) 
@@ -7288,9 +7264,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs52.put (yyval52, yyvsp52)
 end
 when 301 then
---|#line 1526 "bon_parser.y"
+--|#line 1558 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1526")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1558")
 end
 
 create yyval52.make_formal_generic_name (yyvs2.item (yyvsp2)) 
@@ -7317,9 +7293,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs52.put (yyval52, yyvsp52)
 end
 when 302 then
---|#line 1533 "bon_parser.y"
+--|#line 1565 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1533")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1565")
 end
 
 create yyval71.make_delta 
@@ -7346,9 +7322,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs71.put (yyval71, yyvsp71)
 end
 when 303 then
---|#line 1534 "bon_parser.y"
+--|#line 1566 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1534")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1566")
 end
 
 create yyval71.make_old 
@@ -7375,9 +7351,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs71.put (yyval71, yyvsp71)
 end
 when 304 then
---|#line 1535 "bon_parser.y"
+--|#line 1567 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1535")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1567")
 end
 
 create yyval71.make_not 
@@ -7404,9 +7380,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs71.put (yyval71, yyvsp71)
 end
 when 305 then
---|#line 1536 "bon_parser.y"
+--|#line 1568 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1536")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1568")
 end
 
 yyval71 := yyvs72.item (yyvsp72); yyval71.set_unary 
@@ -7433,9 +7409,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs71.put (yyval71, yyvsp71)
 end
 when 306 then
---|#line 1539 "bon_parser.y"
+--|#line 1571 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1539")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1571")
 end
 
 yyval70 := yyvs72.item (yyvsp72); yyval70.set_binary 
@@ -7462,9 +7438,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs70.put (yyval70, yyvsp70)
 end
 when 307 then
---|#line 1540 "bon_parser.y"
+--|#line 1572 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1540")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1572")
 end
 
 create yyval70.make_times 
@@ -7491,9 +7467,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs70.put (yyval70, yyvsp70)
 end
 when 308 then
---|#line 1541 "bon_parser.y"
+--|#line 1573 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1541")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1573")
 end
 
 create yyval70.make_division 
@@ -7520,9 +7496,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs70.put (yyval70, yyvsp70)
 end
 when 309 then
---|#line 1542 "bon_parser.y"
+--|#line 1574 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1542")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1574")
 end
 
 create yyval70.make_less_than 
@@ -7549,9 +7525,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs70.put (yyval70, yyvsp70)
 end
 when 310 then
---|#line 1543 "bon_parser.y"
+--|#line 1575 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1543")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1575")
 end
 
 create yyval70.make_greater_than 
@@ -7578,9 +7554,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs70.put (yyval70, yyvsp70)
 end
 when 311 then
---|#line 1544 "bon_parser.y"
+--|#line 1576 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1544")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1576")
 end
 
 create yyval70.make_less_than_equals 
@@ -7607,9 +7583,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs70.put (yyval70, yyvsp70)
 end
 when 312 then
---|#line 1545 "bon_parser.y"
+--|#line 1577 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1545")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1577")
 end
 
 create yyval70.make_greater_than_equals 
@@ -7636,9 +7612,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs70.put (yyval70, yyvsp70)
 end
 when 313 then
---|#line 1546 "bon_parser.y"
+--|#line 1578 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1546")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1578")
 end
 
 create yyval70.make_equals 
@@ -7665,9 +7641,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs70.put (yyval70, yyvsp70)
 end
 when 314 then
---|#line 1547 "bon_parser.y"
+--|#line 1579 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1547")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1579")
 end
 
 create yyval70.make_not_equals 
@@ -7694,9 +7670,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs70.put (yyval70, yyvsp70)
 end
 when 315 then
---|#line 1548 "bon_parser.y"
+--|#line 1580 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1548")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1580")
 end
 
 create yyval70.make_integer_division 
@@ -7723,9 +7699,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs70.put (yyval70, yyvsp70)
 end
 when 316 then
---|#line 1549 "bon_parser.y"
+--|#line 1581 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1549")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1581")
 end
 
 create yyval70.make_modulo 
@@ -7752,9 +7728,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs70.put (yyval70, yyvsp70)
 end
 when 317 then
---|#line 1550 "bon_parser.y"
+--|#line 1582 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1550")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1582")
 end
 
 create yyval70.make_power 
@@ -7781,9 +7757,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs70.put (yyval70, yyvsp70)
 end
 when 318 then
---|#line 1551 "bon_parser.y"
+--|#line 1583 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1551")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1583")
 end
 
 create yyval70.make_or 
@@ -7810,9 +7786,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs70.put (yyval70, yyvsp70)
 end
 when 319 then
---|#line 1552 "bon_parser.y"
+--|#line 1584 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1552")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1584")
 end
 
 create yyval70.make_xor 
@@ -7839,9 +7815,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs70.put (yyval70, yyvsp70)
 end
 when 320 then
---|#line 1553 "bon_parser.y"
+--|#line 1585 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1553")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1585")
 end
 
 create yyval70.make_and 
@@ -7868,9 +7844,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs70.put (yyval70, yyvsp70)
 end
 when 321 then
---|#line 1554 "bon_parser.y"
+--|#line 1586 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1554")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1586")
 end
 
 create yyval70.make_implies 
@@ -7897,9 +7873,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs70.put (yyval70, yyvsp70)
 end
 when 322 then
---|#line 1555 "bon_parser.y"
+--|#line 1587 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1555")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1587")
 end
 
 create yyval70.make_logical_equivalence 
@@ -7926,9 +7902,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs70.put (yyval70, yyvsp70)
 end
 when 323 then
---|#line 1556 "bon_parser.y"
+--|#line 1588 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1556")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1588")
 end
 
 create yyval70.make_member_of 
@@ -7955,9 +7931,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs70.put (yyval70, yyvsp70)
 end
 when 324 then
---|#line 1557 "bon_parser.y"
+--|#line 1589 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1557")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1589")
 end
 
 create yyval70.make_colon 
@@ -7984,80 +7960,80 @@ if yy_parsing_status >= yyContinue then
 	yyvs70.put (yyval70, yyvsp70)
 end
 when 325 then
---|#line 1563 "bon_parser.y"
+--|#line 1595 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1563")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1595")
 end
 
-
+yyval64 := yyvs64.item (yyvsp64) 
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
-	yyvs78.put (yyval78, yyvsp78)
+	yyvs64.put (yyval64, yyvsp64)
 end
 when 326 then
---|#line 1566 "bon_parser.y"
+--|#line 1598 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1566")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1598")
 end
 
-
+create yyval64.make_optional_rest (yyvs79.item (yyvsp79), yyvs64.item (yyvsp64)) 
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 2
 	yyvsp79 := yyvsp79 -1
-	yyvs78.put (yyval78, yyvsp78)
+	yyvs64.put (yyval64, yyvsp64)
 end
 when 327 then
---|#line 1569 "bon_parser.y"
+--|#line 1602 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1569")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1602")
 end
 
 
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 0
-	yyvsp78 := yyvsp78 + 1
-	if yyvsp78 >= yyvsc78 then
-		if yyvs78 = Void then
+	yyvsp64 := yyvsp64 + 1
+	if yyvsp64 >= yyvsc64 then
+		if yyvs64 = Void then
 			debug ("GEYACC")
-				std.error.put_line ("Create yyvs78")
+				std.error.put_line ("Create yyvs64")
 			end
-			create yyspecial_routines78
-			yyvsc78 := yyInitial_yyvs_size
-			yyvs78 := yyspecial_routines78.make (yyvsc78)
+			create yyspecial_routines64
+			yyvsc64 := yyInitial_yyvs_size
+			yyvs64 := yyspecial_routines64.make (yyvsc64)
 		else
 			debug ("GEYACC")
-				std.error.put_line ("Resize yyvs78")
+				std.error.put_line ("Resize yyvs64")
 			end
-			yyvsc78 := yyvsc78 + yyInitial_yyvs_size
-			yyvs78 := yyspecial_routines78.resize (yyvs78, yyvsc78)
+			yyvsc64 := yyvsc64 + yyInitial_yyvs_size
+			yyvs64 := yyspecial_routines64.resize (yyvs64, yyvsc64)
 		end
 	end
-	yyvs78.put (yyval78, yyvsp78)
+	yyvs64.put (yyval64, yyvsp64)
 end
 when 328 then
---|#line 1570 "bon_parser.y"
+--|#line 1603 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1570")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1603")
 end
 
-
+create yyval64.make_optional_first (yyvs64.item (yyvsp64), yyvs79.item (yyvsp79)) 
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 3
 	yyvsp1 := yyvsp1 -1
 	yyvsp79 := yyvsp79 -1
-	yyvs78.put (yyval78, yyvsp78)
+	yyvs64.put (yyval64, yyvsp64)
 end
 when 329 then
---|#line 1573 "bon_parser.y"
+--|#line 1607 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1573")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1607")
 end
 
-
+yyval79 := yyvs81.item (yyvsp81) 
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvsp79 := yyvsp79 + 1
-	yyvsp80 := yyvsp80 -1
+	yyvsp81 := yyvsp81 -1
 	if yyvsp79 >= yyvsc79 then
 		if yyvs79 = Void then
 			debug ("GEYACC")
@@ -8077,16 +8053,16 @@ if yy_parsing_status >= yyContinue then
 	yyvs79.put (yyval79, yyvsp79)
 end
 when 330 then
---|#line 1574 "bon_parser.y"
+--|#line 1608 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1574")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1608")
 end
 
-
+yyval79 := yyvs80.item (yyvsp80) 
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvsp79 := yyvsp79 + 1
-	yyvsp39 := yyvsp39 -1
+	yyvsp80 := yyvsp80 -1
 	if yyvsp79 >= yyvsc79 then
 		if yyvs79 = Void then
 			debug ("GEYACC")
@@ -8106,16 +8082,16 @@ if yy_parsing_status >= yyContinue then
 	yyvs79.put (yyval79, yyvsp79)
 end
 when 331 then
---|#line 1577 "bon_parser.y"
+--|#line 1610 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1577")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1610")
 end
 
-
+create yyval80.make_list (yyvs2.item (yyvsp2)) 
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvsp80 := yyvsp80 + 1
-	yyvsp81 := yyvsp81 -1
+	yyvsp2 := yyvsp2 -1
 	if yyvsp80 >= yyvsc80 then
 		if yyvs80 = Void then
 			debug ("GEYACC")
@@ -8135,45 +8111,27 @@ if yy_parsing_status >= yyContinue then
 	yyvs80.put (yyval80, yyvsp80)
 end
 when 332 then
---|#line 1580 "bon_parser.y"
+--|#line 1613 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1580")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1613")
 end
 
-
+yyval81 := yyvs81.item (yyvsp81) 
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
-	yyvsp81 := yyvsp81 + 1
-	yyvsp82 := yyvsp82 -1
-	if yyvsp81 >= yyvsc81 then
-		if yyvs81 = Void then
-			debug ("GEYACC")
-				std.error.put_line ("Create yyvs81")
-			end
-			create yyspecial_routines81
-			yyvsc81 := yyInitial_yyvs_size
-			yyvs81 := yyspecial_routines81.make (yyvsc81)
-		else
-			debug ("GEYACC")
-				std.error.put_line ("Resize yyvs81")
-			end
-			yyvsc81 := yyvsc81 + yyInitial_yyvs_size
-			yyvs81 := yyspecial_routines81.resize (yyvs81, yyvsc81)
-		end
-	end
 	yyvs81.put (yyval81, yyvsp81)
 end
 when 333 then
---|#line 1581 "bon_parser.y"
+--|#line 1616 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1581")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1616")
 end
 
-
+yyval81 := yyvs83.item (yyvsp83) 
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvsp81 := yyvsp81 + 1
-	yyvsp89 := yyvsp89 -1
+	yyvsp83 := yyvsp83 -1
 	if yyvsp81 >= yyvsc81 then
 		if yyvs81 = Void then
 			debug ("GEYACC")
@@ -8193,16 +8151,16 @@ if yy_parsing_status >= yyContinue then
 	yyvs81.put (yyval81, yyvsp81)
 end
 when 334 then
---|#line 1582 "bon_parser.y"
+--|#line 1617 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1582")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1617")
 end
 
 
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvsp81 := yyvsp81 + 1
-	yyvsp95 := yyvsp95 -1
+	yyvsp88 := yyvsp88 -1
 	if yyvsp81 >= yyvsc81 then
 		if yyvs81 = Void then
 			debug ("GEYACC")
@@ -8222,16 +8180,16 @@ if yy_parsing_status >= yyContinue then
 	yyvs81.put (yyval81, yyvsp81)
 end
 when 335 then
---|#line 1583 "bon_parser.y"
+--|#line 1618 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1583")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1618")
 end
 
 
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvsp81 := yyvsp81 + 1
-	yyvsp105 := yyvsp105 -1
+	yyvsp94 := yyvsp94 -1
 	if yyvsp81 >= yyvsc81 then
 		if yyvs81 = Void then
 			debug ("GEYACC")
@@ -8251,92 +8209,47 @@ if yy_parsing_status >= yyContinue then
 	yyvs81.put (yyval81, yyvsp81)
 end
 when 336 then
---|#line 1586 "bon_parser.y"
+--|#line 1619 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1586")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1619")
 end
 
 
 if yy_parsing_status >= yyContinue then
-	yyssp := yyssp - 4
-	yyvsp82 := yyvsp82 + 1
-	yyvsp1 := yyvsp1 -1
-	yyvsp83 := yyvsp83 -1
-	yyvsp84 := yyvsp84 -1
-	yyvsp85 := yyvsp85 -1
-	if yyvsp82 >= yyvsc82 then
-		if yyvs82 = Void then
+	yyssp := yyssp - 1
+	yyvsp81 := yyvsp81 + 1
+	yyvsp104 := yyvsp104 -1
+	if yyvsp81 >= yyvsc81 then
+		if yyvs81 = Void then
 			debug ("GEYACC")
-				std.error.put_line ("Create yyvs82")
+				std.error.put_line ("Create yyvs81")
 			end
-			create yyspecial_routines82
-			yyvsc82 := yyInitial_yyvs_size
-			yyvs82 := yyspecial_routines82.make (yyvsc82)
+			create yyspecial_routines81
+			yyvsc81 := yyInitial_yyvs_size
+			yyvs81 := yyspecial_routines81.make (yyvsc81)
 		else
 			debug ("GEYACC")
-				std.error.put_line ("Resize yyvs82")
+				std.error.put_line ("Resize yyvs81")
 			end
-			yyvsc82 := yyvsc82 + yyInitial_yyvs_size
-			yyvs82 := yyspecial_routines82.resize (yyvs82, yyvsc82)
+			yyvsc81 := yyvsc81 + yyInitial_yyvs_size
+			yyvs81 := yyspecial_routines81.resize (yyvs81, yyvsc81)
 		end
 	end
-	yyvs82.put (yyval82, yyvsp82)
+	yyvs81.put (yyval81, yyvsp81)
 end
 when 337 then
---|#line 1588 "bon_parser.y"
+--|#line 1622 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1588")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1622")
 end
 
-
+create yyval83.make (yyvs82.item (yyvsp82), yyvs84.item (yyvsp84), yyvs81.item (yyvsp81 - 1), yyvs81.item (yyvsp81)) 
 if yy_parsing_status >= yyContinue then
-	yyssp := yyssp - 1
-	yyvs1.put (yyval1, yyvsp1)
-end
-when 338 then
---|#line 1589 "bon_parser.y"
-debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1589")
-end
-
-
-if yy_parsing_status >= yyContinue then
-	yyssp := yyssp - 1
-	yyvs1.put (yyval1, yyvsp1)
-end
-when 339 then
---|#line 1592 "bon_parser.y"
-debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1592")
-end
-
-
-if yy_parsing_status >= yyContinue then
-	yyssp := yyssp - 1
-	yyvs83.put (yyval83, yyvsp83)
-end
-when 340 then
---|#line 1595 "bon_parser.y"
-debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1595")
-end
-
-
-if yy_parsing_status >= yyContinue then
-	yyssp := yyssp - 2
-	yyvsp86 := yyvsp86 -1
-	yyvs83.put (yyval83, yyvsp83)
-end
-when 341 then
---|#line 1598 "bon_parser.y"
-debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1598")
-end
-
-
-if yy_parsing_status >= yyContinue then
-	yyssp := yyssp - 0
+	yyssp := yyssp - 4
 	yyvsp83 := yyvsp83 + 1
+	yyvsp82 := yyvsp82 -1
+	yyvsp84 := yyvsp84 -1
+	yyvsp81 := yyvsp81 -2
 	if yyvsp83 >= yyvsc83 then
 		if yyvs83 = Void then
 			debug ("GEYACC")
@@ -8355,23 +8268,91 @@ if yy_parsing_status >= yyContinue then
 	end
 	yyvs83.put (yyval83, yyvsp83)
 end
-when 342 then
---|#line 1599 "bon_parser.y"
+when 338 then
+--|#line 1626 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1599")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1626")
 end
 
-
+create yyval82.make_for_all 
 if yy_parsing_status >= yyContinue then
-	yyssp := yyssp - 3
+	yyssp := yyssp - 1
+	yyvsp82 := yyvsp82 + 1
 	yyvsp1 := yyvsp1 -1
-	yyvsp86 := yyvsp86 -1
-	yyvs83.put (yyval83, yyvsp83)
+	if yyvsp82 >= yyvsc82 then
+		if yyvs82 = Void then
+			debug ("GEYACC")
+				std.error.put_line ("Create yyvs82")
+			end
+			create yyspecial_routines82
+			yyvsc82 := yyInitial_yyvs_size
+			yyvs82 := yyspecial_routines82.make (yyvsc82)
+		else
+			debug ("GEYACC")
+				std.error.put_line ("Resize yyvs82")
+			end
+			yyvsc82 := yyvsc82 + yyInitial_yyvs_size
+			yyvs82 := yyspecial_routines82.resize (yyvs82, yyvsc82)
+		end
+	end
+	yyvs82.put (yyval82, yyvsp82)
 end
-when 343 then
---|#line 1602 "bon_parser.y"
+when 339 then
+--|#line 1627 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1602")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1627")
+end
+
+create yyval82.make_exists 
+if yy_parsing_status >= yyContinue then
+	yyssp := yyssp - 1
+	yyvsp82 := yyvsp82 + 1
+	yyvsp1 := yyvsp1 -1
+	if yyvsp82 >= yyvsc82 then
+		if yyvs82 = Void then
+			debug ("GEYACC")
+				std.error.put_line ("Create yyvs82")
+			end
+			create yyspecial_routines82
+			yyvsc82 := yyInitial_yyvs_size
+			yyvs82 := yyspecial_routines82.make (yyvsc82)
+		else
+			debug ("GEYACC")
+				std.error.put_line ("Resize yyvs82")
+			end
+			yyvsc82 := yyvsc82 + yyInitial_yyvs_size
+			yyvs82 := yyspecial_routines82.resize (yyvs82, yyvsc82)
+		end
+	end
+	yyvs82.put (yyval82, yyvsp82)
+end
+when 340 then
+--|#line 1630 "bon_parser.y"
+debug ("GEYACC")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1630")
+end
+
+yyval84 := yyvs84.item (yyvsp84) 
+if yy_parsing_status >= yyContinue then
+	yyssp := yyssp - 1
+	yyvs84.put (yyval84, yyvsp84)
+end
+when 341 then
+--|#line 1633 "bon_parser.y"
+debug ("GEYACC")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1633")
+end
+
+create yyval84.make_optional_rest (yyvs85.item (yyvsp85), yyvs84.item (yyvsp84)) 
+if yy_parsing_status >= yyContinue then
+	yyssp := yyssp - 2
+	yyvsp85 := yyvsp85 -1
+	yyvs84.put (yyval84, yyvsp84)
+end
+when 342 then
+--|#line 1637 "bon_parser.y"
+debug ("GEYACC")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1637")
 end
 
 
@@ -8396,59 +8377,93 @@ if yy_parsing_status >= yyContinue then
 	end
 	yyvs84.put (yyval84, yyvsp84)
 end
-when 344 then
---|#line 1603 "bon_parser.y"
+when 343 then
+--|#line 1638 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1603")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1638")
 end
 
-
+create yyval84.make_optional_first (yyvs84.item (yyvsp84), yyvs85.item (yyvsp85)) 
 if yy_parsing_status >= yyContinue then
-	yyssp := yyssp - 1
+	yyssp := yyssp - 3
+	yyvsp1 := yyvsp1 -1
+	yyvsp85 := yyvsp85 -1
 	yyvs84.put (yyval84, yyvsp84)
 end
-when 345 then
---|#line 1606 "bon_parser.y"
+when 344 then
+--|#line 1642 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1606")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1642")
 end
 
 
 if yy_parsing_status >= yyContinue then
-	yyssp := yyssp - 2
-	yyvsp84 := yyvsp84 + 1
-	yyvsp1 := yyvsp1 -1
-	yyvsp80 := yyvsp80 -1
-	if yyvsp84 >= yyvsc84 then
-		if yyvs84 = Void then
+	yyssp := yyssp - 0
+	yyvsp81 := yyvsp81 + 1
+	if yyvsp81 >= yyvsc81 then
+		if yyvs81 = Void then
 			debug ("GEYACC")
-				std.error.put_line ("Create yyvs84")
+				std.error.put_line ("Create yyvs81")
 			end
-			create yyspecial_routines84
-			yyvsc84 := yyInitial_yyvs_size
-			yyvs84 := yyspecial_routines84.make (yyvsc84)
+			create yyspecial_routines81
+			yyvsc81 := yyInitial_yyvs_size
+			yyvs81 := yyspecial_routines81.make (yyvsc81)
 		else
 			debug ("GEYACC")
-				std.error.put_line ("Resize yyvs84")
+				std.error.put_line ("Resize yyvs81")
 			end
-			yyvsc84 := yyvsc84 + yyInitial_yyvs_size
-			yyvs84 := yyspecial_routines84.resize (yyvs84, yyvsc84)
+			yyvsc81 := yyvsc81 + yyInitial_yyvs_size
+			yyvs81 := yyspecial_routines81.resize (yyvs81, yyvsc81)
 		end
 	end
-	yyvs84.put (yyval84, yyvsp84)
+	yyvs81.put (yyval81, yyvsp81)
+end
+when 345 then
+--|#line 1643 "bon_parser.y"
+debug ("GEYACC")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1643")
+end
+
+yyval81 := yyvs81.item (yyvsp81) 
+if yy_parsing_status >= yyContinue then
+	yyssp := yyssp - 1
+	yyvs81.put (yyval81, yyvsp81)
 end
 when 346 then
---|#line 1609 "bon_parser.y"
+--|#line 1646 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1609")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1646")
 end
 
-
+yyval81 := yyvs81.item (yyvsp81) 
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 2
-	yyvsp85 := yyvsp85 + 1
 	yyvsp1 := yyvsp1 -1
-	yyvsp80 := yyvsp80 -1
+	yyvs81.put (yyval81, yyvsp81)
+end
+when 347 then
+--|#line 1649 "bon_parser.y"
+debug ("GEYACC")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1649")
+end
+
+yyval81 := yyvs81.item (yyvsp81) 
+if yy_parsing_status >= yyContinue then
+	yyssp := yyssp - 2
+	yyvsp1 := yyvsp1 -1
+	yyvs81.put (yyval81, yyvsp81)
+end
+when 348 then
+--|#line 1652 "bon_parser.y"
+debug ("GEYACC")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1652")
+end
+
+yyval85 := yyvs86.item (yyvsp86) 
+if yy_parsing_status >= yyContinue then
+	yyssp := yyssp - 1
+	yyvsp85 := yyvsp85 + 1
+	yyvsp86 := yyvsp86 -1
 	if yyvsp85 >= yyvsc85 then
 		if yyvs85 = Void then
 			debug ("GEYACC")
@@ -8467,68 +8482,70 @@ if yy_parsing_status >= yyContinue then
 	end
 	yyvs85.put (yyval85, yyvsp85)
 end
-when 347 then
---|#line 1612 "bon_parser.y"
-debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1612")
-end
-
-
-if yy_parsing_status >= yyContinue then
-	yyssp := yyssp - 1
-	yyvsp86 := yyvsp86 + 1
-	yyvsp87 := yyvsp87 -1
-	if yyvsp86 >= yyvsc86 then
-		if yyvs86 = Void then
-			debug ("GEYACC")
-				std.error.put_line ("Create yyvs86")
-			end
-			create yyspecial_routines86
-			yyvsc86 := yyInitial_yyvs_size
-			yyvs86 := yyspecial_routines86.make (yyvsc86)
-		else
-			debug ("GEYACC")
-				std.error.put_line ("Resize yyvs86")
-			end
-			yyvsc86 := yyvsc86 + yyInitial_yyvs_size
-			yyvs86 := yyspecial_routines86.resize (yyvs86, yyvsc86)
-		end
-	end
-	yyvs86.put (yyval86, yyvsp86)
-end
-when 348 then
---|#line 1613 "bon_parser.y"
-debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1613")
-end
-
-
-if yy_parsing_status >= yyContinue then
-	yyssp := yyssp - 1
-	yyvsp86 := yyvsp86 + 1
-	yyvsp88 := yyvsp88 -1
-	if yyvsp86 >= yyvsc86 then
-		if yyvs86 = Void then
-			debug ("GEYACC")
-				std.error.put_line ("Create yyvs86")
-			end
-			create yyspecial_routines86
-			yyvsc86 := yyInitial_yyvs_size
-			yyvs86 := yyspecial_routines86.make (yyvsc86)
-		else
-			debug ("GEYACC")
-				std.error.put_line ("Resize yyvs86")
-			end
-			yyvsc86 := yyvsc86 + yyInitial_yyvs_size
-			yyvs86 := yyspecial_routines86.resize (yyvs86, yyvsc86)
-		end
-	end
-	yyvs86.put (yyval86, yyvsp86)
-end
 when 349 then
---|#line 1616 "bon_parser.y"
+--|#line 1653 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1616")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1653")
+end
+
+yyval85 := yyvs87.item (yyvsp87) 
+if yy_parsing_status >= yyContinue then
+	yyssp := yyssp - 1
+	yyvsp85 := yyvsp85 + 1
+	yyvsp87 := yyvsp87 -1
+	if yyvsp85 >= yyvsc85 then
+		if yyvs85 = Void then
+			debug ("GEYACC")
+				std.error.put_line ("Create yyvs85")
+			end
+			create yyspecial_routines85
+			yyvsc85 := yyInitial_yyvs_size
+			yyvs85 := yyspecial_routines85.make (yyvsc85)
+		else
+			debug ("GEYACC")
+				std.error.put_line ("Resize yyvs85")
+			end
+			yyvsc85 := yyvsc85 + yyInitial_yyvs_size
+			yyvs85 := yyspecial_routines85.resize (yyvs85, yyvsc85)
+		end
+	end
+	yyvs85.put (yyval85, yyvsp85)
+end
+when 350 then
+--|#line 1656 "bon_parser.y"
+debug ("GEYACC")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1656")
+end
+
+
+if yy_parsing_status >= yyContinue then
+	yyssp := yyssp - 3
+	yyvsp86 := yyvsp86 + 1
+	yyvsp18 := yyvsp18 -1
+	yyvsp1 := yyvsp1 -1
+	yyvsp97 := yyvsp97 -1
+	if yyvsp86 >= yyvsc86 then
+		if yyvs86 = Void then
+			debug ("GEYACC")
+				std.error.put_line ("Create yyvs86")
+			end
+			create yyspecial_routines86
+			yyvsc86 := yyInitial_yyvs_size
+			yyvs86 := yyspecial_routines86.make (yyvsc86)
+		else
+			debug ("GEYACC")
+				std.error.put_line ("Resize yyvs86")
+			end
+			yyvsc86 := yyvsc86 + yyInitial_yyvs_size
+			yyvs86 := yyspecial_routines86.resize (yyvs86, yyvsc86)
+		end
+	end
+	yyvs86.put (yyval86, yyvsp86)
+end
+when 351 then
+--|#line 1659 "bon_parser.y"
+debug ("GEYACC")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1659")
 end
 
 
@@ -8537,7 +8554,7 @@ if yy_parsing_status >= yyContinue then
 	yyvsp87 := yyvsp87 + 1
 	yyvsp18 := yyvsp18 -1
 	yyvsp1 := yyvsp1 -1
-	yyvsp98 := yyvsp98 -1
+	yyvsp52 := yyvsp52 -1
 	if yyvsp87 >= yyvsc87 then
 		if yyvs87 = Void then
 			debug ("GEYACC")
@@ -8556,19 +8573,18 @@ if yy_parsing_status >= yyContinue then
 	end
 	yyvs87.put (yyval87, yyvsp87)
 end
-when 350 then
---|#line 1619 "bon_parser.y"
+when 352 then
+--|#line 1662 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1619")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1662")
 end
 
 
 if yy_parsing_status >= yyContinue then
-	yyssp := yyssp - 3
+	yyssp := yyssp - 2
 	yyvsp88 := yyvsp88 + 1
-	yyvsp18 := yyvsp18 -1
-	yyvsp1 := yyvsp1 -1
-	yyvsp52 := yyvsp52 -1
+	yyvsp89 := yyvsp89 -1
+	yyvsp90 := yyvsp90 -1
 	if yyvsp88 >= yyvsc88 then
 		if yyvs88 = Void then
 			debug ("GEYACC")
@@ -8587,18 +8603,16 @@ if yy_parsing_status >= yyContinue then
 	end
 	yyvs88.put (yyval88, yyvsp88)
 end
-when 351 then
---|#line 1622 "bon_parser.y"
+when 353 then
+--|#line 1665 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1622")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1665")
 end
 
 
 if yy_parsing_status >= yyContinue then
-	yyssp := yyssp - 2
+	yyssp := yyssp - 0
 	yyvsp89 := yyvsp89 + 1
-	yyvsp90 := yyvsp90 -1
-	yyvsp91 := yyvsp91 -1
 	if yyvsp89 >= yyvsc89 then
 		if yyvs89 = Void then
 			debug ("GEYACC")
@@ -8617,10 +8631,56 @@ if yy_parsing_status >= yyContinue then
 	end
 	yyvs89.put (yyval89, yyvsp89)
 end
-when 352 then
---|#line 1625 "bon_parser.y"
+when 354 then
+--|#line 1666 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1625")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1666")
+end
+
+
+if yy_parsing_status >= yyContinue then
+	yyssp := yyssp - 1
+	yyvs89.put (yyval89, yyvsp89)
+end
+when 355 then
+--|#line 1669 "bon_parser.y"
+debug ("GEYACC")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1669")
+end
+
+
+if yy_parsing_status >= yyContinue then
+	yyssp := yyssp - 2
+	yyvsp1 := yyvsp1 -1
+	yyvs89.put (yyval89, yyvsp89)
+end
+when 356 then
+--|#line 1672 "bon_parser.y"
+debug ("GEYACC")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1672")
+end
+
+
+if yy_parsing_status >= yyContinue then
+	yyssp := yyssp - 1
+	yyvs90.put (yyval90, yyvsp90)
+end
+when 357 then
+--|#line 1675 "bon_parser.y"
+debug ("GEYACC")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1675")
+end
+
+
+if yy_parsing_status >= yyContinue then
+	yyssp := yyssp - 2
+	yyvsp91 := yyvsp91 -1
+	yyvs90.put (yyval90, yyvsp90)
+end
+when 358 then
+--|#line 1678 "bon_parser.y"
+debug ("GEYACC")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1678")
 end
 
 
@@ -8645,62 +8705,31 @@ if yy_parsing_status >= yyContinue then
 	end
 	yyvs90.put (yyval90, yyvsp90)
 end
-when 353 then
---|#line 1626 "bon_parser.y"
+when 359 then
+--|#line 1679 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1626")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1679")
 end
 
 
 if yy_parsing_status >= yyContinue then
-	yyssp := yyssp - 1
-	yyvs90.put (yyval90, yyvsp90)
-end
-when 354 then
---|#line 1629 "bon_parser.y"
-debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1629")
-end
-
-
-if yy_parsing_status >= yyContinue then
-	yyssp := yyssp - 2
+	yyssp := yyssp - 3
 	yyvsp1 := yyvsp1 -1
+	yyvsp91 := yyvsp91 -1
 	yyvs90.put (yyval90, yyvsp90)
 end
-when 355 then
---|#line 1632 "bon_parser.y"
+when 360 then
+--|#line 1682 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1632")
-end
-
-
-if yy_parsing_status >= yyContinue then
-	yyssp := yyssp - 1
-	yyvs91.put (yyval91, yyvsp91)
-end
-when 356 then
---|#line 1635 "bon_parser.y"
-debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1635")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1682")
 end
 
 
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 2
-	yyvsp92 := yyvsp92 -1
-	yyvs91.put (yyval91, yyvsp91)
-end
-when 357 then
---|#line 1638 "bon_parser.y"
-debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1638")
-end
-
-
-if yy_parsing_status >= yyContinue then
-	yyssp := yyssp - 0
 	yyvsp91 := yyvsp91 + 1
+	yyvsp2 := yyvsp2 -1
+	yyvsp92 := yyvsp92 -1
 	if yyvsp91 >= yyvsc91 then
 		if yyvs91 = Void then
 			debug ("GEYACC")
@@ -8719,30 +8748,56 @@ if yy_parsing_status >= yyContinue then
 	end
 	yyvs91.put (yyval91, yyvsp91)
 end
-when 358 then
---|#line 1639 "bon_parser.y"
+when 361 then
+--|#line 1685 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1639")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1685")
+end
+
+
+if yy_parsing_status >= yyContinue then
+	yyssp := yyssp - 0
+	yyvsp92 := yyvsp92 + 1
+	if yyvsp92 >= yyvsc92 then
+		if yyvs92 = Void then
+			debug ("GEYACC")
+				std.error.put_line ("Create yyvs92")
+			end
+			create yyspecial_routines92
+			yyvsc92 := yyInitial_yyvs_size
+			yyvs92 := yyspecial_routines92.make (yyvsc92)
+		else
+			debug ("GEYACC")
+				std.error.put_line ("Resize yyvs92")
+			end
+			yyvsc92 := yyvsc92 + yyInitial_yyvs_size
+			yyvs92 := yyspecial_routines92.resize (yyvs92, yyvsc92)
+		end
+	end
+	yyvs92.put (yyval92, yyvsp92)
+end
+when 362 then
+--|#line 1686 "bon_parser.y"
+debug ("GEYACC")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1686")
+end
+
+
+if yy_parsing_status >= yyContinue then
+	yyssp := yyssp - 1
+	yyvs92.put (yyval92, yyvsp92)
+end
+when 363 then
+--|#line 1689 "bon_parser.y"
+debug ("GEYACC")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1689")
 end
 
 
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 3
-	yyvsp1 := yyvsp1 -1
-	yyvsp92 := yyvsp92 -1
-	yyvs91.put (yyval91, yyvsp91)
-end
-when 359 then
---|#line 1642 "bon_parser.y"
-debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1642")
-end
-
-
-if yy_parsing_status >= yyContinue then
-	yyssp := yyssp - 2
 	yyvsp92 := yyvsp92 + 1
-	yyvsp2 := yyvsp2 -1
+	yyvsp1 := yyvsp1 -2
 	yyvsp93 := yyvsp93 -1
 	if yyvsp92 >= yyvsc92 then
 		if yyvs92 = Void then
@@ -8762,108 +8817,81 @@ if yy_parsing_status >= yyContinue then
 	end
 	yyvs92.put (yyval92, yyvsp92)
 end
-when 360 then
---|#line 1645 "bon_parser.y"
-debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1645")
-end
-
-
-if yy_parsing_status >= yyContinue then
-	yyssp := yyssp - 0
-	yyvsp93 := yyvsp93 + 1
-	if yyvsp93 >= yyvsc93 then
-		if yyvs93 = Void then
-			debug ("GEYACC")
-				std.error.put_line ("Create yyvs93")
-			end
-			create yyspecial_routines93
-			yyvsc93 := yyInitial_yyvs_size
-			yyvs93 := yyspecial_routines93.make (yyvsc93)
-		else
-			debug ("GEYACC")
-				std.error.put_line ("Resize yyvs93")
-			end
-			yyvsc93 := yyvsc93 + yyInitial_yyvs_size
-			yyvs93 := yyspecial_routines93.resize (yyvs93, yyvsc93)
-		end
-	end
-	yyvs93.put (yyval93, yyvsp93)
-end
-when 361 then
---|#line 1646 "bon_parser.y"
-debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1646")
-end
-
-
-if yy_parsing_status >= yyContinue then
-	yyssp := yyssp - 1
-	yyvs93.put (yyval93, yyvsp93)
-end
-when 362 then
---|#line 1649 "bon_parser.y"
-debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1649")
-end
-
-
-if yy_parsing_status >= yyContinue then
-	yyssp := yyssp - 3
-	yyvsp93 := yyvsp93 + 1
-	yyvsp1 := yyvsp1 -2
-	yyvsp94 := yyvsp94 -1
-	if yyvsp93 >= yyvsc93 then
-		if yyvs93 = Void then
-			debug ("GEYACC")
-				std.error.put_line ("Create yyvs93")
-			end
-			create yyspecial_routines93
-			yyvsc93 := yyInitial_yyvs_size
-			yyvs93 := yyspecial_routines93.make (yyvsc93)
-		else
-			debug ("GEYACC")
-				std.error.put_line ("Resize yyvs93")
-			end
-			yyvsc93 := yyvsc93 + yyInitial_yyvs_size
-			yyvs93 := yyspecial_routines93.resize (yyvs93, yyvsc93)
-		end
-	end
-	yyvs93.put (yyval93, yyvsp93)
-end
-when 363 then
---|#line 1652 "bon_parser.y"
-debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1652")
-end
-
-
-if yy_parsing_status >= yyContinue then
-	yyssp := yyssp - 1
-	yyvs94.put (yyval94, yyvsp94)
-end
 when 364 then
---|#line 1655 "bon_parser.y"
+--|#line 1692 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1655")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1692")
+end
+
+
+if yy_parsing_status >= yyContinue then
+	yyssp := yyssp - 1
+	yyvs93.put (yyval93, yyvsp93)
+end
+when 365 then
+--|#line 1695 "bon_parser.y"
+debug ("GEYACC")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1695")
 end
 
 
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 2
 	yyvsp81 := yyvsp81 -1
-	yyvs94.put (yyval94, yyvsp94)
+	yyvs93.put (yyval93, yyvsp93)
 end
-when 365 then
---|#line 1658 "bon_parser.y"
+when 366 then
+--|#line 1698 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1658")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1698")
 end
 
 
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 0
+	yyvsp93 := yyvsp93 + 1
+	if yyvsp93 >= yyvsc93 then
+		if yyvs93 = Void then
+			debug ("GEYACC")
+				std.error.put_line ("Create yyvs93")
+			end
+			create yyspecial_routines93
+			yyvsc93 := yyInitial_yyvs_size
+			yyvs93 := yyspecial_routines93.make (yyvsc93)
+		else
+			debug ("GEYACC")
+				std.error.put_line ("Resize yyvs93")
+			end
+			yyvsc93 := yyvsc93 + yyInitial_yyvs_size
+			yyvs93 := yyspecial_routines93.resize (yyvs93, yyvsc93)
+		end
+	end
+	yyvs93.put (yyval93, yyvsp93)
+end
+when 367 then
+--|#line 1699 "bon_parser.y"
+debug ("GEYACC")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1699")
+end
+
+
+if yy_parsing_status >= yyContinue then
+	yyssp := yyssp - 3
+	yyvsp1 := yyvsp1 -1
+	yyvsp81 := yyvsp81 -1
+	yyvs93.put (yyval93, yyvsp93)
+end
+when 368 then
+--|#line 1702 "bon_parser.y"
+debug ("GEYACC")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1702")
+end
+
+
+if yy_parsing_status >= yyContinue then
+	yyssp := yyssp - 1
 	yyvsp94 := yyvsp94 + 1
+	yyvsp89 := yyvsp89 -1
 	if yyvsp94 >= yyvsc94 then
 		if yyvs94 = Void then
 			debug ("GEYACC")
@@ -8882,148 +8910,136 @@ if yy_parsing_status >= yyContinue then
 	end
 	yyvs94.put (yyval94, yyvsp94)
 end
-when 366 then
---|#line 1659 "bon_parser.y"
+when 369 then
+--|#line 1703 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1659")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1703")
 end
 
 
 if yy_parsing_status >= yyContinue then
-	yyssp := yyssp - 3
-	yyvsp1 := yyvsp1 -1
-	yyvsp81 := yyvsp81 -1
+	yyssp := yyssp - 1
+	yyvsp94 := yyvsp94 + 1
+	yyvsp95 := yyvsp95 -1
+	if yyvsp94 >= yyvsc94 then
+		if yyvs94 = Void then
+			debug ("GEYACC")
+				std.error.put_line ("Create yyvs94")
+			end
+			create yyspecial_routines94
+			yyvsc94 := yyInitial_yyvs_size
+			yyvs94 := yyspecial_routines94.make (yyvsc94)
+		else
+			debug ("GEYACC")
+				std.error.put_line ("Resize yyvs94")
+			end
+			yyvsc94 := yyvsc94 + yyInitial_yyvs_size
+			yyvs94 := yyspecial_routines94.resize (yyvs94, yyvsc94)
+		end
+	end
 	yyvs94.put (yyval94, yyvsp94)
 end
-when 367 then
---|#line 1662 "bon_parser.y"
-debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1662")
-end
-
-
-if yy_parsing_status >= yyContinue then
-	yyssp := yyssp - 1
-	yyvsp95 := yyvsp95 + 1
-	yyvsp90 := yyvsp90 -1
-	if yyvsp95 >= yyvsc95 then
-		if yyvs95 = Void then
-			debug ("GEYACC")
-				std.error.put_line ("Create yyvs95")
-			end
-			create yyspecial_routines95
-			yyvsc95 := yyInitial_yyvs_size
-			yyvs95 := yyspecial_routines95.make (yyvsc95)
-		else
-			debug ("GEYACC")
-				std.error.put_line ("Resize yyvs95")
-			end
-			yyvsc95 := yyvsc95 + yyInitial_yyvs_size
-			yyvs95 := yyspecial_routines95.resize (yyvs95, yyvsc95)
-		end
-	end
-	yyvs95.put (yyval95, yyvsp95)
-end
-when 368 then
---|#line 1663 "bon_parser.y"
-debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1663")
-end
-
-
-if yy_parsing_status >= yyContinue then
-	yyssp := yyssp - 1
-	yyvsp95 := yyvsp95 + 1
-	yyvsp96 := yyvsp96 -1
-	if yyvsp95 >= yyvsc95 then
-		if yyvs95 = Void then
-			debug ("GEYACC")
-				std.error.put_line ("Create yyvs95")
-			end
-			create yyspecial_routines95
-			yyvsc95 := yyInitial_yyvs_size
-			yyvs95 := yyspecial_routines95.make (yyvsc95)
-		else
-			debug ("GEYACC")
-				std.error.put_line ("Resize yyvs95")
-			end
-			yyvsc95 := yyvsc95 + yyInitial_yyvs_size
-			yyvs95 := yyspecial_routines95.resize (yyvs95, yyvsc95)
-		end
-	end
-	yyvs95.put (yyval95, yyvsp95)
-end
-when 369 then
---|#line 1664 "bon_parser.y"
-debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1664")
-end
-
-
-if yy_parsing_status >= yyContinue then
-	yyssp := yyssp - 1
-	yyvsp95 := yyvsp95 + 1
-	yyvsp97 := yyvsp97 -1
-	if yyvsp95 >= yyvsc95 then
-		if yyvs95 = Void then
-			debug ("GEYACC")
-				std.error.put_line ("Create yyvs95")
-			end
-			create yyspecial_routines95
-			yyvsc95 := yyInitial_yyvs_size
-			yyvs95 := yyspecial_routines95.make (yyvsc95)
-		else
-			debug ("GEYACC")
-				std.error.put_line ("Resize yyvs95")
-			end
-			yyvsc95 := yyvsc95 + yyInitial_yyvs_size
-			yyvs95 := yyspecial_routines95.resize (yyvs95, yyvsc95)
-		end
-	end
-	yyvs95.put (yyval95, yyvsp95)
-end
 when 370 then
---|#line 1667 "bon_parser.y"
+--|#line 1704 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1667")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1704")
+end
+
+
+if yy_parsing_status >= yyContinue then
+	yyssp := yyssp - 1
+	yyvsp94 := yyvsp94 + 1
+	yyvsp96 := yyvsp96 -1
+	if yyvsp94 >= yyvsc94 then
+		if yyvs94 = Void then
+			debug ("GEYACC")
+				std.error.put_line ("Create yyvs94")
+			end
+			create yyspecial_routines94
+			yyvsc94 := yyInitial_yyvs_size
+			yyvs94 := yyspecial_routines94.make (yyvsc94)
+		else
+			debug ("GEYACC")
+				std.error.put_line ("Resize yyvs94")
+			end
+			yyvsc94 := yyvsc94 + yyInitial_yyvs_size
+			yyvs94 := yyspecial_routines94.resize (yyvs94, yyvsc94)
+		end
+	end
+	yyvs94.put (yyval94, yyvsp94)
+end
+when 371 then
+--|#line 1707 "bon_parser.y"
+debug ("GEYACC")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1707")
 end
 
 
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 3
-	yyvsp90 := yyvsp90 + 1
+	yyvsp89 := yyvsp89 + 1
 	yyvsp1 := yyvsp1 -2
 	yyvsp81 := yyvsp81 -1
-	if yyvsp90 >= yyvsc90 then
-		if yyvs90 = Void then
+	if yyvsp89 >= yyvsc89 then
+		if yyvs89 = Void then
 			debug ("GEYACC")
-				std.error.put_line ("Create yyvs90")
+				std.error.put_line ("Create yyvs89")
 			end
-			create yyspecial_routines90
-			yyvsc90 := yyInitial_yyvs_size
-			yyvs90 := yyspecial_routines90.make (yyvsc90)
+			create yyspecial_routines89
+			yyvsc89 := yyInitial_yyvs_size
+			yyvs89 := yyspecial_routines89.make (yyvsc89)
 		else
 			debug ("GEYACC")
-				std.error.put_line ("Resize yyvs90")
+				std.error.put_line ("Resize yyvs89")
 			end
-			yyvsc90 := yyvsc90 + yyInitial_yyvs_size
-			yyvs90 := yyspecial_routines90.resize (yyvs90, yyvsc90)
+			yyvsc89 := yyvsc89 + yyInitial_yyvs_size
+			yyvs89 := yyspecial_routines89.resize (yyvs89, yyvsc89)
 		end
 	end
-	yyvs90.put (yyval90, yyvsp90)
+	yyvs89.put (yyval89, yyvsp89)
 end
-when 371 then
---|#line 1670 "bon_parser.y"
+when 372 then
+--|#line 1710 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1670")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1710")
 end
 
 
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 2
-	yyvsp96 := yyvsp96 + 1
+	yyvsp95 := yyvsp95 + 1
 	yyvsp69 := yyvsp69 -1
 	yyvsp81 := yyvsp81 -1
+	if yyvsp95 >= yyvsc95 then
+		if yyvs95 = Void then
+			debug ("GEYACC")
+				std.error.put_line ("Create yyvs95")
+			end
+			create yyspecial_routines95
+			yyvsc95 := yyInitial_yyvs_size
+			yyvs95 := yyspecial_routines95.make (yyvsc95)
+		else
+			debug ("GEYACC")
+				std.error.put_line ("Resize yyvs95")
+			end
+			yyvsc95 := yyvsc95 + yyInitial_yyvs_size
+			yyvs95 := yyspecial_routines95.resize (yyvs95, yyvsc95)
+		end
+	end
+	yyvs95.put (yyval95, yyvsp95)
+end
+when 373 then
+--|#line 1713 "bon_parser.y"
+debug ("GEYACC")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1713")
+end
+
+
+if yy_parsing_status >= yyContinue then
+	yyssp := yyssp - 3
+	yyvsp96 := yyvsp96 + 1
+	yyvsp81 := yyvsp81 -2
+	yyvsp69 := yyvsp69 -1
 	if yyvsp96 >= yyvsc96 then
 		if yyvs96 = Void then
 			debug ("GEYACC")
@@ -9042,18 +9058,17 @@ if yy_parsing_status >= yyContinue then
 	end
 	yyvs96.put (yyval96, yyvsp96)
 end
-when 372 then
---|#line 1673 "bon_parser.y"
+when 374 then
+--|#line 1716 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1673")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1716")
 end
 
 
 if yy_parsing_status >= yyContinue then
-	yyssp := yyssp - 3
+	yyssp := yyssp - 1
 	yyvsp97 := yyvsp97 + 1
-	yyvsp81 := yyvsp81 -2
-	yyvsp69 := yyvsp69 -1
+	yyvsp98 := yyvsp98 -1
 	if yyvsp97 >= yyvsc97 then
 		if yyvs97 = Void then
 			debug ("GEYACC")
@@ -9072,16 +9087,75 @@ if yy_parsing_status >= yyContinue then
 	end
 	yyvs97.put (yyval97, yyvsp97)
 end
-when 373 then
---|#line 1676 "bon_parser.y"
+when 375 then
+--|#line 1717 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1676")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1717")
 end
 
 
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
+	yyvsp97 := yyvsp97 + 1
+	yyvsp88 := yyvsp88 -1
+	if yyvsp97 >= yyvsc97 then
+		if yyvs97 = Void then
+			debug ("GEYACC")
+				std.error.put_line ("Create yyvs97")
+			end
+			create yyspecial_routines97
+			yyvsc97 := yyInitial_yyvs_size
+			yyvs97 := yyspecial_routines97.make (yyvsc97)
+		else
+			debug ("GEYACC")
+				std.error.put_line ("Resize yyvs97")
+			end
+			yyvsc97 := yyvsc97 + yyInitial_yyvs_size
+			yyvs97 := yyspecial_routines97.resize (yyvs97, yyvsc97)
+		end
+	end
+	yyvs97.put (yyval97, yyvsp97)
+end
+when 376 then
+--|#line 1718 "bon_parser.y"
+debug ("GEYACC")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1718")
+end
+
+
+if yy_parsing_status >= yyContinue then
+	yyssp := yyssp - 1
+	yyvsp97 := yyvsp97 + 1
+	yyvsp94 := yyvsp94 -1
+	if yyvsp97 >= yyvsc97 then
+		if yyvs97 = Void then
+			debug ("GEYACC")
+				std.error.put_line ("Create yyvs97")
+			end
+			create yyspecial_routines97
+			yyvsc97 := yyInitial_yyvs_size
+			yyvs97 := yyspecial_routines97.make (yyvsc97)
+		else
+			debug ("GEYACC")
+				std.error.put_line ("Resize yyvs97")
+			end
+			yyvsc97 := yyvsc97 + yyInitial_yyvs_size
+			yyvs97 := yyspecial_routines97.resize (yyvs97, yyvsc97)
+		end
+	end
+	yyvs97.put (yyval97, yyvsp97)
+end
+when 377 then
+--|#line 1721 "bon_parser.y"
+debug ("GEYACC")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1721")
+end
+
+
+if yy_parsing_status >= yyContinue then
+	yyssp := yyssp - 3
 	yyvsp98 := yyvsp98 + 1
+	yyvsp1 := yyvsp1 -2
 	yyvsp99 := yyvsp99 -1
 	if yyvsp98 >= yyvsc98 then
 		if yyvs98 = Void then
@@ -9101,76 +9175,39 @@ if yy_parsing_status >= yyContinue then
 	end
 	yyvs98.put (yyval98, yyvsp98)
 end
-when 374 then
---|#line 1677 "bon_parser.y"
+when 378 then
+--|#line 1724 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1677")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1724")
 end
 
 
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
-	yyvsp98 := yyvsp98 + 1
-	yyvsp89 := yyvsp89 -1
-	if yyvsp98 >= yyvsc98 then
-		if yyvs98 = Void then
-			debug ("GEYACC")
-				std.error.put_line ("Create yyvs98")
-			end
-			create yyspecial_routines98
-			yyvsc98 := yyInitial_yyvs_size
-			yyvs98 := yyspecial_routines98.make (yyvsc98)
-		else
-			debug ("GEYACC")
-				std.error.put_line ("Resize yyvs98")
-			end
-			yyvsc98 := yyvsc98 + yyInitial_yyvs_size
-			yyvs98 := yyspecial_routines98.resize (yyvs98, yyvsc98)
-		end
-	end
-	yyvs98.put (yyval98, yyvsp98)
+	yyvs99.put (yyval99, yyvsp99)
 end
-when 375 then
---|#line 1678 "bon_parser.y"
+when 379 then
+--|#line 1727 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1678")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1727")
 end
 
 
 if yy_parsing_status >= yyContinue then
-	yyssp := yyssp - 1
-	yyvsp98 := yyvsp98 + 1
-	yyvsp95 := yyvsp95 -1
-	if yyvsp98 >= yyvsc98 then
-		if yyvs98 = Void then
-			debug ("GEYACC")
-				std.error.put_line ("Create yyvs98")
-			end
-			create yyspecial_routines98
-			yyvsc98 := yyInitial_yyvs_size
-			yyvs98 := yyspecial_routines98.make (yyvsc98)
-		else
-			debug ("GEYACC")
-				std.error.put_line ("Resize yyvs98")
-			end
-			yyvsc98 := yyvsc98 + yyInitial_yyvs_size
-			yyvs98 := yyspecial_routines98.resize (yyvs98, yyvsc98)
-		end
-	end
-	yyvs98.put (yyval98, yyvsp98)
-end
-when 376 then
---|#line 1681 "bon_parser.y"
-debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1681")
-end
-
-
-if yy_parsing_status >= yyContinue then
-	yyssp := yyssp - 3
-	yyvsp99 := yyvsp99 + 1
-	yyvsp1 := yyvsp1 -2
+	yyssp := yyssp - 2
 	yyvsp100 := yyvsp100 -1
+	yyvs99.put (yyval99, yyvsp99)
+end
+when 380 then
+--|#line 1730 "bon_parser.y"
+debug ("GEYACC")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1730")
+end
+
+
+if yy_parsing_status >= yyContinue then
+	yyssp := yyssp - 0
+	yyvsp99 := yyvsp99 + 1
 	if yyvsp99 >= yyvsc99 then
 		if yyvs99 = Void then
 			debug ("GEYACC")
@@ -9189,39 +9226,30 @@ if yy_parsing_status >= yyContinue then
 	end
 	yyvs99.put (yyval99, yyvsp99)
 end
-when 377 then
---|#line 1684 "bon_parser.y"
+when 381 then
+--|#line 1731 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1684")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1731")
+end
+
+
+if yy_parsing_status >= yyContinue then
+	yyssp := yyssp - 3
+	yyvsp1 := yyvsp1 -1
+	yyvsp100 := yyvsp100 -1
+	yyvs99.put (yyval99, yyvsp99)
+end
+when 382 then
+--|#line 1735 "bon_parser.y"
+debug ("GEYACC")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1735")
 end
 
 
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
-	yyvs100.put (yyval100, yyvsp100)
-end
-when 378 then
---|#line 1687 "bon_parser.y"
-debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1687")
-end
-
-
-if yy_parsing_status >= yyContinue then
-	yyssp := yyssp - 2
-	yyvsp101 := yyvsp101 -1
-	yyvs100.put (yyval100, yyvsp100)
-end
-when 379 then
---|#line 1690 "bon_parser.y"
-debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1690")
-end
-
-
-if yy_parsing_status >= yyContinue then
-	yyssp := yyssp - 0
 	yyvsp100 := yyvsp100 + 1
+	yyvsp81 := yyvsp81 -1
 	if yyvsp100 >= yyvsc100 then
 		if yyvs100 = Void then
 			debug ("GEYACC")
@@ -9240,52 +9268,39 @@ if yy_parsing_status >= yyContinue then
 	end
 	yyvs100.put (yyval100, yyvsp100)
 end
-when 380 then
---|#line 1691 "bon_parser.y"
+when 383 then
+--|#line 1736 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1691")
-end
-
-
-if yy_parsing_status >= yyContinue then
-	yyssp := yyssp - 3
-	yyvsp1 := yyvsp1 -1
-	yyvsp101 := yyvsp101 -1
-	yyvs100.put (yyval100, yyvsp100)
-end
-when 381 then
---|#line 1695 "bon_parser.y"
-debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1695")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1736")
 end
 
 
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
-	yyvsp101 := yyvsp101 + 1
-	yyvsp81 := yyvsp81 -1
-	if yyvsp101 >= yyvsc101 then
-		if yyvs101 = Void then
+	yyvsp100 := yyvsp100 + 1
+	yyvsp101 := yyvsp101 -1
+	if yyvsp100 >= yyvsc100 then
+		if yyvs100 = Void then
 			debug ("GEYACC")
-				std.error.put_line ("Create yyvs101")
+				std.error.put_line ("Create yyvs100")
 			end
-			create yyspecial_routines101
-			yyvsc101 := yyInitial_yyvs_size
-			yyvs101 := yyspecial_routines101.make (yyvsc101)
+			create yyspecial_routines100
+			yyvsc100 := yyInitial_yyvs_size
+			yyvs100 := yyspecial_routines100.make (yyvsc100)
 		else
 			debug ("GEYACC")
-				std.error.put_line ("Resize yyvs101")
+				std.error.put_line ("Resize yyvs100")
 			end
-			yyvsc101 := yyvsc101 + yyInitial_yyvs_size
-			yyvs101 := yyspecial_routines101.resize (yyvs101, yyvsc101)
+			yyvsc100 := yyvsc100 + yyInitial_yyvs_size
+			yyvs100 := yyspecial_routines100.resize (yyvs100, yyvsc100)
 		end
 	end
-	yyvs101.put (yyval101, yyvsp101)
+	yyvs100.put (yyval100, yyvsp100)
 end
-when 382 then
---|#line 1696 "bon_parser.y"
+when 384 then
+--|#line 1739 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1696")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1739")
 end
 
 
@@ -9311,75 +9326,76 @@ if yy_parsing_status >= yyContinue then
 	end
 	yyvs101.put (yyval101, yyvsp101)
 end
-when 383 then
---|#line 1699 "bon_parser.y"
-debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1699")
-end
-
-
-if yy_parsing_status >= yyContinue then
-	yyssp := yyssp - 1
-	yyvsp102 := yyvsp102 + 1
-	yyvsp103 := yyvsp103 -1
-	if yyvsp102 >= yyvsc102 then
-		if yyvs102 = Void then
-			debug ("GEYACC")
-				std.error.put_line ("Create yyvs102")
-			end
-			create yyspecial_routines102
-			yyvsc102 := yyInitial_yyvs_size
-			yyvs102 := yyspecial_routines102.make (yyvsc102)
-		else
-			debug ("GEYACC")
-				std.error.put_line ("Resize yyvs102")
-			end
-			yyvsc102 := yyvsc102 + yyInitial_yyvs_size
-			yyvs102 := yyspecial_routines102.resize (yyvs102, yyvsc102)
-		end
-	end
-	yyvs102.put (yyval102, yyvsp102)
-end
-when 384 then
---|#line 1700 "bon_parser.y"
-debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1700")
-end
-
-
-if yy_parsing_status >= yyContinue then
-	yyssp := yyssp - 1
-	yyvsp102 := yyvsp102 + 1
-	yyvsp104 := yyvsp104 -1
-	if yyvsp102 >= yyvsc102 then
-		if yyvs102 = Void then
-			debug ("GEYACC")
-				std.error.put_line ("Create yyvs102")
-			end
-			create yyspecial_routines102
-			yyvsc102 := yyInitial_yyvs_size
-			yyvs102 := yyspecial_routines102.make (yyvsc102)
-		else
-			debug ("GEYACC")
-				std.error.put_line ("Resize yyvs102")
-			end
-			yyvsc102 := yyvsc102 + yyInitial_yyvs_size
-			yyvs102 := yyspecial_routines102.resize (yyvs102, yyvsc102)
-		end
-	end
-	yyvs102.put (yyval102, yyvsp102)
-end
 when 385 then
---|#line 1703 "bon_parser.y"
+--|#line 1740 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1703")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1740")
+end
+
+
+if yy_parsing_status >= yyContinue then
+	yyssp := yyssp - 1
+	yyvsp101 := yyvsp101 + 1
+	yyvsp103 := yyvsp103 -1
+	if yyvsp101 >= yyvsc101 then
+		if yyvs101 = Void then
+			debug ("GEYACC")
+				std.error.put_line ("Create yyvs101")
+			end
+			create yyspecial_routines101
+			yyvsc101 := yyInitial_yyvs_size
+			yyvs101 := yyspecial_routines101.make (yyvsc101)
+		else
+			debug ("GEYACC")
+				std.error.put_line ("Resize yyvs101")
+			end
+			yyvsc101 := yyvsc101 + yyInitial_yyvs_size
+			yyvs101 := yyspecial_routines101.resize (yyvs101, yyvsc101)
+		end
+	end
+	yyvs101.put (yyval101, yyvsp101)
+end
+when 386 then
+--|#line 1743 "bon_parser.y"
+debug ("GEYACC")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1743")
+end
+
+
+if yy_parsing_status >= yyContinue then
+	yyssp := yyssp - 3
+	yyvsp102 := yyvsp102 + 1
+	yyvsp4 := yyvsp4 -2
+	yyvsp1 := yyvsp1 -1
+	if yyvsp102 >= yyvsc102 then
+		if yyvs102 = Void then
+			debug ("GEYACC")
+				std.error.put_line ("Create yyvs102")
+			end
+			create yyspecial_routines102
+			yyvsc102 := yyInitial_yyvs_size
+			yyvs102 := yyspecial_routines102.make (yyvsc102)
+		else
+			debug ("GEYACC")
+				std.error.put_line ("Resize yyvs102")
+			end
+			yyvsc102 := yyvsc102 + yyInitial_yyvs_size
+			yyvs102 := yyspecial_routines102.resize (yyvs102, yyvsc102)
+		end
+	end
+	yyvs102.put (yyval102, yyvsp102)
+end
+when 387 then
+--|#line 1746 "bon_parser.y"
+debug ("GEYACC")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1746")
 end
 
 
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 3
 	yyvsp103 := yyvsp103 + 1
-	yyvsp4 := yyvsp4 -2
+	yyvsp3 := yyvsp3 -2
 	yyvsp1 := yyvsp1 -1
 	if yyvsp103 >= yyvsc103 then
 		if yyvs103 = Void then
@@ -9399,17 +9415,74 @@ if yy_parsing_status >= yyContinue then
 	end
 	yyvs103.put (yyval103, yyvsp103)
 end
-when 386 then
---|#line 1706 "bon_parser.y"
+when 388 then
+--|#line 1753 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1706")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1753")
 end
 
 
 if yy_parsing_status >= yyContinue then
-	yyssp := yyssp - 3
+	yyssp := yyssp - 1
 	yyvsp104 := yyvsp104 + 1
-	yyvsp3 := yyvsp3 -2
+	yyvsp105 := yyvsp105 -1
+	if yyvsp104 >= yyvsc104 then
+		if yyvs104 = Void then
+			debug ("GEYACC")
+				std.error.put_line ("Create yyvs104")
+			end
+			create yyspecial_routines104
+			yyvsc104 := yyInitial_yyvs_size
+			yyvs104 := yyspecial_routines104.make (yyvsc104)
+		else
+			debug ("GEYACC")
+				std.error.put_line ("Resize yyvs104")
+			end
+			yyvsc104 := yyvsc104 + yyInitial_yyvs_size
+			yyvs104 := yyspecial_routines104.resize (yyvs104, yyvsc104)
+		end
+	end
+	yyvs104.put (yyval104, yyvsp104)
+end
+when 389 then
+--|#line 1754 "bon_parser.y"
+debug ("GEYACC")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1754")
+end
+
+
+if yy_parsing_status >= yyContinue then
+	yyssp := yyssp - 1
+	yyvsp104 := yyvsp104 + 1
+	yyvsp98 := yyvsp98 -1
+	if yyvsp104 >= yyvsc104 then
+		if yyvs104 = Void then
+			debug ("GEYACC")
+				std.error.put_line ("Create yyvs104")
+			end
+			create yyspecial_routines104
+			yyvsc104 := yyInitial_yyvs_size
+			yyvs104 := yyspecial_routines104.make (yyvsc104)
+		else
+			debug ("GEYACC")
+				std.error.put_line ("Resize yyvs104")
+			end
+			yyvsc104 := yyvsc104 + yyInitial_yyvs_size
+			yyvs104 := yyspecial_routines104.resize (yyvs104, yyvsc104)
+		end
+	end
+	yyvs104.put (yyval104, yyvsp104)
+end
+when 390 then
+--|#line 1755 "bon_parser.y"
+debug ("GEYACC")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1755")
+end
+
+
+if yy_parsing_status >= yyContinue then
+	yyssp := yyssp - 1
+	yyvsp104 := yyvsp104 + 1
 	yyvsp1 := yyvsp1 -1
 	if yyvsp104 >= yyvsc104 then
 		if yyvs104 = Void then
@@ -9429,300 +9502,213 @@ if yy_parsing_status >= yyContinue then
 	end
 	yyvs104.put (yyval104, yyvsp104)
 end
-when 387 then
---|#line 1713 "bon_parser.y"
-debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1713")
-end
-
-
-if yy_parsing_status >= yyContinue then
-	yyssp := yyssp - 1
-	yyvsp105 := yyvsp105 + 1
-	yyvsp106 := yyvsp106 -1
-	if yyvsp105 >= yyvsc105 then
-		if yyvs105 = Void then
-			debug ("GEYACC")
-				std.error.put_line ("Create yyvs105")
-			end
-			create yyspecial_routines105
-			yyvsc105 := yyInitial_yyvs_size
-			yyvs105 := yyspecial_routines105.make (yyvsc105)
-		else
-			debug ("GEYACC")
-				std.error.put_line ("Resize yyvs105")
-			end
-			yyvsc105 := yyvsc105 + yyInitial_yyvs_size
-			yyvs105 := yyspecial_routines105.resize (yyvs105, yyvsc105)
-		end
-	end
-	yyvs105.put (yyval105, yyvsp105)
-end
-when 388 then
---|#line 1714 "bon_parser.y"
-debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1714")
-end
-
-
-if yy_parsing_status >= yyContinue then
-	yyssp := yyssp - 1
-	yyvsp105 := yyvsp105 + 1
-	yyvsp99 := yyvsp99 -1
-	if yyvsp105 >= yyvsc105 then
-		if yyvs105 = Void then
-			debug ("GEYACC")
-				std.error.put_line ("Create yyvs105")
-			end
-			create yyspecial_routines105
-			yyvsc105 := yyInitial_yyvs_size
-			yyvs105 := yyspecial_routines105.make (yyvsc105)
-		else
-			debug ("GEYACC")
-				std.error.put_line ("Resize yyvs105")
-			end
-			yyvsc105 := yyvsc105 + yyInitial_yyvs_size
-			yyvs105 := yyspecial_routines105.resize (yyvs105, yyvsc105)
-		end
-	end
-	yyvs105.put (yyval105, yyvsp105)
-end
-when 389 then
---|#line 1715 "bon_parser.y"
-debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1715")
-end
-
-
-if yy_parsing_status >= yyContinue then
-	yyssp := yyssp - 1
-	yyvsp105 := yyvsp105 + 1
-	yyvsp1 := yyvsp1 -1
-	if yyvsp105 >= yyvsc105 then
-		if yyvs105 = Void then
-			debug ("GEYACC")
-				std.error.put_line ("Create yyvs105")
-			end
-			create yyspecial_routines105
-			yyvsc105 := yyInitial_yyvs_size
-			yyvs105 := yyspecial_routines105.make (yyvsc105)
-		else
-			debug ("GEYACC")
-				std.error.put_line ("Resize yyvs105")
-			end
-			yyvsc105 := yyvsc105 + yyInitial_yyvs_size
-			yyvs105 := yyspecial_routines105.resize (yyvs105, yyvsc105)
-		end
-	end
-	yyvs105.put (yyval105, yyvsp105)
-end
-when 390 then
---|#line 1716 "bon_parser.y"
-debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1716")
-end
-
-
-if yy_parsing_status >= yyContinue then
-	yyssp := yyssp - 1
-	yyvsp105 := yyvsp105 + 1
-	yyvsp1 := yyvsp1 -1
-	if yyvsp105 >= yyvsc105 then
-		if yyvs105 = Void then
-			debug ("GEYACC")
-				std.error.put_line ("Create yyvs105")
-			end
-			create yyspecial_routines105
-			yyvsc105 := yyInitial_yyvs_size
-			yyvs105 := yyspecial_routines105.make (yyvsc105)
-		else
-			debug ("GEYACC")
-				std.error.put_line ("Resize yyvs105")
-			end
-			yyvsc105 := yyvsc105 + yyInitial_yyvs_size
-			yyvs105 := yyspecial_routines105.resize (yyvs105, yyvsc105)
-		end
-	end
-	yyvs105.put (yyval105, yyvsp105)
-end
 when 391 then
---|#line 1717 "bon_parser.y"
+--|#line 1756 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1717")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1756")
 end
 
 
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
-	yyvsp105 := yyvsp105 + 1
+	yyvsp104 := yyvsp104 + 1
 	yyvsp1 := yyvsp1 -1
-	if yyvsp105 >= yyvsc105 then
-		if yyvs105 = Void then
+	if yyvsp104 >= yyvsc104 then
+		if yyvs104 = Void then
 			debug ("GEYACC")
-				std.error.put_line ("Create yyvs105")
+				std.error.put_line ("Create yyvs104")
 			end
-			create yyspecial_routines105
-			yyvsc105 := yyInitial_yyvs_size
-			yyvs105 := yyspecial_routines105.make (yyvsc105)
+			create yyspecial_routines104
+			yyvsc104 := yyInitial_yyvs_size
+			yyvs104 := yyspecial_routines104.make (yyvsc104)
 		else
 			debug ("GEYACC")
-				std.error.put_line ("Resize yyvs105")
+				std.error.put_line ("Resize yyvs104")
 			end
-			yyvsc105 := yyvsc105 + yyInitial_yyvs_size
-			yyvs105 := yyspecial_routines105.resize (yyvs105, yyvsc105)
+			yyvsc104 := yyvsc104 + yyInitial_yyvs_size
+			yyvs104 := yyspecial_routines104.resize (yyvs104, yyvsc104)
 		end
 	end
-	yyvs105.put (yyval105, yyvsp105)
+	yyvs104.put (yyval104, yyvsp104)
 end
 when 392 then
---|#line 1720 "bon_parser.y"
+--|#line 1757 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1720")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1757")
 end
 
 
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
-	yyvsp106 := yyvsp106 + 1
-	yyvsp6 := yyvsp6 -1
-	if yyvsp106 >= yyvsc106 then
-		if yyvs106 = Void then
+	yyvsp104 := yyvsp104 + 1
+	yyvsp1 := yyvsp1 -1
+	if yyvsp104 >= yyvsc104 then
+		if yyvs104 = Void then
 			debug ("GEYACC")
-				std.error.put_line ("Create yyvs106")
+				std.error.put_line ("Create yyvs104")
 			end
-			create yyspecial_routines106
-			yyvsc106 := yyInitial_yyvs_size
-			yyvs106 := yyspecial_routines106.make (yyvsc106)
+			create yyspecial_routines104
+			yyvsc104 := yyInitial_yyvs_size
+			yyvs104 := yyspecial_routines104.make (yyvsc104)
 		else
 			debug ("GEYACC")
-				std.error.put_line ("Resize yyvs106")
+				std.error.put_line ("Resize yyvs104")
 			end
-			yyvsc106 := yyvsc106 + yyInitial_yyvs_size
-			yyvs106 := yyspecial_routines106.resize (yyvs106, yyvsc106)
+			yyvsc104 := yyvsc104 + yyInitial_yyvs_size
+			yyvs104 := yyspecial_routines104.resize (yyvs104, yyvsc104)
 		end
 	end
-	yyvs106.put (yyval106, yyvsp106)
+	yyvs104.put (yyval104, yyvsp104)
 end
 when 393 then
---|#line 1721 "bon_parser.y"
+--|#line 1760 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1721")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1760")
 end
 
 
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
-	yyvsp106 := yyvsp106 + 1
-	yyvsp3 := yyvsp3 -1
-	if yyvsp106 >= yyvsc106 then
-		if yyvs106 = Void then
+	yyvsp105 := yyvsp105 + 1
+	yyvsp6 := yyvsp6 -1
+	if yyvsp105 >= yyvsc105 then
+		if yyvs105 = Void then
 			debug ("GEYACC")
-				std.error.put_line ("Create yyvs106")
+				std.error.put_line ("Create yyvs105")
 			end
-			create yyspecial_routines106
-			yyvsc106 := yyInitial_yyvs_size
-			yyvs106 := yyspecial_routines106.make (yyvsc106)
+			create yyspecial_routines105
+			yyvsc105 := yyInitial_yyvs_size
+			yyvs105 := yyspecial_routines105.make (yyvsc105)
 		else
 			debug ("GEYACC")
-				std.error.put_line ("Resize yyvs106")
+				std.error.put_line ("Resize yyvs105")
 			end
-			yyvsc106 := yyvsc106 + yyInitial_yyvs_size
-			yyvs106 := yyspecial_routines106.resize (yyvs106, yyvsc106)
+			yyvsc105 := yyvsc105 + yyInitial_yyvs_size
+			yyvs105 := yyspecial_routines105.resize (yyvs105, yyvsc105)
 		end
 	end
-	yyvs106.put (yyval106, yyvsp106)
+	yyvs105.put (yyval105, yyvsp105)
 end
 when 394 then
---|#line 1722 "bon_parser.y"
+--|#line 1761 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1722")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1761")
 end
 
 
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
-	yyvsp106 := yyvsp106 + 1
-	yyvsp4 := yyvsp4 -1
-	if yyvsp106 >= yyvsc106 then
-		if yyvs106 = Void then
+	yyvsp105 := yyvsp105 + 1
+	yyvsp3 := yyvsp3 -1
+	if yyvsp105 >= yyvsc105 then
+		if yyvs105 = Void then
 			debug ("GEYACC")
-				std.error.put_line ("Create yyvs106")
+				std.error.put_line ("Create yyvs105")
 			end
-			create yyspecial_routines106
-			yyvsc106 := yyInitial_yyvs_size
-			yyvs106 := yyspecial_routines106.make (yyvsc106)
+			create yyspecial_routines105
+			yyvsc105 := yyInitial_yyvs_size
+			yyvs105 := yyspecial_routines105.make (yyvsc105)
 		else
 			debug ("GEYACC")
-				std.error.put_line ("Resize yyvs106")
+				std.error.put_line ("Resize yyvs105")
 			end
-			yyvsc106 := yyvsc106 + yyInitial_yyvs_size
-			yyvs106 := yyspecial_routines106.resize (yyvs106, yyvsc106)
+			yyvsc105 := yyvsc105 + yyInitial_yyvs_size
+			yyvs105 := yyspecial_routines105.resize (yyvs105, yyvsc105)
 		end
 	end
-	yyvs106.put (yyval106, yyvsp106)
+	yyvs105.put (yyval105, yyvsp105)
 end
 when 395 then
---|#line 1723 "bon_parser.y"
+--|#line 1762 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1723")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1762")
 end
 
 
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
-	yyvsp106 := yyvsp106 + 1
-	yyvsp5 := yyvsp5 -1
-	if yyvsp106 >= yyvsc106 then
-		if yyvs106 = Void then
+	yyvsp105 := yyvsp105 + 1
+	yyvsp4 := yyvsp4 -1
+	if yyvsp105 >= yyvsc105 then
+		if yyvs105 = Void then
 			debug ("GEYACC")
-				std.error.put_line ("Create yyvs106")
+				std.error.put_line ("Create yyvs105")
 			end
-			create yyspecial_routines106
-			yyvsc106 := yyInitial_yyvs_size
-			yyvs106 := yyspecial_routines106.make (yyvsc106)
+			create yyspecial_routines105
+			yyvsc105 := yyInitial_yyvs_size
+			yyvs105 := yyspecial_routines105.make (yyvsc105)
 		else
 			debug ("GEYACC")
-				std.error.put_line ("Resize yyvs106")
+				std.error.put_line ("Resize yyvs105")
 			end
-			yyvsc106 := yyvsc106 + yyInitial_yyvs_size
-			yyvs106 := yyspecial_routines106.resize (yyvs106, yyvsc106)
+			yyvsc105 := yyvsc105 + yyInitial_yyvs_size
+			yyvs105 := yyspecial_routines105.resize (yyvs105, yyvsc105)
 		end
 	end
-	yyvs106.put (yyval106, yyvsp106)
+	yyvs105.put (yyval105, yyvsp105)
 end
 when 396 then
---|#line 1724 "bon_parser.y"
+--|#line 1763 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1724")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1763")
 end
 
 
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
-	yyvsp106 := yyvsp106 + 1
-	yyvsp2 := yyvsp2 -1
-	if yyvsp106 >= yyvsc106 then
-		if yyvs106 = Void then
+	yyvsp105 := yyvsp105 + 1
+	yyvsp5 := yyvsp5 -1
+	if yyvsp105 >= yyvsc105 then
+		if yyvs105 = Void then
 			debug ("GEYACC")
-				std.error.put_line ("Create yyvs106")
+				std.error.put_line ("Create yyvs105")
 			end
-			create yyspecial_routines106
-			yyvsc106 := yyInitial_yyvs_size
-			yyvs106 := yyspecial_routines106.make (yyvsc106)
+			create yyspecial_routines105
+			yyvsc105 := yyInitial_yyvs_size
+			yyvs105 := yyspecial_routines105.make (yyvsc105)
 		else
 			debug ("GEYACC")
-				std.error.put_line ("Resize yyvs106")
+				std.error.put_line ("Resize yyvs105")
 			end
-			yyvsc106 := yyvsc106 + yyInitial_yyvs_size
-			yyvs106 := yyspecial_routines106.resize (yyvs106, yyvsc106)
+			yyvsc105 := yyvsc105 + yyInitial_yyvs_size
+			yyvs105 := yyspecial_routines105.resize (yyvs105, yyvsc105)
 		end
 	end
-	yyvs106.put (yyval106, yyvsp106)
+	yyvs105.put (yyval105, yyvsp105)
 end
 when 397 then
---|#line 1726 "bon_parser.y"
+--|#line 1764 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1726")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1764")
+end
+
+
+if yy_parsing_status >= yyContinue then
+	yyssp := yyssp - 1
+	yyvsp105 := yyvsp105 + 1
+	yyvsp2 := yyvsp2 -1
+	if yyvsp105 >= yyvsc105 then
+		if yyvs105 = Void then
+			debug ("GEYACC")
+				std.error.put_line ("Create yyvs105")
+			end
+			create yyspecial_routines105
+			yyvsc105 := yyInitial_yyvs_size
+			yyvs105 := yyspecial_routines105.make (yyvsc105)
+		else
+			debug ("GEYACC")
+				std.error.put_line ("Resize yyvs105")
+			end
+			yyvsc105 := yyvsc105 + yyInitial_yyvs_size
+			yyvs105 := yyspecial_routines105.resize (yyvs105, yyvsc105)
+		end
+	end
+	yyvs105.put (yyval105, yyvsp105)
+end
+when 398 then
+--|#line 1766 "bon_parser.y"
+debug ("GEYACC")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1766")
 end
 
 
@@ -9747,10 +9733,10 @@ if yy_parsing_status >= yyContinue then
 	end
 	yyvs1.put (yyval1, yyvsp1)
 end
-when 398 then
---|#line 1727 "bon_parser.y"
+when 399 then
+--|#line 1767 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1727")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1767")
 end
 
 
@@ -9776,10 +9762,10 @@ if yy_parsing_status >= yyContinue then
 	end
 	yyvs1.put (yyval1, yyvsp1)
 end
-when 399 then
---|#line 1729 "bon_parser.y"
+when 400 then
+--|#line 1769 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1729")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1769")
 end
 
 create yyval72.make_plus 
@@ -9805,10 +9791,10 @@ if yy_parsing_status >= yyContinue then
 	end
 	yyvs72.put (yyval72, yyvsp72)
 end
-when 400 then
---|#line 1730 "bon_parser.y"
+when 401 then
+--|#line 1770 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1730")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1770")
 end
 
 create yyval72.make_minus 
@@ -9834,39 +9820,10 @@ if yy_parsing_status >= yyContinue then
 	end
 	yyvs72.put (yyval72, yyvsp72)
 end
-when 401 then
---|#line 1733 "bon_parser.y"
-debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1733")
-end
-
-
-if yy_parsing_status >= yyContinue then
-	yyssp := yyssp - 1
-	yyvsp6 := yyvsp6 + 1
-	yyvsp1 := yyvsp1 -1
-	if yyvsp6 >= yyvsc6 then
-		if yyvs6 = Void then
-			debug ("GEYACC")
-				std.error.put_line ("Create yyvs6")
-			end
-			create yyspecial_routines6
-			yyvsc6 := yyInitial_yyvs_size
-			yyvs6 := yyspecial_routines6.make (yyvsc6)
-		else
-			debug ("GEYACC")
-				std.error.put_line ("Resize yyvs6")
-			end
-			yyvsc6 := yyvsc6 + yyInitial_yyvs_size
-			yyvs6 := yyspecial_routines6.resize (yyvs6, yyvsc6)
-		end
-	end
-	yyvs6.put (yyval6, yyvsp6)
-end
 when 402 then
---|#line 1734 "bon_parser.y"
+--|#line 1773 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1734")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1773")
 end
 
 
@@ -9893,9 +9850,38 @@ if yy_parsing_status >= yyContinue then
 	yyvs6.put (yyval6, yyvsp6)
 end
 when 403 then
---|#line 1737 "bon_parser.y"
+--|#line 1774 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1737")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1774")
+end
+
+
+if yy_parsing_status >= yyContinue then
+	yyssp := yyssp - 1
+	yyvsp6 := yyvsp6 + 1
+	yyvsp1 := yyvsp1 -1
+	if yyvsp6 >= yyvsc6 then
+		if yyvs6 = Void then
+			debug ("GEYACC")
+				std.error.put_line ("Create yyvs6")
+			end
+			create yyspecial_routines6
+			yyvsc6 := yyInitial_yyvs_size
+			yyvs6 := yyspecial_routines6.make (yyvsc6)
+		else
+			debug ("GEYACC")
+				std.error.put_line ("Resize yyvs6")
+			end
+			yyvsc6 := yyvsc6 + yyInitial_yyvs_size
+			yyvs6 := yyspecial_routines6.resize (yyvs6, yyvsc6)
+		end
+	end
+	yyvs6.put (yyval6, yyvsp6)
+end
+when 404 then
+--|#line 1777 "bon_parser.y"
+debug ("GEYACC")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1777")
 end
 
 
@@ -9904,10 +9890,10 @@ if yy_parsing_status >= yyContinue then
 	yyvsp1 := yyvsp1 -2
 	yyvs3.put (yyval3, yyvsp3)
 end
-when 404 then
---|#line 1740 "bon_parser.y"
+when 405 then
+--|#line 1780 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1740")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1780")
 end
 
 
@@ -9916,10 +9902,10 @@ if yy_parsing_status >= yyContinue then
 	yyvsp1 := yyvsp1 -1
 	yyvs4.put (yyval4, yyvsp4)
 end
-when 405 then
---|#line 1743 "bon_parser.y"
+when 406 then
+--|#line 1783 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1743")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1783")
 end
 
 
@@ -9928,22 +9914,10 @@ if yy_parsing_status >= yyContinue then
 	yyvsp1 := yyvsp1 -1
 	yyvs5.put (yyval5, yyvsp5)
 end
-when 406 then
---|#line 1749 "bon_parser.y"
-debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1749")
-end
-
-create yyval2.make_from_string(last_string_constant) 
-if yy_parsing_status >= yyContinue then
-	yyssp := yyssp - 3
-	yyvsp1 := yyvsp1 -2
-	yyvs2.put (yyval2, yyvsp2)
-end
 when 407 then
---|#line 1752 "bon_parser.y"
+--|#line 1789 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1752")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1789")
 end
 
 create yyval2.make_from_string(last_string_constant) 
@@ -9953,20 +9927,21 @@ if yy_parsing_status >= yyContinue then
 	yyvs2.put (yyval2, yyvsp2)
 end
 when 408 then
---|#line 1754 "bon_parser.y"
+--|#line 1792 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1754")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1792")
 end
 
-
+create yyval2.make_from_string(last_string_constant) 
 if yy_parsing_status >= yyContinue then
-	yyssp := yyssp - 1
-	yyvs1.put (yyval1, yyvsp1)
+	yyssp := yyssp - 3
+	yyvsp1 := yyvsp1 -2
+	yyvs2.put (yyval2, yyvsp2)
 end
 when 409 then
---|#line 1756 "bon_parser.y"
+--|#line 1794 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1756")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1794")
 end
 
 
@@ -9975,20 +9950,20 @@ if yy_parsing_status >= yyContinue then
 	yyvs1.put (yyval1, yyvsp1)
 end
 when 410 then
---|#line 1759 "bon_parser.y"
+--|#line 1796 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1759")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1796")
 end
 
-yyval2 := last_identifier 
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
-	yyvs2.put (yyval2, yyvsp2)
+	yyvs1.put (yyval1, yyvsp1)
 end
 when 411 then
---|#line 1761 "bon_parser.y"
+--|#line 1799 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1761")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1799")
 end
 
 yyval2 := last_identifier 
@@ -9997,9 +9972,20 @@ if yy_parsing_status >= yyContinue then
 	yyvs2.put (yyval2, yyvsp2)
 end
 when 412 then
---|#line 1764 "bon_parser.y"
+--|#line 1801 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1764")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1801")
+end
+
+yyval2 := last_identifier 
+if yy_parsing_status >= yyContinue then
+	yyssp := yyssp - 1
+	yyvs2.put (yyval2, yyvsp2)
+end
+when 413 then
+--|#line 1804 "bon_parser.y"
+debug ("GEYACC")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1804")
 end
 
 yyval4 := last_integer 
@@ -10007,21 +9993,10 @@ if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvs4.put (yyval4, yyvsp4)
 end
-when 413 then
---|#line 1864 "bon_parser.y"
-debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1864")
-end
-
-
-if yy_parsing_status >= yyContinue then
-	yyssp := yyssp - 1
-	yyvs1.put (yyval1, yyvsp1)
-end
 when 414 then
---|#line 1865 "bon_parser.y"
+--|#line 1904 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1865")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1904")
 end
 
 
@@ -10030,9 +10005,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs1.put (yyval1, yyvsp1)
 end
 when 415 then
---|#line 1866 "bon_parser.y"
+--|#line 1905 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1866")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1905")
 end
 
 
@@ -10041,9 +10016,20 @@ if yy_parsing_status >= yyContinue then
 	yyvs1.put (yyval1, yyvsp1)
 end
 when 416 then
---|#line 1868 "bon_parser.y"
+--|#line 1906 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1868")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1906")
+end
+
+
+if yy_parsing_status >= yyContinue then
+	yyssp := yyssp - 1
+	yyvs1.put (yyval1, yyvsp1)
+end
+when 417 then
+--|#line 1908 "bon_parser.y"
+debug ("GEYACC")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1908")
 end
 
 
@@ -10052,10 +10038,10 @@ if yy_parsing_status >= yyContinue then
 	yyvsp2 := yyvsp2 -2
 	yyvs1.put (yyval1, yyvsp1)
 end
-when 417 then
---|#line 1870 "bon_parser.y"
+when 418 then
+--|#line 1910 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1870")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1910")
 end
 
 
@@ -10064,10 +10050,10 @@ if yy_parsing_status >= yyContinue then
 	yyvsp2 := yyvsp2 -1
 	yyvs1.put (yyval1, yyvsp1)
 end
-when 418 then
---|#line 1872 "bon_parser.y"
+when 419 then
+--|#line 1912 "bon_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1872")
+	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 1912")
 end
 
 
@@ -10090,7 +10076,7 @@ end
 			-- Execute error action.
 		do
 			inspect yy_act
-			when 589 then
+			when 590 then
 					-- End-of-file expected action.
 				report_eof_expected_error
 			else
@@ -10172,29 +10158,29 @@ feature {NONE} -- Table templates
 			  265,  265,  265,  265,  249,  249,  249,  150,  152,  154,
 
 			  153,  155,  151,  149,  149,  128,  147,  147,  121,  145,
-			  270,  277,  277,  273,  273,  272,  274,  275,  276,  276,
-			  280,  281,  282,  282,  283,  278,  278,  305,  306,  307,
-			  307,  308,  140,  140,  140,  140,  353,  353,  354,  354,
-			  355,  355,  356,  356,  357,  358,  358,  358,  359,  360,
-			  361,  279,  302,  303,  304,  304,  284,  284,  284,  284,
-			  284,  292,  293,  294,  295,  296,  296,  297,  300,  300,
-			  298,  299,  301,  301,  285,  286,  287,  287,  288,  288,
+			  270,  279,  279,  273,  273,  272,  276,  277,  278,  278,
+			  282,  283,  284,  284,  285,  280,  280,  314,  315,  316,
+			  316,  317,  140,  140,  140,  140,  289,  289,  297,  297,
+			  301,  301,  311,  311,  310,  312,  312,  312,  274,  275,
+			  313,  281,  307,  308,  309,  309,  286,  286,  286,  286,
+			  286,  295,  296,  298,  299,  300,  300,  302,  305,  305,
+			  303,  304,  306,  306,  287,  288,  290,  290,  291,  291,
 			  236,  236,  237,  238,  239,  240,  240,  235,  242,  242,
 			  131,  131,  241,  243,  243,  244,  245,  246,  247,  247,
 
-			  248,  248,  290,  290,  290,  290,  289,  289,  289,  289,
-			  289,  289,  289,  289,  289,  289,  289,  289,  289,  289,
-			  289,  289,  289,  289,  289,  309,  310,  311,  311,  312,
-			  312,  313,  314,  314,  314,  314,  315,  362,  362,  316,
-			  317,  318,  318,  319,  319,  320,  321,  322,  322,  323,
-			  324,  325,  326,  326,  327,  329,  330,  331,  331,  332,
-			  333,  333,  334,  335,  336,  337,  337,  338,  338,  338,
-			  328,  339,  340,  341,  341,  341,  342,  343,  344,  345,
-			  345,  346,  346,  347,  347,  348,  349,  350,  350,  350,
-			  350,  350,  351,  351,  351,  351,  351,  363,  363,  291,
+			  248,  248,  293,  293,  293,  293,  292,  292,  292,  292,
+			  292,  292,  292,  292,  292,  292,  292,  292,  292,  292,
+			  292,  292,  292,  292,  292,  318,  319,  320,  320,  321,
+			  321,  322,  323,  324,  324,  324,  324,  329,  328,  328,
+			  330,  331,  332,  332,  325,  325,  326,  327,  333,  333,
+			  334,  335,  336,  337,  337,  338,  340,  341,  342,  342,
+			  343,  344,  344,  345,  346,  347,  348,  348,  349,  349,
+			  349,  339,  350,  351,  352,  352,  352,  353,  354,  355,
+			  356,  356,  357,  357,  358,  358,  359,  360,  361,  361,
+			  361,  361,  361,  362,  362,  362,  362,  362,  364,  364,
 
-			  291,  115,  115,  119,  120,  124,  139,  138,  364,  365,
-			  132,  133,  123,  352,  352,  352,  366,  367,  368, yyDummy>>)
+			  294,  294,  115,  115,  119,  120,  124,  139,  138,  365,
+			  366,  132,  133,  123,  363,  363,  363,  367,  368,  369, yyDummy>>)
 		end
 
 	yytypes1_template: SPECIAL [INTEGER]
@@ -10248,24 +10234,24 @@ feature {NONE} -- Table templates
 			    1,   51,    1,   65,   61,    1,   50,   65,   65,    1,
 			   66,   66,   67,   52,   65,    1,   25,   25,    1,   64,
 			   66,    1,   25,   39,    1,    1,    1,    1,    1,    1,
-			    1,    1,    1,    1,    6,    3,    4,    5,    2,   39,
-			   64,   69,   72,   78,   78,   79,   80,   81,   82,   89,
-			   90,   90,   90,   95,   96,   97,   99,  105,  106,    1,
-			    1,    1,   67,   50,    1,    1,    1,    1,    2,   76,
-			   76,   77,    3,   81,    3,    4,   81,  100,  100,  101,
-			  102,  103,  104,   81,   78,   69,    2,   91,   91,   92,
-			    1,    2,   18,   18,   83,   83,   86,   87,   88,    5,
+			    1,    1,    1,    1,    6,    3,    4,    5,    2,    2,
+			   64,   69,   72,   64,   64,   79,   80,   81,   81,   82,
+			   83,   88,   89,   89,   89,   94,   95,   96,   98,  104,
+			  105,    1,    1,   67,   50,    1,    1,    1,    1,    2,
+			   77,   77,   78,    3,   81,    3,    4,   81,   99,   99,
+			  100,  101,  102,  103,   81,   64,   69,    2,   18,   18,
+			   84,   84,   85,   86,   87,    2,   90,   90,   91,    1,
 
-			    4,   57,   76,    1,    1,    1,    1,    1,  100,    1,
-			   81,    1,   93,   93,   91,   18,    1,    1,    1,   84,
-			   84,   83,   53,    1,   77,    3,    4,   72,    1,    1,
-			   79,   81,   94,   94,    1,    1,   52,   81,   89,   95,
-			   98,   99,   80,    1,   85,    1,   52,    1,   73,    1,
-			  101,   94,    1,   92,    2,   80,   86,    1,   73,   39,
-			    1,    2,    1,    1,   74,   74,   75,    1,   81,    1,
-			   18,   18,   74,    1,    1,    1,    1,    1,    1,    1,
-			    1,   68,    1,   52,   75,   78,   78,    1,    1,    8,
-			    1,    1, yyDummy>>)
+			    5,    4,   57,   77,    1,    1,    1,    1,    1,   99,
+			    1,   81,   18,    1,    1,    1,   81,   81,   84,    1,
+			   92,   92,   90,   53,   52,   78,    3,    4,   72,    1,
+			    1,   79,    1,   52,   81,   88,   94,   97,   98,   81,
+			    1,   81,    1,   81,   93,   93,    1,   52,    1,   73,
+			   73,  100,    2,   81,   85,   93,    1,   91,    1,   73,
+			   39,    1,    2,    1,    1,   74,   74,   74,   75,   81,
+			    1,   18,   18,    1,    1,   64,   64,   76,   76,   76,
+			   76,   74,   68,    1,   52,   64,   64,   64,    1,   75,
+			    8,    1,    1, yyDummy>>)
 		end
 
 	yytypes2_template: SPECIAL [INTEGER]
@@ -10293,13 +10279,13 @@ feature {NONE} -- Table templates
 			Result := yyfixed_array (<<
 			    0,    0,    0,    0,  114,    0,    0,    0,    0,    0,
 			    0,    0,    0,  123,  121,    3,    1,    6,    7,   10,
-			   11,   12,   13,   14,   15,    8,    5,    9,  413,  414,
-			  415,  125,  411,  410,   37,   36,   22,  408,    0,    0,
-			  118,  115,  119,  117,  116,   22,  418,   91,    0,   22,
-			  417,   56,   22,   58,   57,   87,   22,   89,   88,  122,
-			    2,    0,   23,   25,  416,    0,  120,    0,   25,   93,
+			   11,   12,   13,   14,   15,    8,    5,    9,  414,  415,
+			  416,  125,  412,  411,   37,   36,   22,  409,    0,    0,
+			  118,  115,  119,  117,  116,   22,  419,   91,    0,   22,
+			  418,   56,   22,   58,   57,   87,   22,   89,   88,  122,
+			    2,    0,   23,   25,  417,    0,  120,    0,   25,   93,
 			   92,   22,    0,   18,    0,   25,   25,   25,  124,    4,
-			    0,   40,   24,   38,    0,   27,  409,  407,  127,   27,
+			    0,   40,   24,   38,    0,   27,  410,  408,  127,   27,
 			   25,    0,   17,   16,   27,   27,   27,    0,   39,   26,
 
 			    0,   29,    0,  203,  102,   27,    0,   19,  110,   49,
@@ -10315,7 +10301,7 @@ feature {NONE} -- Table templates
 
 			  162,  159,    0,  107,    0,   97,   90,   20,    0,    0,
 			    0,   54,   48,   84,   72,   63,   68,   70,    0,   66,
-			   46,   35,  137,    0,  135,  281,  412,    0,  208,  199,
+			   46,   35,  137,    0,  135,  281,  413,    0,  208,  199,
 			  156,    0,  183,  256,  257,    0,    0,  258,  165,  168,
 			  164,  166,    0,  171,  177,    0,  183,  172,  176,  259,
 			  260,  194,  195,  196,  160,  203,  108,    0,   99,    0,
@@ -10324,9 +10310,9 @@ feature {NONE} -- Table templates
 			  155,  209,  157,  153,  254,    0,  252,  184,    0,  180,
 			  291,  290,  179,  181,    0,    0,  167,  163,  175,  173,
 
-			    0,  201,  156,  100,  406,  112,   86,    0,   74,   82,
+			    0,  201,  156,  100,  407,  112,   86,    0,   74,   82,
 			   67,   78,   80,   59,    0,    0,  287,  284,  282,  146,
-			  147,  253,  178,  183,  182,  302,  303,  400,  399,  304,
+			  147,  253,  178,  183,  182,  302,  303,  401,  400,  304,
 			  277,    0,  276,  305,  317,  316,  315,  308,  307,  314,
 			  313,  312,  310,  311,  309,  319,  318,  320,  324,  323,
 			  322,  321,  279,    0,  278,  306,  174,    0,  158,   71,
@@ -10336,26 +10322,26 @@ feature {NONE} -- Table templates
 			   81,  301,  300,    0,  296,  298,  211,  150,  140,  183,
 
 			  295,  297,    0,    0,  189,    0,  218,  212,  216,  225,
-			  213,  220,  222,  299,  217,    0,  119,  226,  397,    0,
-			  221,    0,    0,  232,    0,  397,  397,  401,  337,  402,
-			  338,  391,  389,  390,  392,  393,  394,  395,  396,  330,
-			  214,  397,  305,  215,  325,  327,  329,  331,  332,  333,
-			    0,  353,  367,  334,  368,  369,  388,  335,  387,    0,
-			    0,  210,  223,  219,  251,  235,  234,  233,    0,  224,
-			  227,  229,    0,    0,  393,  394,  381,    0,  377,  379,
-			  382,  383,  384,  371,  326,  397,  360,  351,  355,  357,
-			  354,  272,    0,  270,  343,  339,  341,  347,  348,  405,
+			  213,  220,  222,  299,  217,    0,  119,  226,  398,    0,
+			  221,    0,    0,  232,    0,  398,  398,  402,  338,  403,
+			  339,  392,  390,  391,  393,  394,  395,  396,  331,  397,
+			  214,  398,  305,  215,  325,  327,  330,  329,  332,    0,
+			  333,  334,    0,  354,  368,  335,  369,  370,  389,  336,
+			  388,    0,  210,  223,  219,  251,  235,  234,  233,    0,
+			  224,  227,  229,    0,    0,  394,  395,  382,    0,  378,
+			  380,  383,  384,  385,  372,  326,  398,  272,    0,  270,
+			  344,  340,  342,  348,  349,  361,  352,  356,  358,  355,
 
-			  404,  236,  232,  403,  370,    0,  397,  376,  378,  397,
-			  372,  397,  359,  361,  356,  271,    0,  397,  397,    0,
-			  344,  340,    0,  238,  230,  386,  385,  398,    0,  397,
-			  328,  365,    0,  363,    0,    0,  350,    0,  374,  375,
-			  349,  388,  345,  397,  336,    0,  237,    0,  239,  119,
-			  380,  364,  362,  358,  273,  346,  342,    0,    0,  240,
-			  397,    0,  261,  268,  241,  263,  265,  242,  366,    0,
-			    0,    0,  264,  397,  397,  231,  243,    0,  245,  246,
-			  247,  262,  269,  267,  266,  248,  249,  244,  250,    0,
-			    0,    0, yyDummy>>)
+			  406,  405,  236,  232,  404,  371,    0,  398,  377,  379,
+			  398,  373,  271,    0,  398,  398,    0,  345,  341,  398,
+			  360,  362,  357,    0,  238,  230,  387,  386,  399,    0,
+			  398,  328,    0,  351,    0,  375,  376,  350,  389,  346,
+			  398,  337,    0,  366,    0,  364,    0,  237,    0,  239,
+			  119,  381,  273,  347,  343,  365,  363,  359,    0,    0,
+			  240,  398,    0,  261,  268,  241,  263,  242,  265,  367,
+			    0,    0,    0,  398,  398,  245,  246,  243,  231,    0,
+			  247,  264,  262,  269,  267,  248,  249,  250,  244,  266,
+			    0,    0,    0, yyDummy>>)
 		end
 
 	yydefgoto_template: SPECIAL [INTEGER]
@@ -10364,9 +10350,9 @@ feature {NONE} -- Table templates
 			Result := yyfixed_array (<<
 			  434,  367,  320,  194,  435,  436,  227,  198,  228,  437,
 			  363,  288,   52,  164,   41,   42,  391,   57,   58,  111,
-			   13,   14,   59,  438,  207,  468,   85,   71,  101,  128,
+			   13,   14,   59,  439,  207,  469,   85,   71,  101,  128,
 			  282,  283,  167,   36,  129,  253,  130,  131,  132,  230,
-			  302,  589,   15,   16,   60,   17,   18,   73,   74,   92,
+			  302,  590,   15,   16,   60,   17,   18,   73,   74,   92,
 			   19,   81,   82,   83,   62,   98,   63,  113,  114,  155,
 			  118,  119,  120,  158,  121,   20,  149,  150,  151,  183,
 			  152,   21,  154,  215,  189,  216,  263,  217,  265,  219,
@@ -10378,283 +10364,297 @@ feature {NONE} -- Table templates
 			  276,  224,  225,  277,  278,  317,  392,  316,  383,  384,
 			  393,  394,  401,  395,  254,  255,  239,  200,  201,  240,
 			  241,  296,  242,  243,  244,  245,  246,  292,  247,  293,
-			  373,  374,  375,  388,  324,  397,  398,  440,  419,  407,
-			  408,  414,  403,  416,  417,  410,  411,  420,  412,  248,
-			  249,  250,  441,  485,  354,  332,  442,  548,  558,  564,
-			  565,  572,  566,  492,  493,  571,  515,  285,  286,  321,
-			  469,  470,  502,  471,  443,  444,  484,  445,  446,  447,
+			  373,  374,  375,  388,  324,  397,  398,  440,  419,  575,
+			  576,  407,  408,  414,  403,  416,  417,  410,  411,  420,
+			  412,  248,  249,  250,  524,  441,  486,  354,  332,  442,
+			  549,  559,  550,  565,  566,  581,  567,  568,  488,  489,
+			  572,  512,  285,  286,  321,  577,  578,  579,  580,  470,
 
-			  448,  494,  495,  521,  519,  520,  544,  496,  497,  498,
-			  449,  450,  451,  452,  487,  488,  514,  489,  512,  513,
-			  532,  533,  551,  453,  454,  455,  540,  456,  477,  478,
-			  508,  479,  480,  481,  482,  457,  458,   27,  523,  549,
-			  567,  575,  576,  577,  578,  579,  580,  459,  460,   39,
-			   87,   28,   29,   30, yyDummy>>)
+			  471,  503,  472,  443,  444,  485,  445,  446,  447,  448,
+			  516,  517,  541,  449,  450,  490,  491,  518,  492,  493,
+			  494,  451,  452,  453,  454,  496,  497,  522,  498,  520,
+			  521,  544,  545,  555,  455,  456,  457,  537,  458,  478,
+			  479,  509,  480,  481,  482,  483,  459,  460,   27,  461,
+			   39,   87,   28,   29,   30, yyDummy>>)
 		end
 
 	yypact_template: SPECIAL [INTEGER]
 			-- Template for `yypact'
 		once
 			Result := yyfixed_array (<<
-			  270,  386,   31,  255,   60,   31,  255,   31,   31,   31,
-			  255,   35,   89, -32768, -32768, -32768, -32768, -32768, -32768, -32768,
+			  666,  376,   68,  262,   25,   68,  262,   68,   68,   68,
+			  262,   79,   65, -32768, -32768, -32768, -32768, -32768, -32768, -32768,
 			 -32768, -32768, -32768, -32768, -32768, -32768, -32768, -32768, -32768, -32768,
-			 -32768, -32768, -32768, -32768, -32768, -32768,  350, -32768,  255,  384,
-			 -32768, -32768,   71, -32768, -32768,  350, -32768,   13,  368,  350,
-			 -32768, -32768,  350, -32768, -32768, -32768,  350, -32768, -32768,   71,
-			  270,   76, -32768,  349, -32768,  308, -32768,  367,  349, -32768,
-			 -32768,  350,   89, -32768,  357,  349,  349,  349, -32768, -32768,
-			  303, -32768, -32768, -32768,  255,  326, -32768, -32768, -32768,  326,
-			  349,  366,  368, -32768,  326,  326,  326,  255,  275, -32768,
+			 -32768, -32768, -32768, -32768, -32768, -32768,  336, -32768,  262,  375,
+			 -32768, -32768,   36, -32768, -32768,  336, -32768,   35,  349,  336,
+			 -32768, -32768,  336, -32768, -32768, -32768,  336, -32768, -32768,   36,
+			  666,  102, -32768,  329, -32768,  293, -32768,  360,  329, -32768,
+			 -32768,  336,   65, -32768,  339,  329,  329,  329, -32768, -32768,
+			  285, -32768, -32768, -32768,  262,  299, -32768, -32768, -32768,  299,
+			  329,  347,  349, -32768,  299,  299,  299,  262,  260, -32768,
 
-			  255,  346,  348,  203,  289,  326,   35, -32768, -32768,  335,
-			  333, -32768, -32768, -32768, -32768,   76, -32768,   35, -32768, -32768,
-			 -32768,  343, -32768, -32768, -32768, -32768, -32768,   35,  356,   74,
-			  332,  330,  353, -32768, -32768, -32768, -32768, -32768, -32768, -32768,
-			  255, -32768, -32768, -32768,  340,  312,  341,   72,   89, -32768,
-			 -32768, -32768,  346,   89,  310,  262, -32768,  339,  346, -32768,
-			  264,   89, -32768,  249, -32768, -32768, -32768, -32768,  258,  257,
-			  331,  289, -32768,  255, -32768, -32768, -32768,  325,  255, -32768,
-			   89, -32768,  323,  335,  321, -32768, -32768, -32768,  255,  327,
-			  255,  255, -32768, -32768,   71,  240, -32768,  300, -32768,   45,
+			  262,  316,  325,  192,  266,  299,   79, -32768, -32768,  310,
+			  315, -32768, -32768, -32768, -32768,  102, -32768,   79, -32768, -32768,
+			 -32768,  319, -32768, -32768, -32768, -32768, -32768,   79,  330,   94,
+			  311,  308,  327, -32768, -32768, -32768, -32768, -32768, -32768, -32768,
+			  262, -32768, -32768, -32768,  318,  282,  313,   51,   65, -32768,
+			 -32768, -32768,  316,   65,  280,  231, -32768,  312,  316, -32768,
+			  243,   65, -32768,  222, -32768, -32768, -32768, -32768,  227,  226,
+			  302,  266, -32768,  262, -32768, -32768, -32768,  295,  262, -32768,
+			   65, -32768,  298,  310,  292, -32768, -32768, -32768,  262,  301,
+			  262,  262, -32768, -32768,   36,  210, -32768,  286, -32768,   42,
 
-			 -32768,  -22,  255, -32768,  301,  312, -32768, -32768,  338,  319,
-			  255, -32768, -32768,  238, -32768, -32768, -32768, -32768,  255,  316,
-			 -32768, -32768,  320,   31,  264, -32768, -32768,  216, -32768, -32768,
-			  255,  103,   89, -32768, -32768,  225,  221, -32768, -32768, -32768,
-			 -32768, -32768,  212, -32768, -32768,  233,   89, -32768,   -7, -32768,
-			 -32768,  210, -32768, -32768, -32768, -32768, -32768,   89, -32768,  308,
-			   89, -32768,   89,  209, -32768, -32768, -32768, -32768,  255,  280,
-			 -32768, -32768, -32768,  232, -32768, -32768, -32768,  206, -32768,  251,
-			 -32768, -32768, -32768, -32768, -32768,  200, -32768, -32768,  201, -32768,
-			  480,  395, -32768, -32768,   75,  534,  202, -32768, -32768, -32768,
+			 -32768,   -4,  262, -32768,  270,  282, -32768, -32768,  307,  291,
+			  262, -32768, -32768,  209, -32768, -32768, -32768, -32768,  262,  289,
+			 -32768, -32768,  290,   68,  243, -32768, -32768,  202, -32768, -32768,
+			  262,  140,   65, -32768, -32768,  198,  197, -32768, -32768, -32768,
+			 -32768, -32768,  196, -32768, -32768,  219,   65, -32768,  -20, -32768,
+			 -32768,  193, -32768, -32768, -32768, -32768, -32768,   65, -32768,  293,
+			   65, -32768,   65,  194, -32768, -32768, -32768, -32768,  262,  261,
+			 -32768, -32768, -32768,  216, -32768, -32768, -32768,  186, -32768,  236,
+			 -32768, -32768, -32768, -32768, -32768,  189, -32768, -32768,  185, -32768,
+			  445,  422, -32768, -32768,   64,  521,  187, -32768, -32768, -32768,
 
-			  300, -32768,  255, -32768, -32768, -32768, -32768,  255,  199, -32768,
-			 -32768, -32768, -32768, -32768,  269,   89, -32768,  196, -32768, -32768,
-			  253,  193, -32768,   66, -32768, -32768, -32768, -32768, -32768, -32768,
-			 -32768,  181, -32768, -32768, -32768, -32768, -32768, -32768, -32768, -32768,
+			  286, -32768,  262, -32768, -32768, -32768, -32768,  262,  184, -32768,
+			 -32768, -32768, -32768, -32768,  257,   65, -32768,  183, -32768, -32768,
+			  240,  179, -32768,   88, -32768, -32768, -32768, -32768, -32768, -32768,
+			 -32768,  174, -32768, -32768, -32768, -32768, -32768, -32768, -32768, -32768,
 			 -32768, -32768, -32768, -32768, -32768, -32768, -32768, -32768, -32768, -32768,
-			 -32768, -32768, -32768,  176, -32768, -32768,   77,  177, -32768, -32768,
-			  255,  180, -32768,  165, -32768,   31, -32768,   71,  103, -32768,
-			  161, -32768, -32768, -32768,  158, -32768, -32768, -32768, -32768, -32768,
-			 -32768,  255,   89, -32768, -32768, -32768,   43, -32768,  163, -32768,
-			 -32768, -32768, -32768,  150, -32768, -32768,  208, -32768, -32768,   66,
+			 -32768, -32768, -32768,  170, -32768, -32768,   31,  173, -32768, -32768,
+			  262,  168, -32768,  166, -32768,   68, -32768,   36,  140, -32768,
+			  165, -32768, -32768, -32768,  160, -32768, -32768, -32768, -32768, -32768,
+			 -32768,  262,   65, -32768, -32768, -32768,  188, -32768,  163, -32768,
+			 -32768, -32768, -32768,  156, -32768, -32768,  214, -32768, -32768,   88,
 
-			 -32768,  152,   89,  205, -32768,   89, -32768, -32768, -32768,  148,
-			  204, -32768, -32768, -32768,  145,   89,   71, -32768,  189,  213,
-			  205,   89,  136,   21,  236,  318,  318, -32768, -32768, -32768,
+			 -32768,  153,   65,  208, -32768,   65, -32768, -32768, -32768,  150,
+			  207, -32768, -32768, -32768,  149,   65,   36, -32768,  267,  218,
+			  208,   65,  136,   34,  233,  337,  337, -32768, -32768, -32768,
 			 -32768, -32768, -32768, -32768, -32768, -32768, -32768, -32768, -32768, -32768,
-			 -32768,  318, -32768, -32768, -32768, -32768, -32768,  534, -32768, -32768,
-			  143, -32768,  127, -32768, -32768, -32768, -32768, -32768, -32768,   76,
-			  198, -32768, -32768, -32768, -32768, -32768, -32768, -32768,  103, -32768,
-			 -32768, -32768,  123,  512,  162,  157,  534,  114, -32768, -32768,
-			 -32768, -32768, -32768,  534,  116,  318,   98, -32768, -32768, -32768,
-			 -32768, -32768,  112, -32768,  129, -32768, -32768, -32768, -32768, -32768,
+			 -32768,  337, -32768, -32768, -32768, -32768, -32768, -32768,  521,  102,
+			 -32768, -32768,  143, -32768,  114, -32768, -32768, -32768, -32768, -32768,
+			 -32768,  171, -32768, -32768, -32768, -32768, -32768, -32768, -32768,  140,
+			 -32768, -32768, -32768,  122,  491,  155,  144,  521,  112, -32768,
+			 -32768, -32768, -32768, -32768,  521,  109,  337, -32768,   10, -32768,
+			  146, -32768, -32768, -32768, -32768,  101, -32768, -32768, -32768, -32768,
 
-			 -32768,  -22,  151, -32768, -32768,   95,   92, -32768,   83,  189,
-			  534,  318, -32768, -32768,   63,   67,   89,  318,  318,  118,
-			 -32768,   61,   89,   53, -32768, -32768, -32768, -32768,  147,  318,
-			 -32768,  534,   47, -32768,  143,   76, -32768,  534,  577,  555,
-			 -32768,   25, -32768,  318, -32768,   76, -32768,   14, -32768,   71,
-			 -32768,   -3, -32768, -32768, -32768, -32768, -32768,   89,  -17,   -4,
-			  318,  -15, -32768,   76, -32768, -32768, -32768,    5,  534,  103,
-			    4,   89,   -4,  189,  189, -32768, -32768,    2,   30, -32768,
-			 -32768, -32768, -32768, -32768, -32768, -32768, -32768, -32768, -32768,   52,
-			   44, -32768, yyDummy>>)
+			 -32768, -32768,   -4,   20, -32768, -32768,   92,   78, -32768,   99,
+			  267,  521,   89,   65,  337,  337,  154, -32768,   85,  337,
+			 -32768, -32768,   69,   65,   54, -32768, -32768, -32768, -32768,  147,
+			  337, -32768,  102, -32768,  521,  582,  542, -32768,    2, -32768,
+			  337, -32768,  102,  521,   40, -32768,  143, -32768,   32, -32768,
+			   36, -32768, -32768, -32768, -32768,   11, -32768, -32768,   65,    3,
+			  -19,  337,  -31, -32768,  102, -32768, -32768,   22, -32768,  521,
+			  140,   16,   65,  267,  267,   30, -32768, -32768, -32768,   43,
+			 -32768,  -19, -32768, -32768, -32768, -32768, -32768, -32768, -32768, -32768,
+			   57,   46, -32768, yyDummy>>)
 		end
 
 	yypgoto_template: SPECIAL [INTEGER]
 			-- Template for `yypgoto'
 		once
 			Result := yyfixed_array (<<
-			 -32768, -32768, -32768,  235, -381, -397, -166, -32768, -32768, -32768,
-			   10, -32768,  -33, -32768, -32768, -32768, -192,    1,    9,  271,
-			  399, -32768, -32768,   20, -132, -32768,  137, -32768,  169, -32768,
-			 -32768,  155, -32768,  273, -32768, -32768, -183, -32768, -32768, -32768,
-			 -32768, -32768,  394, -32768, -32768, -32768, -32768,  360, -32768, -32768,
-			 -32768,  336, -32768, -32768, -32768, -32768,  -24, -32768, -32768, -32768,
-			  292, -32768, -32768, -32768,  297, -32768,  265, -32768, -32768, -32768,
-			 -32768, -32768, -32768, -32768, -32768, -32768, -32768,  140, -32768, -32768,
-			 -32768, -32768,   81, -32768, -32768, -32768, -32768,   64, -233, -32768,
-			 -32768, -32768,  241, -32768, -32768, -32768, -32768, -32768,  272, -32768,
+			 -32768, -32768, -32768,  211, -376, -386, -162, -32768, -32768, -32768,
+			    0, -32768,   58, -32768, -32768, -32768, -197,   -2,    6,  244,
+			  374, -382, -32768,   17,   -9, -32768,  120, -32768,  145, -32768,
+			 -32768,  128, -32768,  256, -32768, -32768, -159, -32768, -32768, -32768,
+			 -32768, -32768,  368, -32768, -32768, -32768, -32768,  335, -32768, -32768,
+			 -32768,  314, -32768, -32768, -32768, -32768,  -27, -32768, -32768, -32768,
+			  268, -32768, -32768, -32768,  271, -32768,  238, -32768, -32768, -32768,
+			 -32768, -32768, -32768, -32768, -32768, -32768, -32768,  115, -32768, -32768,
+			 -32768, -32768,   59, -32768, -32768, -32768, -32768,   39, -236, -32768,
+			 -32768, -32768,  212, -32768, -32768, -32768, -32768, -32768,  245, -32768,
 
-			 -32768, -32768, -32768, -32768, -32768, -32768, -32768,    0, -193, -32768,
-			 -32768,  170, -32768, -32768, -32768, -32768, -32768, -32768, -32768, -32768,
-			   73, -32768, -32768, -32768, -32768, -32768, -311, -32768, -32768, -32768,
-			 -32768, -32768, -32768, -403,  -64, -32768,   80, -32768, -32768, -32768,
-			 -32768, -32768, -32768, -32768, -32768, -32768, -32768,  188, -32768, -304,
-			   34, -32768, -32768, -32768, -32768, -32768, -32768, -32768, -32768, -32768,
-			 -32768, -32768, -32768, -32768, -32768, -32768, -32768, -32768,   11, -224,
-			 -32768, -32768,  128,  135, -32768, -32768, -258, -32768, -32768, -32768,
-			 -32768, -32768, -153, -146, -32768, -32768, -32768,  -52, -32768, -32768,
-			 -32768, -32768, -32768,  -87, -357, -32768, -32768,  -99, -472, -384,
+			 -32768, -32768, -32768, -32768, -32768, -32768, -32768,   38, -193, -32768,
+			 -32768,  148, -32768, -32768, -32768, -32768, -32768, -32768, -32768, -32768,
+			   49, -32768, -32768, -32768, -32768, -32768, -284, -32768, -32768, -32768,
+			 -32768, -32768, -32768, -389,  -89, -32768,   53, -32768, -32768, -32768,
+			 -32768, -32768, -32768, -32768, -32768, -32768, -32768,  164, -32768, -304,
+			   13, -32768, -32768, -32768, -32768, -32768, -32768, -32768, -32768, -32768,
+			 -167, -32768, -32768, -32768, -32768, -32768, -32768, -32768, -32768, -32768,
+			  -14, -227, -32768, -32768, -32768,  110,  107, -32768, -32768, -262,
+			 -32768, -32768, -32768, -32768, -32768, -32768, -32768, -180, -164, -32768,
+			 -32768, -32768,  -73, -32768, -32768, -32768, -32768, -32768, -32768, -32768,
 
-			 -32768, -32768, -32768, -32768, -32768, -32768, -32768, -134, -32768, -32768,
-			 -113, -32768, -32768, -32768, -32768, -32768, -32768, -127, -32768, -32768,
-			 -32768, -32768, -32768, -114, -32768, -32768, -32768, -115, -32768, -32768,
-			 -32768, -130, -32768, -32768, -32768, -32768, -32768, -32768, -32768, -32768,
-			 -32768, -32768, -32768, -32768, -32768, -182, -32768, -32768, -111, -135,
-			  138, -32768, -32768, -32768, yyDummy>>)
+			 -32768, -32768, -108, -374, -32768, -32768, -116, -32768, -452, -383,
+			 -32768, -32768, -32768, -32768, -32768, -32768, -32768, -32768, -149, -32768,
+			 -32768, -122, -32768, -32768, -32768, -32768, -32768, -32768, -155, -32768,
+			 -32768, -32768, -32768, -32768, -124, -32768, -32768, -32768, -125, -32768,
+			 -32768, -32768, -143, -32768, -32768, -32768, -32768, -32768, -32768, -121,
+			 -137,  126, -32768, -32768, -32768, yyDummy>>)
 		end
 
 	yytable_template: SPECIAL [INTEGER]
 			-- Template for `yytable'
 		once
 			Result := yyfixed_array (<<
-			   26,  222,  413,   34,  364,   43,   34,  284,   34,   34,
-			   34,   35,   53,   44,   35,  229,   35,   35,   35,  372,
-			   54,   68,   56,   38,  303,   75,   46,  305,   76,  475,
-			   50,  273,   77,  238,   33,  587,  333,  355,   33,  574,
-			  289,  473,  476,  208,  591,  474,  542,   90,  237,  467,
-			  226,  252,  590,  466,  289,   70,  208,  483,   64,  221,
-			   26,  251,   80,   33,  574,   40,  573,  208,   69,   33,
-			  256,  555,  301,  146, -373,  208,  563,   33,  261,   33,
-			  237,  465,   91,  -22,  157,  330,   61,  582,  -22,  236,
-			  562,  406,   33, -373,  160,  372,  163,  569, -170,  180,
+			   34,  222,   43,   34,  284,   34,   34,   34,   35,   53,
+			   44,   35,   56,   35,   35,   35,  413,   54,   68,  372,
+			   38,  303,   75,   46,  305,   76,  273,   50,   33,   77,
+			   40,  364,  333,  355,  237,  289,  438,  238,   26,  229,
+			  476,  208,  474,  477,   90,  237,  592,  226,  468,  289,
+			  475, -374,  467, -228,  208,   64,  574,  591,  484,   80,
+			 -228,  564,  468,  539,  574,  208,  467, -228,   33,  252,
+			 -374,   33,   91,  208,  330,  236,  588,   70,  180,  251,
+			  466,  570,   33,  573,  179, -170,  236, -170,  553,  235,
+			   69,   33,  514,  513,  466,  372,  301,   33,   26,  583,
 
-			 -170,  510,  560,  235,   99,  179,  237,   53,   32,  526,
-			  463,   51,   32,  536,  557,   54,   80,  112,   53,  546,
-			  116,  236,  234,  233,  525,  232,   54,  531,   53, -373,
-			  165,  371,  475,  537,  357,  235,   54,   32,  166,  162,
-			  369,   55,    1,   32,  387,  476,  486,  236,  474,   55,
-			   51,   32,  500,  231,  234,  233,  552,  232,  182,  547,
-			  170,  235,  329,  185,   55,  545,   32,  543,  583,  328,
-			  327,  195,  535,  273,  386,  534,  568,  326,  325,  467,
-			  234,  233,  422,  466, -228,  231,  328,  327,  529,  355,
-			  209, -228, -352,  204,  517,  516,   37,  518, -228,  330,
+			  235,   99,   32,  511,   53,   33, -374,    1,  234,  233,
+			  563,  232,   54,   80,  112,   53,  561,  116,  406,  234,
+			  233,  527,  232,   54,  533,   53,  371,  165,  438,  162,
+			  526,  534,  558,   54,  547,  166,  543,  464,  357,  231,
+			   55,  387,   32,  237,  476,   32,  495,  477,  182,  556,
+			  231,  329,  501,  185,  475,   51,   32,  170,  328,  327,
+			  548,  195,  369,   55,  146,   32,  326,  325,  273,   55,
+			   51,   32,  328,  327,  386,  157,  501,  500,  569,  422,
+			  209,  546,  221,  584,  236,  160,  355,  163,   89,  542,
+			  204,  438,  438,  256,  532,   94,   95,   96,  235,  585,
 
-			  433,  432,  431,  500,  499,   89,  511,  371,  214,  424,
-			  112,  465,   94,   95,   96,  355,  585,  586,  355, -141,
-			  509,  507,  127,  423,  274,  355,  430,  105,  429,  506,
-			  428,  126,  275,  290,  505,  125, -126,  503,  264,  490,
-			  472,  291,  287,  464,  284,  409,  461,  290,  527,  421,
-			  281,  418,  355,  402,  415,  291,  287,  405,  104,  427,
-			    1,  400,   37,  108,  109,  110,  124,  185,  399,  389,
-			  185, -184,  306,  355,  145,  382,  329,  123,   45,  355,
-			   47,   48,   49,  328,  327,  381,  379,   12,  309,  377,
-			   11,  326,  325,   10,  376,  426,    9,  425,  368,  366,
+			  586,  261,  371,  540,  530,  214,  424,  112, -141,  519,
+			  105,  127,  355,  510,  515,  355,  507,  234,  233,  508,
+			  126,  274,  355,  423,  125, -126,  499,  506,  -22,  275,
+			  290,   61,  287,  -22,  104,  264,  504,  473,  291,  108,
+			  109,  110,  284,  465,  290,  528,  287,  281,  409,  355,
+			  145,  462,  291,  421,  418,  124,  415,  185,  405,  402,
+			  185,   45,  306,   47,   48,   49,  123,  400,  399,   37,
+			 -353,  389,  355,  381,   37, -184,  382,  330,  433,  432,
+			  431,  355,  379,  377,  368,  309,  366,  376,  365,  360,
+			  362,  226,  356,  319,  313,  323,  315,  318,  322,  307,
 
-			    8,  365,  362,  424,  360,  226,    7,  356,  319,  322,
-			  355,  323,  315,  313,  307,   86,  298,  318,  300,  297,
-			    6, -352,  281,  280,  290,   37,  193,  214,  330,  433,
-			  432,  431,  291,  370,  295,    5,    4,    3,  294,    2,
-			  268,    1,  270,  262,  260,  581,  259,  173,  218,  257,
-			  223,  148,  210,  140,  212,  430,  559,  429,  206,  428,
-			  202,  196,  396,  199,  197,  117,  274,  190,  191,  188,
-			  178,  169,  161,  172,  275,  168,  159, -198,  153,  115,
-			  264,  122,  100,  290,   72,  106,   97,   84,  427,   88,
-			   93,  291,   65,   61,   31,  528,  588,  304,  -88,  550,
+			   86,  300,  298,  297,  430,  193,  429,  355,  428,  280,
+			  295,  294,  270,  268,  262,  259,  260,  173,  257,  281,
+			  223,  290,  218,  370,  214,  212,  148,  210,  206,  291,
+			  140,  202,  199,  197,  196,  117,  190,  427,    1,  188,
+			 -353,  191,  178,  582,   37,  169,  161,  330,  433,  432,
+			  431,  172,  159,  168,  329,  100, -198,  560,  122,  396,
+			  153,  328,  327,  274,  115,   72,  106,   84,   97,  326,
+			  325,  275,   93,  426,  430,  425,  429,  264,  428,   61,
+			  290,  424,   88,   65,   31,  304,  529,  551,  291,  538,
+			  536,  557,  535,  554,  531,  525,  502,  290,  309,  370,
 
-			  290,  309,  541,  539,  538,  329,  290,  553,  291,  370,
-			  530,  556,  328,  327,  291,  524,  501,  570,  439,  584,
-			  326,  325,  331,  -88,  426,  185,  425,  -88,  -88,  -88,
-			  353,  462,  424,  404,  299,  -88,  378,  522,  385,  -88,
-			  314,  380,  -88,  203,  -88,  390,  258,  359,  211,  184,
-			  192,  156,  107,  -88,   79,  -88,  -88,  358,   78,  279,
-			  491,  220,    0,  -88,    0,    0,  -88,    0,    0,    0,
-			    0,    0,  -88,  -88,    0,  -88,    0,    0,    0,    0,
-			    0,    0,    0,  -89,    0,    0,    0,    0,    0,    0,
-			    0,    0,    0,    0,    0,    0,    0,    0,    0,  -88,
+			  571,  589,  353,  290,  331,  291,  463,  427,  587,  378,
+			  299,  291,  404,  523,  385,  185,  203,  258,  314,  380,
+			  390,  211,  359,  184,  329,  -88,  192,  107,   79,  156,
+			  358,  328,  327,   78,  220,  279,    0,    0,    0,  326,
+			  325,    0,    0,  426,    0,  425,    0,  487,  -89,    0,
+			  -88,  424,    0,    0,  -88,  -88,  -88,    0,    0,    0,
+			    0,    0,  -88,    0,    0,    0,  -88,    0,    0,  -88,
+			    0,  -88,    0,  -89,    0,    0,    0,  -89,  -89,  -89,
+			  -88,    0,  -88,  -88,    0,  -89,    0,    0,    0,  -89,
+			  -88,    0,  -89,  -88,  -89,    0,    0,    0,    0,  -88,
 
-			  -88,  -88,    0,    0,    0,  -88,  -88,    0,  -89,  439,
-			    0,    0,  -89,  -89,  -89,    0,    0,  290,    0,    0,
-			  -89,    0,  352,  290,  -89,  291,    0,  -89,    0,  -89,
-			    0,  291,    0,    0,    0,    0,  554,    0,  -89,    0,
-			  -89,  -89,    0,    0,  352,    0,  491,    0,  -89,    0,
-			    0,  -89,    0,    0,    0,    0,    0,  -89,  -89,    0,
-			  -89,    0,    0,    0,  491, -334,    0,  561,    0,    0,
-			    0,    0,  290,  439,  439,    0,    0,    0,    0,    0,
-			  291,    0,    0,    0,  -89,  -89,  -89, -333,    0,    0,
-			  -89,  -89,  351,  350,  349,  348,  347,  346,  345,    0,
+			  -88,  352,  -88,  -89,    0,  -89,  -89,    0,    0,    0,
+			    0,  290,    0,  -89,    0,    0,  -89,    0,    0,  291,
+			    0,  290,  -89,  -89,    0,  -89,  -88,  -88,  -88,  291,
+			  552,  352,  -88,  -88,    0,    0,    0,    0,    0,    0,
+			  487,    0,    0,    0,    0,    0,    0,    0,    0,  -89,
+			  -89,  -89, -335,    0,    0,  -89,  -89,    0,  562,    0,
+			    0,    0,  487,    0,    0,    0,    0,    0,    0,    0,
+			  290,  351,  350,  349,  348,  347,  346,  345,  291,  344,
+			  343,  342,  341,  340,  339,  328,  327,  338,  337,  336,
+			  335,  334, -334,    0,    0,    0,    0,    0,    0,    0,
 
-			  344,  343,  342,  341,  340,  339,  328,  327,  338,  337,
-			  336,  335,  334,    0,  351,  350,  349,  348,  347,  346,
-			  345,  504,  344,  343,  342,  341,  340,  339,  328,  327,
-			  338,  337,  336,  335,  334, -334, -334, -334, -334, -334,
-			 -334, -334,    0, -334, -334, -334, -334, -334, -334, -334,
-			 -334, -334, -334, -334, -334, -334,    0, -333, -333, -333,
-			 -333, -333, -333, -333,    0, -333, -333, -333, -333, -333,
-			 -333, -333, -333, -333, -333, -333, -333, -333, yyDummy>>)
+			  505,  351,  350,  349,  348,  347,  346,  345,    0,  344,
+			  343,  342,  341,  340,  339,  328,  327,  338,  337,  336,
+			  335,  334, -335, -335, -335, -335, -335, -335, -335,    0,
+			 -335, -335, -335, -335, -335, -335, -335, -335, -335, -335,
+			 -335, -335, -335,    0,    0,    0,    0,    0,    0,    0,
+			    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,
+			    0,    0, -334, -334, -334, -334, -334, -334, -334,    0,
+			 -334, -334, -334, -334, -334, -334, -334, -334, -334, -334,
+			 -334, -334, -334,   12,    0,    0,   11,    0,    0,   10,
+			    0,    0,    9,    0,    0,    0,    8,    0,    0,    0,
+
+			    0,    0,    7,    0,    0,    0,    0,    0,    0,    0,
+			    0,    0,    0,    0,    0,    0,    6,    0,    0,    0,
+			    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,
+			    0,    5,    4,    3,    0,    2,    0,    1, yyDummy>>)
 		end
 
 	yycheck_template: SPECIAL [INTEGER]
 			-- Template for `yycheck'
 		once
 			Result := yyfixed_array (<<
-			    0,  194,  405,    2,  315,    4,    5,  231,    7,    8,
-			    9,    2,   11,    4,    5,  198,    7,    8,    9,  323,
-			   11,   45,   12,    3,  257,   49,    6,  260,   52,  426,
-			   10,  223,   56,  199,    3,   33,  294,  295,    3,   34,
-			  232,  425,  426,  178,    0,  426,  518,   71,    3,   28,
-			    5,   73,    0,   32,  246,   42,  191,  441,   38,  191,
-			   60,   83,   61,    3,   34,    5,   61,  202,   55,    3,
-			  202,  543,  255,  106,   49,  210,   80,    3,  210,    3,
-			    3,   60,   72,   40,  117,   10,   43,   83,   45,   44,
-			  107,  402,    3,   68,  127,  399,  129,  112,  105,   27,
+			    2,  194,    4,    5,  231,    7,    8,    9,    2,   11,
+			    4,    5,   12,    7,    8,    9,  405,   11,   45,  323,
+			    3,  257,   49,    6,  260,   52,  223,   10,    3,   56,
+			    5,  315,  294,  295,    3,  232,  418,  199,    0,  198,
+			  426,  178,  425,  426,   71,    3,    0,    5,   28,  246,
+			  426,   49,   32,   33,  191,   38,   34,    0,  441,   61,
+			   40,   80,   28,  515,   34,  202,   32,   47,    3,   73,
+			   68,    3,   72,  210,   10,   44,   33,   42,   27,   83,
+			   60,  112,    3,   61,   33,  105,   44,  107,  540,   58,
+			   55,    3,   82,   83,   60,  399,  255,    3,   60,   83,
 
-			  107,  485,  105,   58,   84,   33,    3,  106,   77,  506,
-			  421,   76,   77,  516,  100,  106,  115,   97,  117,  522,
-			  100,   44,   77,   78,  505,   80,  117,  511,  127,  104,
-			  129,  323,  529,  517,  300,   58,  127,   77,  129,  129,
-			   74,   75,   71,   77,  368,  529,    3,   44,  529,   75,
-			   76,   77,    5,  108,   77,   78,  109,   80,  148,  106,
-			  140,   58,   87,  153,   75,  104,   77,   49,  571,   94,
-			   95,  161,  105,  365,  367,  112,  560,  102,  103,   28,
-			   77,   78,  415,   32,   33,  108,   94,   95,  105,  447,
-			  180,   40,    3,  173,   82,   83,    7,   68,   47,   10,
+			   58,   84,   77,  486,  106,    3,  104,   71,   77,   78,
+			  107,   80,  106,  115,   97,  117,  105,  100,  402,   77,
+			   78,  507,   80,  117,  513,  127,  323,  129,  510,  129,
+			  506,  514,  100,  127,  523,  129,  519,  421,  300,  108,
+			   75,  368,   77,    3,  530,   77,    3,  530,  148,  109,
+			  108,   87,    5,  153,  530,   76,   77,  140,   94,   95,
+			  106,  161,   74,   75,  106,   77,  102,  103,  365,   75,
+			   76,   77,   94,   95,  367,  117,    5,    6,  561,  415,
+			  180,  112,  191,  572,   44,  127,  448,  129,   68,  104,
+			  173,  573,  574,  202,  105,   75,   76,   77,   58,  573,
 
-			   11,   12,   13,    5,    6,   68,  108,  399,  188,  114,
-			  190,   60,   75,   76,   77,  473,  573,  574,  476,   16,
-			  104,  107,   19,  416,  223,  483,   37,   90,   39,   72,
-			   41,   28,  223,  232,   72,   32,   33,  114,  218,  112,
-			    4,  232,  232,  107,  468,   40,   33,  246,  506,  104,
-			  230,   47,  510,   45,  106,  246,  246,  105,   89,   70,
-			   71,  111,    7,   94,   95,   96,   63,  257,  105,  111,
-			  260,  110,  262,  531,  105,  110,   87,   74,    5,  537,
-			    7,    8,    9,   94,   95,  105,  109,   17,  268,  113,
-			   20,  102,  103,   23,  113,  106,   26,  108,  105,   46,
+			  574,  210,  399,   49,  105,  188,  114,  190,   16,  108,
+			   90,   19,  474,  104,   68,  477,   72,   77,   78,  107,
+			   28,  223,  484,  416,   32,   33,  112,   72,   40,  223,
+			  232,   43,  232,   45,   89,  218,  114,    4,  232,   94,
+			   95,   96,  469,  107,  246,  507,  246,  230,   40,  511,
+			  105,   33,  246,  104,   47,   63,  106,  257,  105,   45,
+			  260,    5,  262,    7,    8,    9,   74,  111,  105,    7,
+			    3,  111,  534,  105,    7,  110,  110,   10,   11,   12,
+			   13,  543,  109,  113,  105,  268,   46,  113,  105,  105,
+			   33,    5,  105,   57,   33,  110,   80,  111,  109,  105,
 
-			   30,  105,   33,  114,  105,    5,   36,  105,   57,  109,
-			  568,  110,   80,   33,  105,    7,   83,  111,  108,  107,
-			   50,    3,  302,  107,  323,    7,   62,  307,   10,   11,
-			   12,   13,  323,  323,  113,   65,   66,   67,  113,   69,
-			   24,   71,   22,  105,   25,  569,    8,   35,   21,   48,
-			  110,   16,   29,   64,   33,   37,  549,   39,   33,   41,
-			   29,  112,  386,  106,  106,   19,  365,  105,   29,   59,
-			   29,   18,   16,   33,  365,   45,   33,   45,   45,  104,
-			  360,   33,   56,  382,   16,   19,   83,   38,   70,   22,
-			   33,  382,    8,   43,    8,  506,  578,  259,    3,  529,
+			    7,  108,   83,  107,   37,   62,   39,  569,   41,  107,
+			  113,  113,   22,   24,  105,    8,   25,   35,   48,  302,
+			  110,  323,   21,  323,  307,   33,   16,   29,   33,  323,
+			   64,   29,  106,  106,  112,   19,  105,   70,   71,   59,
+			    3,   29,   29,  570,    7,   18,   16,   10,   11,   12,
+			   13,   33,   33,   45,   87,   56,   45,  550,   33,  386,
+			   45,   94,   95,  365,  104,   16,   19,   38,   83,  102,
+			  103,  365,   33,  106,   37,  108,   39,  360,   41,   43,
+			  382,  114,   22,    8,    8,  259,  507,  530,  382,  514,
+			  514,  546,  514,  542,  510,  503,  469,  399,  381,  399,
 
-			  399,  381,  517,  517,  517,   87,  405,  534,  399,  399,
-			  509,  545,   94,   95,  405,  502,  468,  563,  418,  572,
-			  102,  103,  294,   28,  106,  415,  108,   32,   33,   34,
-			  295,  420,  114,  399,  246,   40,  356,  501,  365,   44,
-			  270,  360,   47,  171,   49,  381,  205,  307,  183,  152,
-			  158,  115,   92,   58,   60,   60,   61,  302,   59,  224,
-			  459,  190,   -1,   68,   -1,   -1,   71,   -1,   -1,   -1,
-			   -1,   -1,   77,   78,   -1,   80,   -1,   -1,   -1,   -1,
-			   -1,   -1,   -1,    3,   -1,   -1,   -1,   -1,   -1,   -1,
-			   -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,  104,
+			  564,  581,  295,  405,  294,  399,  420,   70,  575,  356,
+			  246,  405,  399,  502,  365,  415,  171,  205,  270,  360,
+			  381,  183,  307,  152,   87,    3,  158,   92,   60,  115,
+			  302,   94,   95,   59,  190,  224,   -1,   -1,   -1,  102,
+			  103,   -1,   -1,  106,   -1,  108,   -1,  449,    3,   -1,
+			   28,  114,   -1,   -1,   32,   33,   34,   -1,   -1,   -1,
+			   -1,   -1,   40,   -1,   -1,   -1,   44,   -1,   -1,   47,
+			   -1,   49,   -1,   28,   -1,   -1,   -1,   32,   33,   34,
+			   58,   -1,   60,   61,   -1,   40,   -1,   -1,   -1,   44,
+			   68,   -1,   47,   71,   49,   -1,   -1,   -1,   -1,   77,
 
-			  105,  106,   -1,   -1,   -1,  110,  111,   -1,   28,  509,
-			   -1,   -1,   32,   33,   34,   -1,   -1,  516,   -1,   -1,
-			   40,   -1,   10,  522,   44,  516,   -1,   47,   -1,   49,
-			   -1,  522,   -1,   -1,   -1,   -1,  535,   -1,   58,   -1,
-			   60,   61,   -1,   -1,   10,   -1,  545,   -1,   68,   -1,
-			   -1,   71,   -1,   -1,   -1,   -1,   -1,   77,   78,   -1,
-			   80,   -1,   -1,   -1,  563,   10,   -1,  557,   -1,   -1,
-			   -1,   -1,  571,  573,  574,   -1,   -1,   -1,   -1,   -1,
-			  571,   -1,   -1,   -1,  104,  105,  106,   10,   -1,   -1,
-			  110,  111,   80,   81,   82,   83,   84,   85,   86,   -1,
+			   78,   10,   80,   58,   -1,   60,   61,   -1,   -1,   -1,
+			   -1,  513,   -1,   68,   -1,   -1,   71,   -1,   -1,  513,
+			   -1,  523,   77,   78,   -1,   80,  104,  105,  106,  523,
+			  532,   10,  110,  111,   -1,   -1,   -1,   -1,   -1,   -1,
+			  542,   -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,  104,
+			  105,  106,   10,   -1,   -1,  110,  111,   -1,  558,   -1,
+			   -1,   -1,  564,   -1,   -1,   -1,   -1,   -1,   -1,   -1,
+			  572,   80,   81,   82,   83,   84,   85,   86,  572,   88,
+			   89,   90,   91,   92,   93,   94,   95,   96,   97,   98,
+			   99,  100,   10,   -1,   -1,   -1,   -1,   -1,   -1,   -1,
 
+			  109,   80,   81,   82,   83,   84,   85,   86,   -1,   88,
+			   89,   90,   91,   92,   93,   94,   95,   96,   97,   98,
+			   99,  100,   80,   81,   82,   83,   84,   85,   86,   -1,
 			   88,   89,   90,   91,   92,   93,   94,   95,   96,   97,
-			   98,   99,  100,   -1,   80,   81,   82,   83,   84,   85,
-			   86,  109,   88,   89,   90,   91,   92,   93,   94,   95,
-			   96,   97,   98,   99,  100,   80,   81,   82,   83,   84,
-			   85,   86,   -1,   88,   89,   90,   91,   92,   93,   94,
-			   95,   96,   97,   98,   99,  100,   -1,   80,   81,   82,
-			   83,   84,   85,   86,   -1,   88,   89,   90,   91,   92,
-			   93,   94,   95,   96,   97,   98,   99,  100, yyDummy>>)
+			   98,   99,  100,   -1,   -1,   -1,   -1,   -1,   -1,   -1,
+			   -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,
+			   -1,   -1,   80,   81,   82,   83,   84,   85,   86,   -1,
+			   88,   89,   90,   91,   92,   93,   94,   95,   96,   97,
+			   98,   99,  100,   17,   -1,   -1,   20,   -1,   -1,   23,
+			   -1,   -1,   26,   -1,   -1,   -1,   30,   -1,   -1,   -1,
+
+			   -1,   -1,   36,   -1,   -1,   -1,   -1,   -1,   -1,   -1,
+			   -1,   -1,   -1,   -1,   -1,   -1,   50,   -1,   -1,   -1,
+			   -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,
+			   -1,   65,   66,   67,   -1,   69,   -1,   71, yyDummy>>)
 		end
 
 feature {NONE} -- Semantic value stacks
@@ -11415,8 +11415,8 @@ feature {NONE} -- Semantic value stacks
 	yyspecial_routines63: KL_SPECIAL_ROUTINES [CLASS_INTERFACE]
 			-- Routines that ought to be in SPECIAL [CLASS_INTERFACE]
 
-	yyvs64: SPECIAL [CLASS_INVARIANT]
-			-- Stack for semantic values of type CLASS_INVARIANT
+	yyvs64: SPECIAL [ASSERTION_CLAUSE_LIST]
+			-- Stack for semantic values of type ASSERTION_CLAUSE_LIST
 
 	yyvsc64: INTEGER
 			-- Capacity of semantic value stack `yyvs64'
@@ -11424,8 +11424,8 @@ feature {NONE} -- Semantic value stacks
 	yyvsp64: INTEGER
 			-- Top of semantic value stack `yyvs64'
 
-	yyspecial_routines64: KL_SPECIAL_ROUTINES [CLASS_INVARIANT]
-			-- Routines that ought to be in SPECIAL [CLASS_INVARIANT]
+	yyspecial_routines64: KL_SPECIAL_ROUTINES [ASSERTION_CLAUSE_LIST]
+			-- Routines that ought to be in SPECIAL [ASSERTION_CLAUSE_LIST]
 
 	yyvs65: SPECIAL [CLASS_TYPE_LIST]
 			-- Stack for semantic values of type CLASS_TYPE_LIST
@@ -11559,8 +11559,8 @@ feature {NONE} -- Semantic value stacks
 	yyspecial_routines75: KL_SPECIAL_ROUTINES [FEATURE_ARGUMENT]
 			-- Routines that ought to be in SPECIAL [FEATURE_ARGUMENT]
 
-	yyvs76: SPECIAL [FEATURE_SPECIFICATION_LIST]
-			-- Stack for semantic values of type FEATURE_SPECIFICATION_LIST
+	yyvs76: SPECIAL [CONTRACT_CLAUSE]
+			-- Stack for semantic values of type CONTRACT_CLAUSE
 
 	yyvsc76: INTEGER
 			-- Capacity of semantic value stack `yyvs76'
@@ -11568,11 +11568,11 @@ feature {NONE} -- Semantic value stacks
 	yyvsp76: INTEGER
 			-- Top of semantic value stack `yyvs76'
 
-	yyspecial_routines76: KL_SPECIAL_ROUTINES [FEATURE_SPECIFICATION_LIST]
-			-- Routines that ought to be in SPECIAL [FEATURE_SPECIFICATION_LIST]
+	yyspecial_routines76: KL_SPECIAL_ROUTINES [CONTRACT_CLAUSE]
+			-- Routines that ought to be in SPECIAL [CONTRACT_CLAUSE]
 
-	yyvs77: SPECIAL [FEATURE_SPECIFICATION]
-			-- Stack for semantic values of type FEATURE_SPECIFICATION
+	yyvs77: SPECIAL [FEATURE_SPECIFICATION_LIST]
+			-- Stack for semantic values of type FEATURE_SPECIFICATION_LIST
 
 	yyvsc77: INTEGER
 			-- Capacity of semantic value stack `yyvs77'
@@ -11580,11 +11580,11 @@ feature {NONE} -- Semantic value stacks
 	yyvsp77: INTEGER
 			-- Top of semantic value stack `yyvs77'
 
-	yyspecial_routines77: KL_SPECIAL_ROUTINES [FEATURE_SPECIFICATION]
-			-- Routines that ought to be in SPECIAL [FEATURE_SPECIFICATION]
+	yyspecial_routines77: KL_SPECIAL_ROUTINES [FEATURE_SPECIFICATION_LIST]
+			-- Routines that ought to be in SPECIAL [FEATURE_SPECIFICATION_LIST]
 
-	yyvs78: SPECIAL [ASSERTION_CLAUSE_LIST]
-			-- Stack for semantic values of type ASSERTION_CLAUSE_LIST
+	yyvs78: SPECIAL [FEATURE_SPECIFICATION]
+			-- Stack for semantic values of type FEATURE_SPECIFICATION
 
 	yyvsc78: INTEGER
 			-- Capacity of semantic value stack `yyvs78'
@@ -11592,8 +11592,8 @@ feature {NONE} -- Semantic value stacks
 	yyvsp78: INTEGER
 			-- Top of semantic value stack `yyvs78'
 
-	yyspecial_routines78: KL_SPECIAL_ROUTINES [ASSERTION_CLAUSE_LIST]
-			-- Routines that ought to be in SPECIAL [ASSERTION_CLAUSE_LIST]
+	yyspecial_routines78: KL_SPECIAL_ROUTINES [FEATURE_SPECIFICATION]
+			-- Routines that ought to be in SPECIAL [FEATURE_SPECIFICATION]
 
 	yyvs79: SPECIAL [ASSERTION_CLAUSE]
 			-- Stack for semantic values of type ASSERTION_CLAUSE
@@ -11607,8 +11607,8 @@ feature {NONE} -- Semantic value stacks
 	yyspecial_routines79: KL_SPECIAL_ROUTINES [ASSERTION_CLAUSE]
 			-- Routines that ought to be in SPECIAL [ASSERTION_CLAUSE]
 
-	yyvs80: SPECIAL [BOOLEAN_EXPRESSION]
-			-- Stack for semantic values of type BOOLEAN_EXPRESSION
+	yyvs80: SPECIAL [ASSERTION_COMMENT]
+			-- Stack for semantic values of type ASSERTION_COMMENT
 
 	yyvsc80: INTEGER
 			-- Capacity of semantic value stack `yyvs80'
@@ -11616,11 +11616,11 @@ feature {NONE} -- Semantic value stacks
 	yyvsp80: INTEGER
 			-- Top of semantic value stack `yyvs80'
 
-	yyspecial_routines80: KL_SPECIAL_ROUTINES [BOOLEAN_EXPRESSION]
-			-- Routines that ought to be in SPECIAL [BOOLEAN_EXPRESSION]
+	yyspecial_routines80: KL_SPECIAL_ROUTINES [ASSERTION_COMMENT]
+			-- Routines that ought to be in SPECIAL [ASSERTION_COMMENT]
 
-	yyvs81: SPECIAL [EXPRESSION]
-			-- Stack for semantic values of type EXPRESSION
+	yyvs81: SPECIAL [BOOLEAN_EXPRESSION]
+			-- Stack for semantic values of type BOOLEAN_EXPRESSION
 
 	yyvsc81: INTEGER
 			-- Capacity of semantic value stack `yyvs81'
@@ -11628,11 +11628,11 @@ feature {NONE} -- Semantic value stacks
 	yyvsp81: INTEGER
 			-- Top of semantic value stack `yyvs81'
 
-	yyspecial_routines81: KL_SPECIAL_ROUTINES [EXPRESSION]
-			-- Routines that ought to be in SPECIAL [EXPRESSION]
+	yyspecial_routines81: KL_SPECIAL_ROUTINES [BOOLEAN_EXPRESSION]
+			-- Routines that ought to be in SPECIAL [BOOLEAN_EXPRESSION]
 
-	yyvs82: SPECIAL [QUANTIFICATION]
-			-- Stack for semantic values of type QUANTIFICATION
+	yyvs82: SPECIAL [QUANTIFIER]
+			-- Stack for semantic values of type QUANTIFIER
 
 	yyvsc82: INTEGER
 			-- Capacity of semantic value stack `yyvs82'
@@ -11640,11 +11640,11 @@ feature {NONE} -- Semantic value stacks
 	yyvsp82: INTEGER
 			-- Top of semantic value stack `yyvs82'
 
-	yyspecial_routines82: KL_SPECIAL_ROUTINES [QUANTIFICATION]
-			-- Routines that ought to be in SPECIAL [QUANTIFICATION]
+	yyspecial_routines82: KL_SPECIAL_ROUTINES [QUANTIFIER]
+			-- Routines that ought to be in SPECIAL [QUANTIFIER]
 
-	yyvs83: SPECIAL [VARIABLE_RANGE_LIST]
-			-- Stack for semantic values of type VARIABLE_RANGE_LIST
+	yyvs83: SPECIAL [QUANTIFICATION]
+			-- Stack for semantic values of type QUANTIFICATION
 
 	yyvsc83: INTEGER
 			-- Capacity of semantic value stack `yyvs83'
@@ -11652,11 +11652,11 @@ feature {NONE} -- Semantic value stacks
 	yyvsp83: INTEGER
 			-- Top of semantic value stack `yyvs83'
 
-	yyspecial_routines83: KL_SPECIAL_ROUTINES [VARIABLE_RANGE_LIST]
-			-- Routines that ought to be in SPECIAL [VARIABLE_RANGE_LIST]
+	yyspecial_routines83: KL_SPECIAL_ROUTINES [QUANTIFICATION]
+			-- Routines that ought to be in SPECIAL [QUANTIFICATION]
 
-	yyvs84: SPECIAL [RESTRICTION]
-			-- Stack for semantic values of type RESTRICTION
+	yyvs84: SPECIAL [VARIABLE_RANGE_LIST]
+			-- Stack for semantic values of type VARIABLE_RANGE_LIST
 
 	yyvsc84: INTEGER
 			-- Capacity of semantic value stack `yyvs84'
@@ -11664,11 +11664,11 @@ feature {NONE} -- Semantic value stacks
 	yyvsp84: INTEGER
 			-- Top of semantic value stack `yyvs84'
 
-	yyspecial_routines84: KL_SPECIAL_ROUTINES [RESTRICTION]
-			-- Routines that ought to be in SPECIAL [RESTRICTION]
+	yyspecial_routines84: KL_SPECIAL_ROUTINES [VARIABLE_RANGE_LIST]
+			-- Routines that ought to be in SPECIAL [VARIABLE_RANGE_LIST]
 
-	yyvs85: SPECIAL [PROPOSITION]
-			-- Stack for semantic values of type PROPOSITION
+	yyvs85: SPECIAL [VARIABLE_RANGE]
+			-- Stack for semantic values of type VARIABLE_RANGE
 
 	yyvsc85: INTEGER
 			-- Capacity of semantic value stack `yyvs85'
@@ -11676,11 +11676,11 @@ feature {NONE} -- Semantic value stacks
 	yyvsp85: INTEGER
 			-- Top of semantic value stack `yyvs85'
 
-	yyspecial_routines85: KL_SPECIAL_ROUTINES [PROPOSITION]
-			-- Routines that ought to be in SPECIAL [PROPOSITION]
+	yyspecial_routines85: KL_SPECIAL_ROUTINES [VARIABLE_RANGE]
+			-- Routines that ought to be in SPECIAL [VARIABLE_RANGE]
 
-	yyvs86: SPECIAL [VARIABLE_RANGE]
-			-- Stack for semantic values of type VARIABLE_RANGE
+	yyvs86: SPECIAL [MEMBER_RANGE]
+			-- Stack for semantic values of type MEMBER_RANGE
 
 	yyvsc86: INTEGER
 			-- Capacity of semantic value stack `yyvs86'
@@ -11688,11 +11688,11 @@ feature {NONE} -- Semantic value stacks
 	yyvsp86: INTEGER
 			-- Top of semantic value stack `yyvs86'
 
-	yyspecial_routines86: KL_SPECIAL_ROUTINES [VARIABLE_RANGE]
-			-- Routines that ought to be in SPECIAL [VARIABLE_RANGE]
+	yyspecial_routines86: KL_SPECIAL_ROUTINES [MEMBER_RANGE]
+			-- Routines that ought to be in SPECIAL [MEMBER_RANGE]
 
-	yyvs87: SPECIAL [MEMBER_RANGE]
-			-- Stack for semantic values of type MEMBER_RANGE
+	yyvs87: SPECIAL [TYPE_RANGE]
+			-- Stack for semantic values of type TYPE_RANGE
 
 	yyvsc87: INTEGER
 			-- Capacity of semantic value stack `yyvs87'
@@ -11700,11 +11700,11 @@ feature {NONE} -- Semantic value stacks
 	yyvsp87: INTEGER
 			-- Top of semantic value stack `yyvs87'
 
-	yyspecial_routines87: KL_SPECIAL_ROUTINES [MEMBER_RANGE]
-			-- Routines that ought to be in SPECIAL [MEMBER_RANGE]
+	yyspecial_routines87: KL_SPECIAL_ROUTINES [TYPE_RANGE]
+			-- Routines that ought to be in SPECIAL [TYPE_RANGE]
 
-	yyvs88: SPECIAL [TYPE_RANGE]
-			-- Stack for semantic values of type TYPE_RANGE
+	yyvs88: SPECIAL [CALL]
+			-- Stack for semantic values of type CALL
 
 	yyvsc88: INTEGER
 			-- Capacity of semantic value stack `yyvs88'
@@ -11712,11 +11712,11 @@ feature {NONE} -- Semantic value stacks
 	yyvsp88: INTEGER
 			-- Top of semantic value stack `yyvs88'
 
-	yyspecial_routines88: KL_SPECIAL_ROUTINES [TYPE_RANGE]
-			-- Routines that ought to be in SPECIAL [TYPE_RANGE]
+	yyspecial_routines88: KL_SPECIAL_ROUTINES [CALL]
+			-- Routines that ought to be in SPECIAL [CALL]
 
-	yyvs89: SPECIAL [CALL]
-			-- Stack for semantic values of type CALL
+	yyvs89: SPECIAL [PARENTHESIZED]
+			-- Stack for semantic values of type PARENTHESIZED
 
 	yyvsc89: INTEGER
 			-- Capacity of semantic value stack `yyvs89'
@@ -11724,11 +11724,11 @@ feature {NONE} -- Semantic value stacks
 	yyvsp89: INTEGER
 			-- Top of semantic value stack `yyvs89'
 
-	yyspecial_routines89: KL_SPECIAL_ROUTINES [CALL]
-			-- Routines that ought to be in SPECIAL [CALL]
+	yyspecial_routines89: KL_SPECIAL_ROUTINES [PARENTHESIZED]
+			-- Routines that ought to be in SPECIAL [PARENTHESIZED]
 
-	yyvs90: SPECIAL [PARENTHESIZED]
-			-- Stack for semantic values of type PARENTHESIZED
+	yyvs90: SPECIAL [UNQUALIFIED_CALLS]
+			-- Stack for semantic values of type UNQUALIFIED_CALLS
 
 	yyvsc90: INTEGER
 			-- Capacity of semantic value stack `yyvs90'
@@ -11736,11 +11736,11 @@ feature {NONE} -- Semantic value stacks
 	yyvsp90: INTEGER
 			-- Top of semantic value stack `yyvs90'
 
-	yyspecial_routines90: KL_SPECIAL_ROUTINES [PARENTHESIZED]
-			-- Routines that ought to be in SPECIAL [PARENTHESIZED]
+	yyspecial_routines90: KL_SPECIAL_ROUTINES [UNQUALIFIED_CALLS]
+			-- Routines that ought to be in SPECIAL [UNQUALIFIED_CALLS]
 
-	yyvs91: SPECIAL [UNQUALIFIED_CALLS]
-			-- Stack for semantic values of type UNQUALIFIED_CALLS
+	yyvs91: SPECIAL [UNQUALIFIED_CALL]
+			-- Stack for semantic values of type UNQUALIFIED_CALL
 
 	yyvsc91: INTEGER
 			-- Capacity of semantic value stack `yyvs91'
@@ -11748,11 +11748,11 @@ feature {NONE} -- Semantic value stacks
 	yyvsp91: INTEGER
 			-- Top of semantic value stack `yyvs91'
 
-	yyspecial_routines91: KL_SPECIAL_ROUTINES [UNQUALIFIED_CALLS]
-			-- Routines that ought to be in SPECIAL [UNQUALIFIED_CALLS]
+	yyspecial_routines91: KL_SPECIAL_ROUTINES [UNQUALIFIED_CALL]
+			-- Routines that ought to be in SPECIAL [UNQUALIFIED_CALL]
 
-	yyvs92: SPECIAL [UNQUALIFIED_CALL]
-			-- Stack for semantic values of type UNQUALIFIED_CALL
+	yyvs92: SPECIAL [ACTUAL_ARGUMENTS]
+			-- Stack for semantic values of type ACTUAL_ARGUMENTS
 
 	yyvsc92: INTEGER
 			-- Capacity of semantic value stack `yyvs92'
@@ -11760,11 +11760,11 @@ feature {NONE} -- Semantic value stacks
 	yyvsp92: INTEGER
 			-- Top of semantic value stack `yyvs92'
 
-	yyspecial_routines92: KL_SPECIAL_ROUTINES [UNQUALIFIED_CALL]
-			-- Routines that ought to be in SPECIAL [UNQUALIFIED_CALL]
+	yyspecial_routines92: KL_SPECIAL_ROUTINES [ACTUAL_ARGUMENTS]
+			-- Routines that ought to be in SPECIAL [ACTUAL_ARGUMENTS]
 
-	yyvs93: SPECIAL [ACTUAL_ARGUMENTS]
-			-- Stack for semantic values of type ACTUAL_ARGUMENTS
+	yyvs93: SPECIAL [EXPRESSION_LIST]
+			-- Stack for semantic values of type EXPRESSION_LIST
 
 	yyvsc93: INTEGER
 			-- Capacity of semantic value stack `yyvs93'
@@ -11772,11 +11772,11 @@ feature {NONE} -- Semantic value stacks
 	yyvsp93: INTEGER
 			-- Top of semantic value stack `yyvs93'
 
-	yyspecial_routines93: KL_SPECIAL_ROUTINES [ACTUAL_ARGUMENTS]
-			-- Routines that ought to be in SPECIAL [ACTUAL_ARGUMENTS]
+	yyspecial_routines93: KL_SPECIAL_ROUTINES [EXPRESSION_LIST]
+			-- Routines that ought to be in SPECIAL [EXPRESSION_LIST]
 
-	yyvs94: SPECIAL [EXPRESSION_LIST]
-			-- Stack for semantic values of type EXPRESSION_LIST
+	yyvs94: SPECIAL [OPERATOR_EXPRESSION]
+			-- Stack for semantic values of type OPERATOR_EXPRESSION
 
 	yyvsc94: INTEGER
 			-- Capacity of semantic value stack `yyvs94'
@@ -11784,11 +11784,11 @@ feature {NONE} -- Semantic value stacks
 	yyvsp94: INTEGER
 			-- Top of semantic value stack `yyvs94'
 
-	yyspecial_routines94: KL_SPECIAL_ROUTINES [EXPRESSION_LIST]
-			-- Routines that ought to be in SPECIAL [EXPRESSION_LIST]
+	yyspecial_routines94: KL_SPECIAL_ROUTINES [OPERATOR_EXPRESSION]
+			-- Routines that ought to be in SPECIAL [OPERATOR_EXPRESSION]
 
-	yyvs95: SPECIAL [OPERATOR_EXPRESSION]
-			-- Stack for semantic values of type OPERATOR_EXPRESSION
+	yyvs95: SPECIAL [UNARY_EXPRESSION]
+			-- Stack for semantic values of type UNARY_EXPRESSION
 
 	yyvsc95: INTEGER
 			-- Capacity of semantic value stack `yyvs95'
@@ -11796,11 +11796,11 @@ feature {NONE} -- Semantic value stacks
 	yyvsp95: INTEGER
 			-- Top of semantic value stack `yyvs95'
 
-	yyspecial_routines95: KL_SPECIAL_ROUTINES [OPERATOR_EXPRESSION]
-			-- Routines that ought to be in SPECIAL [OPERATOR_EXPRESSION]
+	yyspecial_routines95: KL_SPECIAL_ROUTINES [UNARY_EXPRESSION]
+			-- Routines that ought to be in SPECIAL [UNARY_EXPRESSION]
 
-	yyvs96: SPECIAL [UNARY_EXPRESSION]
-			-- Stack for semantic values of type UNARY_EXPRESSION
+	yyvs96: SPECIAL [BINARY_EXPRESSION]
+			-- Stack for semantic values of type BINARY_EXPRESSION
 
 	yyvsc96: INTEGER
 			-- Capacity of semantic value stack `yyvs96'
@@ -11808,11 +11808,11 @@ feature {NONE} -- Semantic value stacks
 	yyvsp96: INTEGER
 			-- Top of semantic value stack `yyvs96'
 
-	yyspecial_routines96: KL_SPECIAL_ROUTINES [UNARY_EXPRESSION]
-			-- Routines that ought to be in SPECIAL [UNARY_EXPRESSION]
+	yyspecial_routines96: KL_SPECIAL_ROUTINES [BINARY_EXPRESSION]
+			-- Routines that ought to be in SPECIAL [BINARY_EXPRESSION]
 
-	yyvs97: SPECIAL [BINARY_EXPRESSION]
-			-- Stack for semantic values of type BINARY_EXPRESSION
+	yyvs97: SPECIAL [SET_EXPRESSION]
+			-- Stack for semantic values of type SET_EXPRESSION
 
 	yyvsc97: INTEGER
 			-- Capacity of semantic value stack `yyvs97'
@@ -11820,11 +11820,11 @@ feature {NONE} -- Semantic value stacks
 	yyvsp97: INTEGER
 			-- Top of semantic value stack `yyvs97'
 
-	yyspecial_routines97: KL_SPECIAL_ROUTINES [BINARY_EXPRESSION]
-			-- Routines that ought to be in SPECIAL [BINARY_EXPRESSION]
+	yyspecial_routines97: KL_SPECIAL_ROUTINES [SET_EXPRESSION]
+			-- Routines that ought to be in SPECIAL [SET_EXPRESSION]
 
-	yyvs98: SPECIAL [SET_EXPRESSION]
-			-- Stack for semantic values of type SET_EXPRESSION
+	yyvs98: SPECIAL [ENUMERATED_SET]
+			-- Stack for semantic values of type ENUMERATED_SET
 
 	yyvsc98: INTEGER
 			-- Capacity of semantic value stack `yyvs98'
@@ -11832,11 +11832,11 @@ feature {NONE} -- Semantic value stacks
 	yyvsp98: INTEGER
 			-- Top of semantic value stack `yyvs98'
 
-	yyspecial_routines98: KL_SPECIAL_ROUTINES [SET_EXPRESSION]
-			-- Routines that ought to be in SPECIAL [SET_EXPRESSION]
+	yyspecial_routines98: KL_SPECIAL_ROUTINES [ENUMERATED_SET]
+			-- Routines that ought to be in SPECIAL [ENUMERATED_SET]
 
-	yyvs99: SPECIAL [ENUMERATED_SET]
-			-- Stack for semantic values of type ENUMERATED_SET
+	yyvs99: SPECIAL [ENUMERATION_LIST]
+			-- Stack for semantic values of type ENUMERATION_LIST
 
 	yyvsc99: INTEGER
 			-- Capacity of semantic value stack `yyvs99'
@@ -11844,11 +11844,11 @@ feature {NONE} -- Semantic value stacks
 	yyvsp99: INTEGER
 			-- Top of semantic value stack `yyvs99'
 
-	yyspecial_routines99: KL_SPECIAL_ROUTINES [ENUMERATED_SET]
-			-- Routines that ought to be in SPECIAL [ENUMERATED_SET]
+	yyspecial_routines99: KL_SPECIAL_ROUTINES [ENUMERATION_LIST]
+			-- Routines that ought to be in SPECIAL [ENUMERATION_LIST]
 
-	yyvs100: SPECIAL [ENUMERATION_LIST]
-			-- Stack for semantic values of type ENUMERATION_LIST
+	yyvs100: SPECIAL [ENUMERATION_ELEMENT]
+			-- Stack for semantic values of type ENUMERATION_ELEMENT
 
 	yyvsc100: INTEGER
 			-- Capacity of semantic value stack `yyvs100'
@@ -11856,11 +11856,11 @@ feature {NONE} -- Semantic value stacks
 	yyvsp100: INTEGER
 			-- Top of semantic value stack `yyvs100'
 
-	yyspecial_routines100: KL_SPECIAL_ROUTINES [ENUMERATION_LIST]
-			-- Routines that ought to be in SPECIAL [ENUMERATION_LIST]
+	yyspecial_routines100: KL_SPECIAL_ROUTINES [ENUMERATION_ELEMENT]
+			-- Routines that ought to be in SPECIAL [ENUMERATION_ELEMENT]
 
-	yyvs101: SPECIAL [ENUMERATION_ELEMENT]
-			-- Stack for semantic values of type ENUMERATION_ELEMENT
+	yyvs101: SPECIAL [BON_INTERVAL]
+			-- Stack for semantic values of type BON_INTERVAL
 
 	yyvsc101: INTEGER
 			-- Capacity of semantic value stack `yyvs101'
@@ -11868,11 +11868,11 @@ feature {NONE} -- Semantic value stacks
 	yyvsp101: INTEGER
 			-- Top of semantic value stack `yyvs101'
 
-	yyspecial_routines101: KL_SPECIAL_ROUTINES [ENUMERATION_ELEMENT]
-			-- Routines that ought to be in SPECIAL [ENUMERATION_ELEMENT]
+	yyspecial_routines101: KL_SPECIAL_ROUTINES [BON_INTERVAL]
+			-- Routines that ought to be in SPECIAL [BON_INTERVAL]
 
-	yyvs102: SPECIAL [BON_INTERVAL]
-			-- Stack for semantic values of type BON_INTERVAL
+	yyvs102: SPECIAL [INTEGER_INTERVAL]
+			-- Stack for semantic values of type INTEGER_INTERVAL
 
 	yyvsc102: INTEGER
 			-- Capacity of semantic value stack `yyvs102'
@@ -11880,11 +11880,11 @@ feature {NONE} -- Semantic value stacks
 	yyvsp102: INTEGER
 			-- Top of semantic value stack `yyvs102'
 
-	yyspecial_routines102: KL_SPECIAL_ROUTINES [BON_INTERVAL]
-			-- Routines that ought to be in SPECIAL [BON_INTERVAL]
+	yyspecial_routines102: KL_SPECIAL_ROUTINES [INTEGER_INTERVAL]
+			-- Routines that ought to be in SPECIAL [INTEGER_INTERVAL]
 
-	yyvs103: SPECIAL [INTEGER_INTERVAL]
-			-- Stack for semantic values of type INTEGER_INTERVAL
+	yyvs103: SPECIAL [CHARACTER_INTERVAL]
+			-- Stack for semantic values of type CHARACTER_INTERVAL
 
 	yyvsc103: INTEGER
 			-- Capacity of semantic value stack `yyvs103'
@@ -11892,11 +11892,11 @@ feature {NONE} -- Semantic value stacks
 	yyvsp103: INTEGER
 			-- Top of semantic value stack `yyvs103'
 
-	yyspecial_routines103: KL_SPECIAL_ROUTINES [INTEGER_INTERVAL]
-			-- Routines that ought to be in SPECIAL [INTEGER_INTERVAL]
+	yyspecial_routines103: KL_SPECIAL_ROUTINES [CHARACTER_INTERVAL]
+			-- Routines that ought to be in SPECIAL [CHARACTER_INTERVAL]
 
-	yyvs104: SPECIAL [CHARACTER_INTERVAL]
-			-- Stack for semantic values of type CHARACTER_INTERVAL
+	yyvs104: SPECIAL [CONSTANT]
+			-- Stack for semantic values of type CONSTANT
 
 	yyvsc104: INTEGER
 			-- Capacity of semantic value stack `yyvs104'
@@ -11904,11 +11904,11 @@ feature {NONE} -- Semantic value stacks
 	yyvsp104: INTEGER
 			-- Top of semantic value stack `yyvs104'
 
-	yyspecial_routines104: KL_SPECIAL_ROUTINES [CHARACTER_INTERVAL]
-			-- Routines that ought to be in SPECIAL [CHARACTER_INTERVAL]
+	yyspecial_routines104: KL_SPECIAL_ROUTINES [CONSTANT]
+			-- Routines that ought to be in SPECIAL [CONSTANT]
 
-	yyvs105: SPECIAL [CONSTANT]
-			-- Stack for semantic values of type CONSTANT
+	yyvs105: SPECIAL [MANIFEST_CONSTANT]
+			-- Stack for semantic values of type MANIFEST_CONSTANT
 
 	yyvsc105: INTEGER
 			-- Capacity of semantic value stack `yyvs105'
@@ -11916,24 +11916,12 @@ feature {NONE} -- Semantic value stacks
 	yyvsp105: INTEGER
 			-- Top of semantic value stack `yyvs105'
 
-	yyspecial_routines105: KL_SPECIAL_ROUTINES [CONSTANT]
-			-- Routines that ought to be in SPECIAL [CONSTANT]
-
-	yyvs106: SPECIAL [MANIFEST_CONSTANT]
-			-- Stack for semantic values of type MANIFEST_CONSTANT
-
-	yyvsc106: INTEGER
-			-- Capacity of semantic value stack `yyvs106'
-
-	yyvsp106: INTEGER
-			-- Top of semantic value stack `yyvs106'
-
-	yyspecial_routines106: KL_SPECIAL_ROUTINES [MANIFEST_CONSTANT]
+	yyspecial_routines105: KL_SPECIAL_ROUTINES [MANIFEST_CONSTANT]
 			-- Routines that ought to be in SPECIAL [MANIFEST_CONSTANT]
 
 feature {NONE} -- Constants
 
-	yyFinal: INTEGER = 591
+	yyFinal: INTEGER = 592
 			-- Termination state id
 
 	yyFlag: INTEGER = -32768
@@ -11942,14 +11930,14 @@ feature {NONE} -- Constants
 	yyNtbase: INTEGER = 115
 			-- Number of tokens
 
-	yyLast: INTEGER = 677
+	yyLast: INTEGER = 737
 			-- Upper bound of `yytable' and `yycheck'
 
 	yyMax_token: INTEGER = 349
 			-- Maximum token id
 			-- (upper bound of `yytranslate'.)
 
-	yyNsyms: INTEGER = 369
+	yyNsyms: INTEGER = 370
 			-- Number of symbols
 			-- (terminal and nonterminal)
 

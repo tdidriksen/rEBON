@@ -173,33 +173,33 @@ feature -- Parsed specification elements
 		do
 			io.put_boolean (type_checker.check_bon_specification (bon_specification))
 
-			from
-				class_charts.start
-			until
-				class_charts.exhausted
-			loop
-				io.put_string ("%NClass name: ")
-				io.put_string (class_charts.item.name)
+--			from
+--				class_charts.start
+--			until
+--				class_charts.exhausted
+--			loop
+--				io.put_string ("%NClass name: ")
+--				io.put_string (class_charts.item.name)
 
-				class_charts.forth
-			end
+--				class_charts.forth
+--			end
 
-			from
-				cluster_charts.start
-			until
-				cluster_charts.exhausted
-			loop
-				io.put_string ("%NCluster name: ")
-				io.put_string (cluster_charts.item.name)
-				io.put_string ("%NClass count: ")
-				io.put_integer (cluster_charts.item.classes_count)
-				io.put_string ("%NIndex: ")
-				io.put_string (cluster_charts.first.index.first.property)
-				io.put_string (": ")
-				io.put_string (cluster_charts.first.index.first.value.first)
+--			from
+--				cluster_charts.start
+--			until
+--				cluster_charts.exhausted
+--			loop
+--				io.put_string ("%NCluster name: ")
+--				io.put_string (cluster_charts.item.name)
+--				io.put_string ("%NClass count: ")
+--				io.put_integer (cluster_charts.item.classes_count)
+--				io.put_string ("%NIndex: ")
+--				io.put_string (cluster_charts.first.index.first.property)
+--				io.put_string (": ")
+--				io.put_string (cluster_charts.first.index.first.value.first)
 
-				cluster_charts.forth
-			end
+--				cluster_charts.forth
+--			end
 		end
 
 	bon_specification: BON_SPECIFICATION

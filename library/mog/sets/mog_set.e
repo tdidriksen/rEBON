@@ -59,7 +59,7 @@ feature -- Initialization
 		ensure
 			has (singleton)
 			optional /= Void implies is_superset(optional) --@changed didriksen - changed 'and then' to 'implies', as optional can be Void.
-			optional /= Void implies count = 1 + optional.count
+			(optional /= Void and then not optional.has (singleton)) implies count = 1 + optional.count
 			optional = Void implies count = 1
 		end
 
@@ -76,7 +76,7 @@ feature -- Initialization
 		ensure
 			has (singleton)
 			optional /= Void implies is_superset(optional) --@changed didriksen - changed 'and then' to 'implies', as optional can be Void.
-			optional /= Void implies count = 1 + optional.count
+			(optional /= Void and then not optional.has (singleton)) implies count = 1 + optional.count
 		end
 
 	make_from_set (set: like Current)

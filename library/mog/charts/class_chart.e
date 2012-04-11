@@ -15,7 +15,7 @@ inherit
 			wipe_out
 		end
 
-creation
+create
 	make
 
 feature -- Initialization
@@ -134,6 +134,11 @@ feature -- Measurement
 		end
 
 feature -- Status report
+	has_parents: BOOLEAN
+			-- Does `Current' have any parents?
+		do
+			Result := my_parents /= Void and then not my_parents.is_empty
+		end
 
 	is_part_of (other: like Current): BOOLEAN
 		do

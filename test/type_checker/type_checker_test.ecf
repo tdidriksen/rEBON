@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<system xmlns="http://www.eiffel.com/developers/xml/configuration-1-9-0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.eiffel.com/developers/xml/configuration-1-9-0 http://www.eiffel.com/developers/xml/configuration-1-9-0.xsd" name="type_checker_test" uuid="00CD313D-9007-4518-ADBA-BF3AB3210B9C">
+	<target name="type_checker_test">
+		<root class="TYPE_CHECKER_TEST" feature="make"/>
+		<file_rule>
+			<exclude>/EIFGENs$</exclude>
+			<exclude>/CVS$</exclude>
+			<exclude>/.svn$</exclude>
+		</file_rule>
+		<option warning="true" is_attached_by_default="false" syntax="transitional">
+			<assertions precondition="true" postcondition="true" check="true" invariant="true" loop="true" supplier_precondition="true"/>
+		</option>
+		<precompile name="base_pre" location="$ISE_PRECOMP\base.ecf"/>
+		<library name="base" location="$ISE_LIBRARY\library\base\base.ecf"/>
+		<library name="base2" location="\Users\Thomas\Documents\ITU\6. semester\Bachelor\EiffelBase2\base2.ecf"/>
+		<library name="gobo_kernel" location="$ISE_LIBRARY\library\gobo\gobo_kernel.ecf"/>
+		<library name="gobo_lexical" location="$ISE_LIBRARY\library\gobo\gobo_lexical.ecf"/>
+		<library name="gobo_parse" location="$ISE_LIBRARY\library\gobo\gobo_parse.ecf"/>
+		<library name="gobo_structure" location="$ISE_LIBRARY\library\gobo\gobo_structure.ecf"/>
+		<library name="gobo_test" location="$ISE_LIBRARY\library\gobo\gobo_test.ecf"/>
+		<library name="gobo_utility" location="$ISE_LIBRARY\library\gobo\gobo_utility.ecf"/>
+		<cluster name="parser" location="$REBON\src\parser\"/>
+		<cluster name="scanner" location="\Users\Thomas\Documents\ITU\6. semester\Bachelor\rEBON\src\scanner\"/>
+		<cluster name="type_checker" location="$REBON\src\type_checker\" recursive="true"/>
+		<cluster name="type_checker_test" location=".\" recursive="true">
+			<cluster name="mog" location="$REBON\library\mog\" recursive="true"/>
+		</cluster>
+	</target>
+	<target name="type_checker_test_dotnet" extends="type_checker_test">
+		<setting name="msil_generation" value="true"/>
+	</target>
+</system>

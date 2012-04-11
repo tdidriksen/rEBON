@@ -9,7 +9,7 @@ inherit
 
 feature -- Access
 
-	hash_code: INTEGER is
+	hash_code: INTEGER
 		do
 			check false end
 		end

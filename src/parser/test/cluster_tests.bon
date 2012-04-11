@@ -1,11 +1,28 @@
 system_chart THE_WORLD
   cluster EARTH description "A small, insignificant planet."
+  cluster PLUTO description "fisk"
 end
+
+--system_chart THE_WORLD
+--  cluster PLUTO description "The best planet."
+--  cluster EARTH description "A small, insignificant planet."
+--end
 
 cluster_chart EARTH
   class CITIZEN description "A humanoid."
+  class CITIZEN description "A humanoid."
   class NOBLEPERSON description "A rich humanoid."
+  class NEGRO description "A black man."
+  cluster PLUTO description "fisk"
 end
+
+class_chart NEGRO
+end
+
+cluster_chart PLUTO
+end
+--cluster_chart ELDERGY
+--end
 
 class_chart CITIZEN
 indexing
@@ -44,16 +61,4 @@ constraint
   "Can only marry other noble person.",
   "Wedding celebrated with style.",
   "Married nobility share their assets and must have a butler."
-end
-
-scenario_chart THE_WORLD
-indexing
-    planet: "Earth";
-    galaxy: "Milky way"
-explanation
-    "Scenarios for the World."
-part "1/1"
-scenario "Apocalypse" description "The end of the World as we know it."
-scenario "Explosion" description "We will need the Sun for this one."
-scenario "Explosion" description "Oops."
 end

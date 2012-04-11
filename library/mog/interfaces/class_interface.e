@@ -24,7 +24,7 @@ feature -- Initialization
 	make (an_index: INDEX_LIST;
 				some_parents: CLASS_TYPE_LIST;
 				some_features: FEATURE_CLAUSE_LIST;
-				an_invariant: CLASS_INVARIANT)
+				an_invariant: ASSERTION_CLAUSE_LIST)
 			-- Initialize `Current'.
 		require
 			some_features /= Void and then some_features.count >= 0
@@ -66,7 +66,7 @@ feature -- Access
 			feature_count_non_negative: Result.count >= 0
 		end
 
-	class_invariant: CLASS_INVARIANT
+	class_invariant: ASSERTION_CLAUSE_LIST
 		do
 			Result := my_class_invariant.twin
 		end
@@ -252,7 +252,7 @@ feature -- Removal
 -- 			parents.is_disjoint (some_parents)
 		end
 
-	remove_class_invariant (an_invariant: CLASS_INVARIANT)
+	remove_class_invariant (an_invariant: ASSERTION_CLAUSE_LIST)
 		do
 			if an_invariant.is_equal (my_class_invariant) then
 				clear_class_invariant
@@ -376,7 +376,7 @@ feature {CLASS_INTERFACE} -- Implementation
 	my_index: INDEX_LIST
 	my_parents: CLASS_TYPE_LIST
 	my_features: FEATURE_CLAUSE_LIST
-	my_class_invariant: CLASS_INVARIANT
+	my_class_invariant: ASSERTION_CLAUSE_LIST
 
 invariant
 

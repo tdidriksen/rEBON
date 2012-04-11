@@ -147,10 +147,25 @@ feature -- Comparison
 
 	is_equal (other: like Current): BOOLEAN
 		do
-			Result := my_name.is_equal (other.my_name) and
-				my_index.is_equal (other.my_index) and
-				my_explanation.is_equal (other.my_explanation) and
-				my_part.is_equal (other.my_part)
+			Result := my_name.is_equal (other.my_name)
+
+			if my_index /= Void and other.my_index /= Void then
+				Result := Result and my_index.is_equal (other.my_index)
+			elseif my_index = Void xor other.my_index = Void then
+				Result := False
+			end
+
+			if my_explanation /= Void and other.my_explanation /= Void then
+				Result := Result and my_explanation.is_equal (other.my_explanation)
+			elseif my_explanation = Void xor other.my_explanation = Void then
+				Result := False
+			end
+
+			if my_part /= Void and other.my_part /= Void then
+				Result := Result and my_part.is_equal (other.my_part)
+			elseif my_part = Void xor other.my_part = Void then
+				Result := False
+			end
 		end
 
 feature -- Element change

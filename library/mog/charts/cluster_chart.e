@@ -15,7 +15,7 @@ inherit
 			wipe_out
 		end
 
-creation
+create
 	make
 
 feature -- Initialization
@@ -93,6 +93,15 @@ feature -- Measurement
 		end
 
 feature -- Status report
+	has_classes: BOOLEAN
+		do
+			Result := my_classes /= Void and then not my_classes.is_empty
+		end
+
+	has_clusters: BOOLEAN
+		do
+			Result := my_clusters /= Void and then not my_clusters.is_empty
+		end
 
 	is_part_of (other: like Current): BOOLEAN
 		do
@@ -119,9 +128,55 @@ feature -- Comparison
 
 	is_equal (other: like Current): BOOLEAN
 		do
-			Result := Precursor (other) and
-				my_classes.is_equal (other.classes) and
-				my_clusters.is_equal (other.clusters)
+			Result := my_name.is_equal (other.my_name)
+
+			if my_index /= Void and other.my_index /= Void then
+				Result := Result and my_index.is_equal (other.my_index)
+			elseif my_index = Void xor other.my_index = Void then
+				Result := False
+			end
+
+			if my_explanation /= Void and other.my_explanation /= Void then
+				Result := Result and my_explanation.is_equal (other.my_explanation)
+			elseif my_explanation = Void xor other.my_explanation = Void then
+				Result := False
+			end
+
+			if my_part /= Void and other.my_part /= Void then
+				Result := Result and my_part.is_equal (other.my_part)
+			elseif my_part = Void xor other.my_part = Void then
+				Result := False
+			end			Result := my_name.is_equal (other.my_name)
+
+			if my_index /= Void and other.my_index /= Void then
+				Result := Result and my_index.is_equal (other.my_index)
+			elseif my_index = Void xor other.my_index = Void then
+				Result := False
+			end
+
+			if my_explanation /= Void and other.my_explanation /= Void then
+				Result := Result and my_explanation.is_equal (other.my_explanation)
+			elseif my_explanation = Void xor other.my_explanation = Void then
+				Result := False
+			end
+
+			if my_part /= Void and other.my_part /= Void then
+				Result := Result and my_part.is_equal (other.my_part)
+			elseif my_part = Void xor other.my_part = Void then
+				Result := False
+			end
+
+			if my_classes /= Void and other.my_classes /= Void then
+				Result := Result and my_classes.is_equal (other.my_classes)
+			elseif my_classes = Void xor other.my_classes = Void then
+				Result := False
+			end
+
+			if my_clusters /= Void and other.my_clusters /= Void then
+				Result := Result and my_clusters.is_equal (other.my_clusters)
+			elseif my_classes = Void xor other.my_classes = Void then
+				Result := False
+			end
 		end
 
 feature -- Element change
