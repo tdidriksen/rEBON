@@ -1,5 +1,5 @@
 note
-	description: "Objects that ..."
+	description: "A list of unqualified calls."
 	author: ""
 	date: "$Date: 2005/05/02 22:58:31 $"
 	revision: "$Revision: 1.1 $"

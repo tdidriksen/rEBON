@@ -1653,10 +1653,10 @@ Variable_range : Member_range { $$ := $1 }
 					| Type_range { $$ := $1 } ;
 
 -- @type MEMBER_RANGE
-Member_range : Identifier_list MEMBER_OF_TOKEN Set_expression ;
+Member_range : Identifier_list MEMBER_OF_TOKEN Set_expression { create $$.make ($1, $3) } ;
 
 -- @type TYPE_RANGE
-Type_range : Identifier_list ':' Type ;
+Type_range : Identifier_list ':' Type { create $$.make ($1, $3) } ;
 
 -- @type CALL
 Call : Optional_Parenthesized_qualifier Call_chain ;
