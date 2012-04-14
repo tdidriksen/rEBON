@@ -9,7 +9,7 @@ inherit
 
 	SPECIFICATION_ELEMENT
 
-creation
+create
 	make_static_diagram
 
 feature -- Initialization
@@ -89,9 +89,9 @@ feature -- Comparison
 
 	is_equal (other: like Current): BOOLEAN
 		do
-			Result := equal (my_name, other.my_name) and
-				equal (my_comment, other.my_comment) and
-				equal (my_components, other.my_components)
+			Result := equal (my_name, other.my_name)
+			Result := Result and (my_comment /= Void implies equal (my_comment, other.my_comment))
+			Result := Result and (my_components /= Void implies equal (my_components, other.my_components))
 		end
 
 feature -- Element change
@@ -190,9 +190,8 @@ feature {STATIC_DIAGRAM} -- Implementation
 	my_components: STATIC_COMPONENTS
 
 invariant
-
-	--my_name /= Void
-	--my_comment /= Void
-	--my_components /= Void
+	my_name /= Void implies not my_name.is_empty
+	my_comment /= Void implies not my_comment.is_empty
+	my_components /= Void implies not my_components.is_empty
 
 end -- class STATIC_DIAGRAM

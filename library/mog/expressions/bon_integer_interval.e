@@ -1,8 +1,11 @@
 note
-   description: "A finite, sequential list of characters."
+	description: "A finite, sequential list of integers."
+	author: ""
+	date: "$Date$"
+	revision: "$Revision$"
 
 class
-   CHARACTER_INTERVAL
+	BON_INTEGER_INTERVAL
 
 inherit
 	BON_INTERVAL
@@ -11,7 +14,7 @@ create
 	make
 
 feature -- Initialization
-	make (a_lower_bound, an_upper_bound: CHARACTER)
+	make (a_lower_bound, an_upper_bound: INTEGER)
 			-- Initialize `Current'.
 		require
 			a_lower_bound <= an_upper_bound
@@ -29,13 +32,13 @@ feature -- Access
 			Result := my_lower_bound.hash_code + my_upper_bound.hash_code
 		end
 
-	lower_bound: CHARACTER
+	lower_bound: INTEGER
 			-- What is the lower bound of `Current'?
 		do
 			Result := my_lower_bound.twin
 		end
 
-	upper_bound: CHARACTER
+	upper_bound: INTEGER
 			-- What is the upper bound of `Current'?
 		do
 			Result := my_upper_bound.twin
@@ -43,10 +46,10 @@ feature -- Access
 
 feature {NONE} -- Implementation
 
-	my_lower_bound: CHARACTER
-	my_upper_bound: CHARACTER
+	my_lower_bound: INTEGER
+	my_upper_bound: INTEGER
 
 invariant
 	my_lower_bound <= my_upper_bound
 
-end -- class CHARACTER_INTERVAL
+end

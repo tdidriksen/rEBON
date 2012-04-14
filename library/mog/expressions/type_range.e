@@ -33,7 +33,7 @@ feature -- Access
 		end
 
 
-feature -- Implementation
+feature {NONE} -- Implementation
 
 	my_type: BON_TYPE
 

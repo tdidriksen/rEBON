@@ -10,7 +10,7 @@ inherit
 			to_list
 		end
 
-creation
+create
 	make, make_set, make_optional_rest, make_optional_first,
 	make_from_set, make_from_list
 
@@ -21,5 +21,5 @@ feature -- Conversion
 		do
 			check false end
 		end
-		
+
 end -- class INDEX_SET

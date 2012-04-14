@@ -8,7 +8,7 @@ class
 inherit
 	HASHABLE
 
-creation
+create
 	make_ambiguous, make_from_components
 
 feature -- Initialization

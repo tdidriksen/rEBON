@@ -16,4 +16,6 @@ inherit
 			hash_code as assertion_hash_code
 		end
 
+	ENUMERATION_ELEMENT
+
 end -- class EXPRESSION

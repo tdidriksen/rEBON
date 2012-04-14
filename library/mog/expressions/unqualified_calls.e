@@ -10,4 +10,7 @@ class
 inherit
 	MOG_LIST [UNQUALIFIED_CALL]
 
+create
+	make_list, make_optional_rest, make_optional_first
+
 end -- class UNQUALIFIED_CALLS

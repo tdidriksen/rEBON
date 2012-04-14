@@ -222,24 +222,27 @@ create
 %type <BOOLEAN>   Optional_Interfaced
 %type <BOOLEAN>   Optional_Persistent
 %type <BOOLEAN>   Optional_Reused
+%type <BOOLEAN>   Optional_Nameless
 %type <CHARACTER> Character_constant
 %type <INTEGER>   Integer_constant
-%type <INTEGER>   Multiplicity         Optional_Multiplicity_clause     Integer
+%type <INTEGER>   Multiplicity         Optional_Multiplicity_clause
 %type <REAL>      Real_constant
 
+%type <STRING> Action_label Action_description
 %type <STRING> Class_name             Optional_Class_name
 %type <STRING> Cluster_name
 %type <STRING> Cluster_prefix
 %type <STRING> Dynamic_component_name
-%type <STRING> Extended_id            Optional_Extended_id
+%type <STRING> Extended_id            Optional_Extended_id  Optional_Extended_id_clause
 %type <STRING> Formal_generic_name
-%type <STRING> Group_name
+%type <STRING> Group_name Group_prefix Zero_or_more_Group_prefixes
 %type <STRING> Identifier   All_caps_identifier
 %type <STRING> Index_string
 %type <STRING> Line_comment           At_least_one_Line_comment   Optional_Line_comments
 %type <STRING> Manifest_string
 %type <STRING> Manifest_textblock
-%type <STRING> Object_name
+%type <STRING> Message_label Optional_Message_label
+--%type <STRING> Object_name
 %type <STRING> Optional_Deferred_or_Effective_or_Redefined
 %type <STRING> Optional_Explanation_Manifest_string
 %type <STRING> Optional_Incoming_or_Outgoing_clause
@@ -401,23 +404,40 @@ create
 %type <MEMBER_RANGE> Member_range
 %type <TYPE_RANGE> Type_range
 %type <CALL> Call
-%type <PARENTHESIZED> Optional_Parenthesized_qualifier Parenthesized_qualifier Parenthesized
+--%type <PARENTHESIZED> Optional_Parenthesized_qualifier Parenthesized_qualifier Parenthesized
+%type <BOOLEAN_EXPRESSION> Optional_Parenthesized_qualifier Parenthesized_qualifier Parenthesized
 %type <UNQUALIFIED_CALLS> Call_chain At_least_one_Unqualified_call Optional_Unqualified_calls
 %type <UNQUALIFIED_CALL> Unqualified_call
-%type <ACTUAL_ARGUMENTS> Optional_Actual_arguments Actual_arguments
-%type <EXPRESSION_LIST> Expression_list At_least_one_Expression Optional_Expressions
+--%type <ACTUAL_ARGUMENTS> Optional_Actual_arguments Actual_arguments
+%type <EXPRESSION_LIST> Expression_list At_least_one_Expression Optional_Expressions Optional_Actual_arguments Actual_arguments
 %type <OPERATOR_EXPRESSION> Operator_expression
 %type <UNARY_EXPRESSION> Unary_expression
 %type <BINARY_EXPRESSION> Binary_expression
 %type <SET_EXPRESSION> Set_expression
 %type <ENUMERATED_SET> Enumerated_set
-%type <ENUMERATION_LIST> Enumeration_list At_least_one_Enumeration_element Optional_Enumeration_elements
+--%type <ENUMERATION_LIST> Enumeration_list At_least_one_Enumeration_element Optional_Enumeration_elements
+%type <ENUMERATED_SET> Enumeration_list At_least_one_Enumeration_element Optional_Enumeration_elements
 %type <ENUMERATION_ELEMENT> Enumeration_element
 %type <BON_INTERVAL> Interval
-%type <INTEGER_INTERVAL> Integer_interval
+%type <BON_INTEGER_INTERVAL> Integer_interval
 %type <CHARACTER_INTERVAL> Character_interval
 %type <CONSTANT> Constant
 %type <MANIFEST_CONSTANT> Manifest_constant
+
+-- A.8 DYNAMIC DIAGRAMS
+
+%type <DYNAMIC_DIAGRAM> Dynamic_diagram_rule
+%type <DYNAMIC_COMPONENTS> Dynamic_block Group_components Optional_Group_components
+%type <DYNAMIC_COMPONENT> Dynamic_component
+%type <SCENARIO_DESCRIPTION> Scenario_description
+%type <OBJECT_GROUP> Object_group_rule
+%type <OBJECT_STACK> Object_stack_rule
+%type <OBJECT> Object_rule
+%type <MESSAGE_RELATION> Message_relation
+%type <LABELED_ACTIONS> Labeled_actions At_least_one_Labeled_action Optional_Labeled_actions
+%type <LABELED_ACTION> Labeled_action
+%type <DYNAMIC_REF> Dynamic_ref Caller Receiver
+%type <OBJECT_NAME> Object_name
 
 -- Indicate how many shift/reduce conflicts we expect.  This is only used
 -- to simplify grammar debugging.  Our total is 64: 1 for the rules
@@ -1255,7 +1275,7 @@ Static_component_name : Class_name
 								{ $$ := $1 } ;
 
 -- @type INTEGER
-Multiplicity : Integer
+Multiplicity : Integer_constant
 					{ $$ := $1 } ;
 
 -- @type like Manifest_string
@@ -1613,9 +1633,11 @@ Assertion_comment : At_least_one_Line_comment { create $$.make_list ($1) } ;
 Boolean_expression : Expression { $$ := $1 } ;
 
 -- @type like Boolean_expression
+-- @design didriksen - Parenthesized moved to Expression. See note for Operator_expression for details.
 Expression : Quantification { $$ := $1 }
 			  | Call { $$ := $1 }
 			  | Operator_expression { $$ := $1 }
+			  | Parenthesized { $$ := $1 }
 			  | Constant { $$ := $1 } ;
 
 -- @type QUANTIFICATION
@@ -1659,91 +1681,106 @@ Member_range : Identifier_list MEMBER_OF_TOKEN Set_expression { create $$.make (
 Type_range : Identifier_list ':' Type { create $$.make ($1, $3) } ;
 
 -- @type CALL
-Call : Optional_Parenthesized_qualifier Call_chain ;
+Call : Optional_Parenthesized_qualifier Call_chain { create $$.make ($1, $2) } ;
 
 -- @type like Parenthesized_qualifier
 Optional_Parenthesized_qualifier : -- Empty
-											| Parenthesized_qualifier ;
+											| Parenthesized_qualifier { $$ := $1 } ;
 
 -- @type like Parenthesized
-Parenthesized_qualifier : Parenthesized '.' ;
+Parenthesized_qualifier : Parenthesized '.' { $$ := $1 } ;
 
 -- @type like At_least_one_Unqualified_call
-Call_chain : At_least_one_Unqualified_call ;
+Call_chain : At_least_one_Unqualified_call { $$ := $1 } ;
 
 -- @type like Optional_Unqualified_calls
-At_least_one_Unqualified_call : Unqualified_call Optional_Unqualified_calls ;
+At_least_one_Unqualified_call : Unqualified_call Optional_Unqualified_calls 
+                                { create $$.make_optional_rest ($1, $2) } ;
 
 -- @type UNQUALIFIED_CALLS == MOG_LIST [UNQUALIFIED_CALL]
 Optional_Unqualified_calls : -- Empty
-									| Optional_Unqualified_calls '.' Unqualified_call ;
+									| Optional_Unqualified_calls '.' Unqualified_call 
+									  { create $$.make_optional_first ($1, $3) } ;
 
 -- @type UNQUALIFIED_CALL
-Unqualified_call : IDENTIFIER_TOKEN Optional_Actual_arguments ;
+Unqualified_call : Identifier Optional_Actual_arguments { create $$.make ($1, $2) } ;
 
 -- @type like Actual_arguments
 Optional_Actual_arguments : -- Empty
-								  | Actual_arguments ;
+								  | Actual_arguments { $$ := $1 } ;
 
 -- @type ACTUAL_ARGUMENTS <: EXPRESSION_LIST
-Actual_arguments : '(' Expression_list ')' ;
+Actual_arguments : '(' Expression_list ')' { $$ := $2 } ;
 
 -- @type like At_least_one_Expression
-Expression_list : At_least_one_Expression ;
+Expression_list : At_least_one_Expression { $$ := $1 } ;
 
 -- @type like Optional_Expressions
-At_least_one_Expression : Expression Optional_Expressions ;
+At_least_one_Expression : Expression Optional_Expressions 
+                          { create $$.make_optional_rest ($1, $2) } ;
 
 -- @type EXPRESSION_LIST == MOG_LIST [EXPRESSION]
 Optional_Expressions : -- Empty
-							| Optional_Expressions ',' Expression ;
+							| Optional_Expressions ',' Expression 
+							  { create $$.make_optional_first ($1, $3) } ;
 
 -- @type OPERATOR_EXPRESSION
-Operator_expression : Parenthesized 
-						  | Unary_expression %prec UNARY_DUMMY
-						  | Binary_expression ;
+-- @design didriksen - Changed from original grammar in order to avoid circular inheritance for type Parenthesized.
+--                     The original grammar implies the following assignment to be possible:
+--                     Operator_expression := Parenthesized := Expression, although it is clearly not due to upcasting.
+--                     Hence, Parenthesized has been moved to Expression.
+Operator_expression : Unary_expression %prec UNARY_DUMMY { $$ := $1 }
+						  | Binary_expression { $$ := $1 } ;
+
+--Operator_expression : Parenthesized { $$ := $1 }
+--						  | Unary_expression %prec UNARY_DUMMY { $$ := $1 }
+--						  | Binary_expression { $$ := $1 } ;
 
 -- @type PARENTHESIZED
-Parenthesized : '(' Expression ')' ; 
+Parenthesized : '(' Expression ')' { $$ := $2 } ; 
 
 -- @type UNARY_EXPRESSION
-Unary_expression : Prefix_operator Expression ;
+Unary_expression : Prefix_operator Expression { create $$.make ($1, $2) } ;
 
 -- @type BINARY_EXPRESSION
-Binary_expression : Expression Infix_operator Expression ;
+Binary_expression : Expression Infix_operator Expression { create $$.make ($2, $1, $3) } ;
 
 -- @type SET_EXPRESSION
-Set_expression : Enumerated_set 
-					| Call 
-					| Operator_expression ;
+Set_expression : Enumerated_set { $$ := $1 }
+					| Call { $$ := $1 }
+					| Operator_expression { $$ := $1 } ;
 
 -- @type ENUMERATED_SET
-Enumerated_set : '{' Enumeration_list '}' ;
+Enumerated_set : '{' Enumeration_list '}' { $$ := $2 } ;
 
 -- @type like At_least_one_Enumeration_element
-Enumeration_list : At_least_one_Enumeration_element ;
+Enumeration_list : At_least_one_Enumeration_element { $$ := $1 } ;
 
 -- @type like Optional_Enumeration_elements
-At_least_one_Enumeration_element : Enumeration_element Optional_Enumeration_elements ;
+At_least_one_Enumeration_element : Enumeration_element Optional_Enumeration_elements 
+                                   { create $$.make_optional_rest ($1, $2) } ;
 
 -- @type ENUMERATION_LIST == MOG_LIST [like Enumeration_element]
 Optional_Enumeration_elements : -- Empty
 										| Optional_Enumeration_elements ',' 
-										  Enumeration_element ;
+										  Enumeration_element 
+										  { create $$.make_optional_first ($1, $3) } ;
 
 -- @type ENUMERATION_ELEMENT
-Enumeration_element : Expression 
-						  | Interval ;
+Enumeration_element : Expression { $$ := $1 }
+						  | Interval { $$ := $1 } ;
 
 -- @type INTERVAL
-Interval : Integer_interval 
-			| Character_interval ;
+Interval : Integer_interval { $$ := $1 }
+			| Character_interval { $$ := $1 } ;
 
 -- @type INTEGER_INTERVAL
-Integer_interval : Integer_constant DOUBLE_DOT_TOKEN Integer_constant ;
+Integer_interval : Integer_constant DOUBLE_DOT_TOKEN Integer_constant
+                   { create $$.make ($1, $3) } ;
 
 -- @type CHARACTER_INTERVAL
-Character_interval : Character_constant DOUBLE_DOT_TOKEN Character_constant ;
+Character_interval : Character_constant DOUBLE_DOT_TOKEN Character_constant
+                     { create $$.make ($1, $3) } ;
 
 -- @design kiniry - Aug 26, 2001 - Added RESULT_TOKEN to this rule since, 
 -- at first blush, it seems to be the right place for it.  See bug id TODO 
@@ -1770,17 +1807,17 @@ Sign : '+' { create $$.make_plus }
 	 | '-' { create $$.make_minus } ; 
 
 -- @type BOOLEAN
-Boolean_constant : TRUE_TOKEN 
-					  | FALSE_TOKEN ;
+Boolean_constant : TRUE_TOKEN { $$ := True } 
+					  | FALSE_TOKEN { $$ := False } ;
 
 -- @type CHARACTER
-Character_constant : '\'' CHARACTER_TOKEN '\'' ;
+Character_constant : '\'' CHARACTER_TOKEN '\'' { $$ := last_character_constant } ;
 
 -- @type INTEGER
-Integer_constant : Optional_Sign INTEGER_TOKEN ;
+Integer_constant : Optional_Sign INTEGER_TOKEN { $$ := last_integer } ;
 
 -- @type REAL
-Real_constant : Optional_Sign REAL_TOKEN ;
+Real_constant : Optional_Sign REAL_TOKEN { $$ := last_real } ;
 
 -- @todo : This specification is incorrect.  Manifest textblocks can 
 -- include multiple New_line separated string.
@@ -1796,12 +1833,9 @@ String_begin : STRING_DELIMITER_TOKEN ;
 String_end : STRING_DELIMITER_TOKEN ;
 
 -- @type STRING
-Identifier : IDENTIFIER_TOKEN { $$ := last_identifier };
+Identifier : IDENTIFIER_TOKEN { create $$.make_from_string(last_identifier) };
 
-All_caps_identifier : ALL_CAPS_IDENTIFIER_TOKEN { $$ := last_identifier };
-
--- @type INTEGER
-Integer : INTEGER_TOKEN { $$ := last_integer };
+All_caps_identifier : ALL_CAPS_IDENTIFIER_TOKEN { create $$.make_from_string(last_identifier) };
 
 -- A.8 DYNAMIC DIAGRAMS 
 
@@ -1809,31 +1843,36 @@ Dynamic_diagram_rule : DYNAMIC_DIAGRAM_TOKEN Optional_Extended_id
 							  Optional_Comment
 							  COMPONENT_TOKEN 
 							  Dynamic_block 
-							  END_TOKEN ;
+							  END_TOKEN 
+                              { create $$.make ($2, $3, $5) } ;
 
 Dynamic_block : -- Empty
-				  | Dynamic_block Dynamic_component ;
+				  | Dynamic_block Dynamic_component 
+				    { create $$.make_optional_first ($1, $2) } ;
 
-Dynamic_component : Scenario_description 
-						| Object_group_rule
-						| Object_stack_rule
-						| Object_rule
-						| Message_relation ;
+Dynamic_component : Scenario_description { $$ := $1 }
+						| Object_group_rule { $$ := $1 }
+						| Object_stack_rule { $$ := $1 }
+						| Object_rule { $$ := $1 }
+						| Message_relation { $$ := $1 } ;
 
 Scenario_description : SCENARIO_TOKEN Scenario_name 
 							  Optional_Comment 
 							  ACTION_TOKEN Labeled_actions 
-							  END_TOKEN ;
+							  END_TOKEN 
+							  { create $$.make ($2, $3, $5) } ;
 
-Labeled_actions : At_least_one_Labeled_action ;
+Labeled_actions : At_least_one_Labeled_action { $$ := $1 } ;
 
-At_least_one_Labeled_action : Labeled_action
-									 Optional_Labeled_actions ;
+At_least_one_Labeled_action : Labeled_action Optional_Labeled_actions 
+                              { create $$.make_optional_rest ($1, $2) } ;
 
 Optional_Labeled_actions : -- Empty
-								 | Optional_Labeled_actions Labeled_action ;
+								 | Optional_Labeled_actions Labeled_action 
+								   { create $$.make_optional_first ($1, $2) } ;
 
-Labeled_action : Action_label Action_description ;
+Labeled_action : Action_label Action_description 
+                 { create $$.make ($1, $2) } ;
 
 Action_label : Manifest_string { $$ := $1 } ;
 
@@ -1844,46 +1883,61 @@ Scenario_name : Manifest_string { $$ := $1 } ;
 Object_group_rule : Optional_Nameless 
 						OBJECT_GROUP_TOKEN Group_name 
 						Optional_Comment 
-						Optional_Group_components ; 
+						Optional_Group_components
+						{ create $$.make ($1, $3, $4, $5) } ; 
 
-Optional_Nameless : -- Empty
-						| NAMELESS_TOKEN ;
+Optional_Nameless : -- Empty 
+                    { $$ := False }
+				  | NAMELESS_TOKEN
+				    { $$ := True } ;
 
 Optional_Group_components : -- Empty
-								  | Group_components ;
+								  | Group_components { $$ := $1 } ;
 
-Group_components : COMPONENT_TOKEN Dynamic_block END_TOKEN ;
+Group_components : COMPONENT_TOKEN Dynamic_block END_TOKEN { $$ := $2 } ;
 
-Object_stack_rule : OBJECT_STACK_TOKEN Object_name Optional_Comment ;
+Object_stack_rule : OBJECT_STACK_TOKEN Object_name Optional_Comment
+                    { create $$.make ($2, $3) } ;
 
-Object_rule : OBJECT_TOKEN Object_name Optional_Comment ;
+Object_rule : OBJECT_TOKEN Object_name Optional_Comment
+              { create $$.make ($2, $3) } ;
 
-Message_relation : Caller CALLS_TOKEN Receiver Optional_Message_label ;
+Message_relation : Caller CALLS_TOKEN Receiver Optional_Message_label
+                   { create $$.make ($1, $3, $4) } ;
 
 Optional_Message_label : -- Empty
-							  | Message_label ;
+							  | Message_label { $$ := $1 } ;
  
-Caller : Dynamic_ref ;
+Caller : Dynamic_ref { $$ := $1 } ;
 
-Receiver : Dynamic_ref ;
+Receiver : Dynamic_ref { $$ := $1 } ;
 
-Dynamic_ref : Zero_or_more_Group_prefixes Dynamic_component_name ;
+-- @design didriksen - deviates from original grammar in order to ease handling of 
+--                     dynamic components names for dynamic references.
+Dynamic_ref : Zero_or_more_Group_prefixes Object_name
+              { create $$.make_with_object_name ($2, $1) }
+            | Zero_or_more_Group_prefixes Group_name
+              { create $$.make_with_group_name ($2, $1) } ;
+--Dynamic_ref : Zero_or_more_Group_prefixes Dynamic_component_name;
 
 Zero_or_more_Group_prefixes : -- Empty
-									 | Zero_or_more_Group_prefixes Group_prefix ;
+									 | Zero_or_more_Group_prefixes Group_prefix 
+									   { create $$.make_from_string ($2); $$.prepend_string ($1) } ;
 
-Group_prefix : Group_name '.' ;
+Group_prefix : Group_name '.' 
+               { create $$.make_from_string ($1); $$.append_character ('.') } ;
  
 Dynamic_component_name : Object_name
 							  | Group_name ;
 
-Object_name : Class_name Optional_Extended_id_clause ;
+Object_name : Class_name Optional_Extended_id_clause
+              { create $$.make ($1, $2) } ;
 
 Optional_Extended_id_clause : -- Empty
-									 | '.' Extended_id ;
+									 | '.' Extended_id { $$ := $2 } ;
 
 -- Varies from original BON grammar.
-Group_name : Extended_id 
+Group_name : Extended_id { $$ := $1 }
 			  | OBJECT_GROUP_OR_CONSTANT_NAME_TOKEN 
 				 { $$ := last_identifier
 					-- add_group_name($$)

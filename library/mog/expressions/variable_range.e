@@ -31,7 +31,7 @@ feature -- Access
 		end
 
 
-feature -- Implementation
+feature {NONE} -- Implementation
 
 	my_identifiers: STRING_LIST
 

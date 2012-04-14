@@ -5,7 +5,7 @@ class
    CONSTANT
 
 inherit
-   EXPRESSION
+   BOOLEAN_EXPRESSION
    	redefine
    		hash_code
     end

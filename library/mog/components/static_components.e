@@ -7,7 +7,7 @@ class
 inherit
    MOG_SET [STATIC_COMPONENT]
 
-creation
+create
 	make, make_set, make_optional_rest, make_optional_first,
 	make_from_set, make_from_list
 

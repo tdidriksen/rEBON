@@ -33,7 +33,7 @@ feature -- Access
 		end
 
 
-feature -- Implementation
+feature {NONE} -- Implementation
 
 	my_set_expression: SET_EXPRESSION
 

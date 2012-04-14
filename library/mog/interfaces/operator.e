@@ -21,6 +21,10 @@ feature --Initialization
 		end
 
 feature -- Access
+	hash_code: INTEGER
+		do
+			Result := my_string_representation.hash_code
+		end
 
 	string_representation: STRING
 			-- What is the string representation of `Current'?

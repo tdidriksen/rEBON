@@ -5,8 +5,8 @@ deferred class
    OPERATOR_EXPRESSION
 
 inherit
-   EXPRESSION
-	
+   BOOLEAN_EXPRESSION
+
    SET_EXPRESSION
 
 end -- class OPERATOR_EXPRESSION

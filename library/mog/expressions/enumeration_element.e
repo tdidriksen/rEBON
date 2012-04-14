@@ -4,10 +4,8 @@ note
 
 deferred class
   ENUMERATION_ELEMENT
-	
+
 inherit
-	BON_INTERVAL
-	
-	EXPRESSION
+	HASHABLE
 
 end -- class ENUMERATION_ELEMENT
