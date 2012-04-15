@@ -1,7 +1,7 @@
 note
    description: "A constant expression."
 
-class
+deferred class
    CONSTANT
 
 inherit
@@ -9,12 +9,5 @@ inherit
    	redefine
    		hash_code
     end
-
-feature -- Access
-
-	hash_code: INTEGER
-		do
-			check false end
-		end
 
 end -- class CONSTANT

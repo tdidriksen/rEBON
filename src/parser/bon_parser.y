@@ -218,15 +218,15 @@ create
 
 -- Rules that bind to base or simple types.
 
-%type <BOOLEAN>   Boolean_constant
+--%type <BOOLEAN>   Boolean_constant
 %type <BOOLEAN>   Optional_Interfaced
 %type <BOOLEAN>   Optional_Persistent
 %type <BOOLEAN>   Optional_Reused
 %type <BOOLEAN>   Optional_Nameless
-%type <CHARACTER> Character_constant
-%type <INTEGER>   Integer_constant
+--%type <CHARACTER> Character_constant
+--%type <INTEGER>   Integer_constant
 %type <INTEGER>   Multiplicity         Optional_Multiplicity_clause
-%type <REAL>      Real_constant
+--%type <REAL>      Real_constant
 
 %type <STRING> Action_label Action_description
 %type <STRING> Class_name             Optional_Class_name
@@ -239,7 +239,7 @@ create
 %type <STRING> Identifier   All_caps_identifier
 %type <STRING> Index_string
 %type <STRING> Line_comment           At_least_one_Line_comment   Optional_Line_comments
-%type <STRING> Manifest_string
+--%type <STRING> Manifest_string
 %type <STRING> Manifest_textblock
 %type <STRING> Message_label Optional_Message_label
 --%type <STRING> Object_name
@@ -423,6 +423,14 @@ create
 %type <CHARACTER_INTERVAL> Character_interval
 %type <CONSTANT> Constant
 %type <MANIFEST_CONSTANT> Manifest_constant
+%type <RESULT_CONSTANT> Result_constant
+%type <CURRENT_CONSTANT> Current_constant
+%type <VOID_CONSTANT> Void_constant
+%type <BOOLEAN_CONSTANT>   Boolean_constant
+%type <CHARACTER_CONSTANT> Character_constant
+%type <INTEGER_CONSTANT> Integer_constant
+%type <REAL_CONSTANT> Real_constant
+%type <MANIFEST_STRING> Manifest_string
 
 -- A.8 DYNAMIC DIAGRAMS
 
@@ -1276,7 +1284,7 @@ Static_component_name : Class_name
 
 -- @type INTEGER
 Multiplicity : Integer_constant
-					{ $$ := $1 } ;
+					{ $$ := $1.value } ;
 
 -- @type like Manifest_string
 Semantic_label : Manifest_string
@@ -1776,29 +1784,39 @@ Interval : Integer_interval { $$ := $1 }
 
 -- @type INTEGER_INTERVAL
 Integer_interval : Integer_constant DOUBLE_DOT_TOKEN Integer_constant
-                   { create $$.make ($1, $3) } ;
+                   { create $$.make ($1.value, $3.value) } ;
 
 -- @type CHARACTER_INTERVAL
 Character_interval : Character_constant DOUBLE_DOT_TOKEN Character_constant
-                     { create $$.make ($1, $3) } ;
+                     { create $$.make ($1.value, $3.value) } ;
 
 -- @design kiniry - Aug 26, 2001 - Added RESULT_TOKEN to this rule since, 
 -- at first blush, it seems to be the right place for it.  See bug id TODO 
 -- for more details.  Also missing are Enumerated_sets as Constants.
 
 -- @type CONSTANT
-Constant : Manifest_constant 
-			| Enumerated_set
-			| RESULT_TOKEN
-			| CURRENT_TOKEN 
-			| VOID_TOKEN ;
+Constant : Manifest_constant { $$ := $1 }
+			| Enumerated_set { $$ := $1 }
+			| Result_constant { $$ := $1 }
+			| Current_constant { $$ := $1 }
+			| Void_constant { $$ := $1 } ;
+
+-- @type RESULT_CONSTANT
+Result_constant : RESULT_TOKEN { create $$.make } ;
+
+-- @type CHARACTER_CONSTANT
+Current_constant : CURRENT_TOKEN { create $$.make } ;
+
+-- @type VOID_CONSTANT
+Void_constant : VOID_TOKEN { create $$.make } ;
+
 
 -- @type MANIFEST_CONSTANT
-Manifest_constant : Boolean_constant 
-						| Character_constant 
-						| Integer_constant 
-						| Real_constant
-						| Manifest_string ;
+Manifest_constant : Boolean_constant { $$ := $1 }
+						| Character_constant { $$ := $1 }
+						| Integer_constant { $$ := $1 }
+						| Real_constant { $$ := $1 }
+						| Manifest_string { $$ := $1 } ;
 
 Optional_Sign : -- Empty
 				  | Sign { $$ := $1 } ;
@@ -1806,36 +1824,36 @@ Optional_Sign : -- Empty
 Sign : '+' { create $$.make_plus }
 	 | '-' { create $$.make_minus } ; 
 
--- @type BOOLEAN
-Boolean_constant : TRUE_TOKEN { $$ := True } 
-					  | FALSE_TOKEN { $$ := False } ;
+-- @type BOOLEAN_CONSTANT
+Boolean_constant : TRUE_TOKEN { create $$.make (True) } 
+					  | FALSE_TOKEN { create $$.make (False) } ;
 
--- @type CHARACTER
-Character_constant : '\'' CHARACTER_TOKEN '\'' { $$ := last_character_constant } ;
+-- @type CHARACTER_CONSTANT
+Character_constant : '\'' CHARACTER_TOKEN '\'' { create $$.make (last_character_constant) } ;
 
--- @type INTEGER
-Integer_constant : Optional_Sign INTEGER_TOKEN { $$ := last_integer } ;
+-- @type INTEGER_CONSTANT
+Integer_constant : Optional_Sign INTEGER_TOKEN { create $$.make (last_integer) } ;
 
--- @type REAL
-Real_constant : Optional_Sign REAL_TOKEN { $$ := last_real } ;
+-- @type REAL_CONSTANT
+Real_constant : Optional_Sign REAL_TOKEN { create $$.make (last_real) } ;
 
 -- @todo : This specification is incorrect.  Manifest textblocks can 
 -- include multiple New_line separated string.
 
 -- @type STRING
-Manifest_textblock : String_begin SIMPLE_STRING_TOKEN String_end { create $$.make_from_string(last_string_constant) };
+Manifest_textblock : String_begin SIMPLE_STRING_TOKEN String_end { create $$.make_from_string (last_string_constant) };
 
--- @type STRING
-Manifest_string : String_begin SIMPLE_STRING_TOKEN String_end { create $$.make_from_string(last_string_constant) };
+-- @type MANIFEST_STRING
+Manifest_string : String_begin SIMPLE_STRING_TOKEN String_end { create $$.make_from_string (last_string_constant) };
 
 String_begin : STRING_DELIMITER_TOKEN ;
 
 String_end : STRING_DELIMITER_TOKEN ;
 
 -- @type STRING
-Identifier : IDENTIFIER_TOKEN { create $$.make_from_string(last_identifier) };
+Identifier : IDENTIFIER_TOKEN { create $$.make_from_string (last_identifier) };
 
-All_caps_identifier : ALL_CAPS_IDENTIFIER_TOKEN { create $$.make_from_string(last_identifier) };
+All_caps_identifier : ALL_CAPS_IDENTIFIER_TOKEN { create $$.make_from_string (last_identifier) };
 
 -- A.8 DYNAMIC DIAGRAMS 
 
