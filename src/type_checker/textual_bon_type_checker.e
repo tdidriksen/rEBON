@@ -70,6 +70,12 @@ feature -- Status report
 			-- Is the type checker in the second phase?
 			-- During the second phase, all elements and statements are checked.
 
+	class_name_exists_in_context (a_class_name: STRING; a_context: like type_context): BOOLEAN
+			-- Does `a_name' exist in `a_context' as a class type?
+		do
+			Result := name_exists_in_context (a_class_name) and attached {TBON_TC_CLASS_TYPE} type_with_name (a_class_name)
+		end
+
 	name_exists_in_context (a_name: STRING): BOOLEAN
 			-- Does `a_name' exist in `type_context'?
 		require
@@ -511,8 +517,95 @@ feature -- Type checking, informal
 
 	check_creation_chart (an_element: CREATION_CHART): BOOLEAN
 			-- Does `an_element' type check as a type CREATION_CHART?
+		note
+			rule: "[
+					In an environment where all creator classes exist,
+					and all target/created classes exist,
+					`an_element' is OK.
+				]"
+		local
+			creation_entries: CREATION_ENTRIES
+			current_entry: CREATION_ENTRY
+			current_target: STRING
+			seen_entries: LIST[CREATION_ENTRY]
 		do
-			check false end
+			if first_phase then
+
+				Result := True
+					-- Nothing to do for first phase
+
+			elseif second_phase then
+
+				Result := True
+
+				if an_element.entries_count > 0 then
+					creation_entries := an_element.entries
+				end
+
+				-- Entries should be compared by object equality
+				create {ARRAYED_LIST[CREATION_ENTRY]} seen_entries.make (10)
+				seen_entries.compare_objects
+
+				-- For each creation entry
+				from creation_entries.start until creation_entries.after
+				loop
+					current_entry := creation_entries.item_for_iteration
+					-- Check that creator class exists
+					if not class_name_exists_in_context (current_entry.creator, type_context) then
+						error_messages.extend (err_creator_does_not_exist (an_element.name, current_entry.creator))
+						Result := False
+					end
+
+					-- Check that all created classes exist
+					from current_entry.targets.start until current_entry.targets.after
+					loop
+						current_target := current_entry.targets.item_for_iteration
+						if not class_name_exists_in_context (current_target, type_context) then
+							error_messages.extend (err_target_does_not_exist (an_element.name, current_target))
+							Result := False
+						end
+
+						current_entry.targets.forth
+					end
+
+
+					-- Check for duplicate entries - emit warning if found
+					if seen_entries.has (current_entry) then
+						warnings.extend (warn_duplicate_creation_entry (an_element.name, current_entry.creator))
+					end
+					seen_entries.extend (current_entry)
+
+					creation_entries.forth
+				end
+
+			else
+				Result := False
+			end
+		ensure
+			all_creators_exist:
+			(second_phase and Result and an_element.entries_count > 0) implies an_element.entries.for_all (
+				agent (entry: CREATION_ENTRY): BOOLEAN
+					do
+						Result := class_name_exists_in_context (entry.creator, type_context)
+					end
+			)
+
+			all_created_classes_exist:
+			(second_phase and Result and an_element.entries_count > 0) implies an_element.entries.for_all (
+				agent (entry: CREATION_ENTRY): BOOLEAN
+					local
+						target: STRING
+					do
+						Result := True
+
+						from entry.targets.start until entry.targets.after
+						loop
+							target := entry.targets.item_for_iteration
+							Result := Result and class_name_exists_in_context (target, type_context)
+							entry.targets.forth
+						end
+					end
+			)
 		end
 
 	check_event_chart (an_element: EVENT_CHART): BOOLEAN
@@ -550,12 +643,13 @@ feature -- Type checking, informal
 					-- Check that all involved classes exist
 					from current_entry.classes_involved.start until current_entry.classes_involved.after
 					loop
-						if not (name_exists_in_context (current_entry.classes_involved.item_for_iteration) and
-							attached {TBON_TC_CLASS_TYPE} type_with_name (current_entry.classes_involved.item_for_iteration))
+						if not (class_name_exists_in_context (current_entry.classes_involved.item_for_iteration, type_context))
 						then
 							error_messages.extend (err_involved_class_does_not_exist (an_element.name, current_entry.name, current_entry.classes_involved.item_for_iteration))
 							Result := False
 						end
+
+						current_entry.classes_involved.forth
 					end
 
 					-- Check for duplicate event names - emit warnings if found.
@@ -563,6 +657,8 @@ feature -- Type checking, informal
 						warnings.extend (warn_duplicate_event_entry (an_element.name, current_entry.name))
 					end
 					seen_entries.extend (current_entry.name)
+
+					event_entries.forth
 				end
 
 			else
@@ -578,8 +674,7 @@ feature -- Type checking, informal
 							Result := True
 							from entry.classes_involved.start until entry.classes_involved.after
 							loop
-								Result := Result and name_exists_in_context (entry.classes_involved.item_for_iteration) and
-											attached {TBON_TC_CLASS_TYPE} type_with_name (entry.classes_involved.item_for_iteration)
+								Result := Result and class_name_exists_in_context (entry.classes_involved.item_for_iteration, type_context)
 							end
 						end
 				)

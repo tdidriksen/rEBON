@@ -122,6 +122,15 @@ feature -- Error messages
 			Result.append_string (" is not in a system chart and is not a subcluster of any cluster.")
 		end
 
+	err_creator_does_not_exist (a_chart_name, a_class_name: STRING): STRING
+		do
+			Result := "Specified creator class "
+			Result.append_string (a_class_name.string)
+			Result.append_string (" in creation chart ")
+			Result.append_string (a_chart_name.string)
+			Result.append_string (" does not exist.")
+		end
+
 	err_involved_class_does_not_exist (a_chart_name, an_entry_name, a_class_name: STRING): STRING
 		do
 			Result := "Specified class "
@@ -130,6 +139,16 @@ feature -- Error messages
 			Result.append_string (an_entry_name.string)
 			Result.append_string (" in event chart ")
 			Result.append_string (a_chart_name.string)
+			Result.append_string (".")
+		end
+
+	err_target_does_not_exist (a_chart_name, a_class_name: STRING): STRING
+		do
+			Result := "Specified target class "
+			Result.append_string (a_class_name.string)
+			Result.append_string (" in creation chart ")
+			Result.append_string (a_chart_name.string)
+			Result.append_string (" does not exist.")
 		end
 
 	err_undefined (a_description: STRING): STRING
@@ -140,12 +159,22 @@ feature -- Error messages
 
 feature -- Warnings
 
+	warn_duplicate_creation_entry (a_chart_name, a_class_name: STRING): STRING
+		do
+			Result := "Duplicate entries for creation involving creator class "
+			Result.append_string (a_class_name.string)
+			Result.append_string (" in creation chart ")
+			Result.append_string (a_chart_name.string)
+			Result.append_string (".")
+		end
+
 	warn_duplicate_event_entry (a_chart_name, a_name: STRING): STRING
 		do
 			Result := "Duplicate entries for event "
 			Result.append_string (a_name.string)
 			Result.append_string (" in event chart ")
 			Result.append_string (a_chart_name.string)
+			Result.append_string (".")
 		end
 
 	warn_duplicate_scenario_entry (a_chart_name, a_name: STRING): STRING
@@ -154,6 +183,7 @@ feature -- Warnings
 			Result.append_string (a_name.string)
 			Result.append_string (" in scenario chart ")
 			Result.append_string (a_chart_name.string)
+			Result.append_string (".")
 		end
 
 end
