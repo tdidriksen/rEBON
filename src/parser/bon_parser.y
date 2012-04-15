@@ -1683,7 +1683,10 @@ Variable_range : Member_range { $$ := $1 }
 					| Type_range { $$ := $1 } ;
 
 -- @type MEMBER_RANGE
-Member_range : Identifier_list MEMBER_OF_TOKEN Set_expression { create $$.make ($1, $3) } ;
+Member_range : Identifier_list MEMBER_OF_TOKEN Set_expression { create $$.make ($1, $3) }
+             | Identifier_list MEMBER_OF_TOKEN Parenthesized  { create $$.make_with_parenthesized_expression ($1, $3) } ;
+             -- This last option was added because Parenthesized is treated as a boolean expression,
+             -- not as a set expression. See note for Operator_expression.
 
 -- @type TYPE_RANGE
 Type_range : Identifier_list ':' Type { create $$.make ($1, $3) } ;
@@ -1744,7 +1747,7 @@ Operator_expression : Unary_expression %prec UNARY_DUMMY { $$ := $1 }
 --						  | Unary_expression %prec UNARY_DUMMY { $$ := $1 }
 --						  | Binary_expression { $$ := $1 } ;
 
--- @type PARENTHESIZED
+-- @type PARENTHESIZED <: BOOLEAN_EXPRESSION
 Parenthesized : '(' Expression ')' { $$ := $2 } ; 
 
 -- @type UNARY_EXPRESSION
