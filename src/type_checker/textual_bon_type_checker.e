@@ -163,7 +163,7 @@ feature -- Error handling
 			warnings.do_all (agent (msg: STRING) do io.put_string (msg); io.put_string ("%N") end)
 		end
 
-feature -- Type checking, informal
+feature -- Type checking, general
 	check_bon_specification (a_bon_spec: BON_SPECIFICATION): BOOLEAN
 			-- Does `a_bon_spec' type check as a type BON_SPECIFICATION?
 		require
@@ -231,6 +231,62 @@ feature -- Type checking, informal
 				Result := False
 			end
 		end
+
+	check_comment (an_element: COMMENT): BOOLEAN
+			-- Does `an_element' type check as a type COMMENT?
+			-- Rule:
+			-- 	In an environment where all line comments in a comment 'c' are STRINGs, 'c' is a type COMMENT.
+		note
+			rule: "[
+					In an environment where all line comments in `an_element' are of type STRING, `an_element' is OK.
+				]"
+		do
+			Result := True
+				-- A comment is type checked by default, as it is a list of STRING.
+		end
+
+	check_structure: BOOLEAN
+			-- Is the structure of the abstract syntax OK?
+		local
+			i: INTEGER
+			types: like type_context
+			type: TBON_TC_TYPE
+		do
+			Result := True
+			types := type_context.twin
+
+			from
+				i := 1
+		 	until
+		 		i >= type_context.count
+			loop
+				type := types.any_item
+
+				if attached {TBON_TC_CLASS_TYPE} type as class_type then
+					-- Check that class is in a cluster
+					if class_type.cluster = Void then
+						error_messages.extend (err_class_not_in_cluster (class_type.name))
+						Result := False
+					end
+
+					-- Check that class does not inherit from itself
+					Result := check_ancestors (class_type, class_type) and Result
+				elseif attached {TBON_TC_CLUSTER_TYPE} type as cluster_type then
+					if cluster_type.parent = Void and not cluster_type.is_in_system_chart then
+						error_messages.extend (err_cluster_not_in_cluster_or_system (cluster_type.name))
+						Result := False
+					elseif cluster_type.parent /= Void and cluster_type.is_in_system_chart then
+						error_messages.extend (err_cluster_in_both_cluster_and_system (cluster_type.name))
+						Result := False
+					end
+				end
+
+				types := types / type
+				i := i + 1
+			end
+		end
+
+feature -- Type checking, informal
 
 	check_class_chart (an_element: CLASS_CHART): BOOLEAN
 			-- Does `an_element' type check as a type CLASS_CHART?
@@ -453,19 +509,6 @@ feature -- Type checking, informal
 
 		end
 
-	check_comment (an_element: COMMENT): BOOLEAN
-			-- Does `an_element' type check as a type COMMENT?
-			-- Rule:
-			-- 	In an environment where all line comments in a comment 'c' are STRINGs, 'c' is a type COMMENT.
-		note
-			rule: "[
-					In an environment where all line comments in `an_element' are of type STRING, `an_element' is OK.
-				]"
-		do
-			Result := True
-				-- A comment is type checked by default, as it is a list of STRING.
-		end
-
 	check_creation_chart (an_element: CREATION_CHART): BOOLEAN
 			-- Does `an_element' type check as a type CREATION_CHART?
 		do
@@ -474,8 +517,72 @@ feature -- Type checking, informal
 
 	check_event_chart (an_element: EVENT_CHART): BOOLEAN
 			-- Does `an_element' type check as a type EVENT_CHART?
+		note
+			rule: "[
+					In an environment where all involved classes in all events exist,
+					`an_element' is OK.
+				]"
+		local
+			event_entries: EVENT_ENTRIES
+			current_entry: EVENT_ENTRY
+			seen_entries: LIST[STRING]
 		do
-			check false end
+			if first_phase then
+
+				Result := True
+					-- Nothing to do for first phase
+
+			elseif second_phase then
+
+				Result := True
+				if an_element.entries_count > 0 then
+					event_entries := an_element.entries
+				end
+
+				-- Entries should be compared by object equality
+				create {ARRAYED_LIST[STRING]} seen_entries.make (10)
+				seen_entries.compare_objects
+
+				-- For each event entry
+				from event_entries.start until event_entries.after
+				loop
+					current_entry := event_entries.item_for_iteration
+					-- Check that all involved classes exist
+					from current_entry.classes_involved.start until current_entry.classes_involved.after
+					loop
+						if not (name_exists_in_context (current_entry.classes_involved.item_for_iteration) and
+							attached {TBON_TC_CLASS_TYPE} type_with_name (current_entry.classes_involved.item_for_iteration))
+						then
+							error_messages.extend (err_involved_class_does_not_exist (an_element.name, current_entry.name, current_entry.classes_involved.item_for_iteration))
+							Result := False
+						end
+					end
+
+					-- Check for duplicate event names - emit warnings if found.
+					if seen_entries.has (current_entry.name) then
+						warnings.extend (warn_duplicate_event_entry (an_element.name, current_entry.name))
+					end
+					seen_entries.extend (current_entry.name)
+				end
+
+			else
+				Result := False
+			end
+		ensure
+			all_involved_classes_exist:
+			(second_phase and Result and an_element.entries_count > 0) implies
+				an_element.entries.for_all (
+					agent (entry: EVENT_ENTRY): BOOLEAN
+							-- Check if all classes exist in context and are class types.
+						do
+							Result := True
+							from entry.classes_involved.start until entry.classes_involved.after
+							loop
+								Result := Result and name_exists_in_context (entry.classes_involved.item_for_iteration) and
+											attached {TBON_TC_CLASS_TYPE} type_with_name (entry.classes_involved.item_for_iteration)
+							end
+						end
+				)
 		end
 
 	check_informal_chart (an_element: INFORMAL_CHART): BOOLEAN
@@ -521,7 +628,7 @@ feature -- Type checking, informal
 
 					-- Check for duplicate scenarios. Emit warning if any are found.
 					scenarios.do_all (
-						agent (entry: SCENARIO_ENTRY; entries: SCENARIO_ENTRIES)
+						agent (entry: SCENARIO_ENTRY; entries: SCENARIO_ENTRIES; chart: SCENARIO_CHART)
 							local
 								occurrences: INTEGER
 							do
@@ -535,9 +642,9 @@ feature -- Type checking, informal
 								end
 
 								if occurrences > 1 then
-									warnings.extend (warn_duplicate_scenario_entry (entry.name))
+									warnings.extend (warn_duplicate_scenario_entry (chart.name, entry.name))
 								end
-							end (?, scenarios)
+							end (?, scenarios, an_element)
 					)
 
 				end
@@ -546,52 +653,6 @@ feature -- Type checking, informal
 			end
 		end
 
-	check_static_diagram (an_element: STATIC_DIAGRAM): BOOLEAN
-			-- Does `an_element' type check as a type STATIC_DIAGRAM?
-		do
-			check false end
-		end
-
-check_structure: BOOLEAN
-		-- Is the structure of the abstract syntax OK?
-	local
-		i: INTEGER
-		types: like type_context
-		type: TBON_TC_TYPE
-	do
-		Result := True
-		types := type_context.twin
-
-		from
-			i := 1
-	 	until
-	 		i >= type_context.count
-		loop
-			type := types.any_item
-
-			if attached {TBON_TC_CLASS_TYPE} type as class_type then
-				-- Check that class is in a cluster
-				if class_type.cluster = Void then
-					error_messages.extend (err_class_not_in_cluster (class_type.name))
-					Result := False
-				end
-
-				-- Check that class does not inherit from itself
-				Result := check_ancestors (class_type, class_type) and Result
-			elseif attached {TBON_TC_CLUSTER_TYPE} type as cluster_type then
-				if cluster_type.parent = Void and not cluster_type.is_in_system_chart then
-					error_messages.extend (err_cluster_not_in_cluster_or_system (cluster_type.name))
-					Result := False
-				elseif cluster_type.parent /= Void and cluster_type.is_in_system_chart then
-					error_messages.extend (err_cluster_in_both_cluster_and_system (cluster_type.name))
-					Result := False
-				end
-			end
-
-			types := types / type
-			i := i + 1
-		end
-	end
 
 	check_system_chart (an_element: SYSTEM_CHART): BOOLEAN
 			-- Does `an_element' type check as a type SYSTEM_CHART?
@@ -640,5 +701,14 @@ check_structure: BOOLEAN
 				-- for_all entry member_of clusters such_that entry: CLUSTER_ENTRY it_holds exists cluster member_of context such_that cluster: TBON_TC_CLUSTER_TYPE it_holds cluster.name = entry.name
 				-- If the type checker claims that the system chart is OK, all its clusters must exist.
 		end
+
+feature -- Type checking, static diagrams
+
+	check_static_diagram (an_element: STATIC_DIAGRAM): BOOLEAN
+			-- Does `an_element' type check as a type STATIC_DIAGRAM?
+		do
+			check false end
+		end
+
 
 end

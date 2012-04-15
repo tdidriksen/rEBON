@@ -122,6 +122,16 @@ feature -- Error messages
 			Result.append_string (" is not in a system chart and is not a subcluster of any cluster.")
 		end
 
+	err_involved_class_does_not_exist (a_chart_name, an_entry_name, a_class_name: STRING): STRING
+		do
+			Result := "Specified class "
+			Result.append_string (a_class_name.string)
+			Result.append_string (" does not exist in event entry ")
+			Result.append_string (an_entry_name.string)
+			Result.append_string (" in event chart ")
+			Result.append_string (a_chart_name.string)
+		end
+
 	err_undefined (a_description: STRING): STRING
 		do
 			Result := "Undefined error: "
@@ -129,10 +139,21 @@ feature -- Error messages
 		end
 
 feature -- Warnings
-	warn_duplicate_scenario_entry (a_name: STRING): STRING
+
+	warn_duplicate_event_entry (a_chart_name, a_name: STRING): STRING
+		do
+			Result := "Duplicate entries for event "
+			Result.append_string (a_name.string)
+			Result.append_string (" in event chart ")
+			Result.append_string (a_chart_name.string)
+		end
+
+	warn_duplicate_scenario_entry (a_chart_name, a_name: STRING): STRING
 		do
 			Result := "Duplicate entries for scenario "
 			Result.append_string (a_name.string)
+			Result.append_string (" in scenario chart ")
+			Result.append_string (a_chart_name.string)
 		end
 
 end
