@@ -17,11 +17,13 @@ create
 	make
 
 feature -- Initialization
-	make (an_error_code: INTEGER; an_error_message: STRING)
+	make (an_error_code: INTEGER; a_warning_message: STRING)
 			-- Initialize `Current'.
 		do
 			code := an_error_code
-			message := an_error_message.string
+			if a_warning_message /= Void then
+				message := a_warning_message.string
+			end
 		end
 
 feature -- Access

@@ -12,7 +12,7 @@
 		</option>
 		<precompile name="base_pre" location="$ISE_PRECOMP\base.ecf"/>
 		<library name="base" location="$ISE_LIBRARY\library\base\base.ecf"/>
-		<library name="base2" location="\Users\Thomas\Documents\ITU\6. semester\Bachelor\EiffelBase2\base2.ecf"/>
+		<library name="base2" location="$EIFFEL_BASE_2\base2.ecf"/>
 		<library name="gobo_kernel" location="$ISE_LIBRARY\library\gobo\gobo_kernel.ecf"/>
 		<library name="gobo_lexical" location="$ISE_LIBRARY\library\gobo\gobo_lexical.ecf"/>
 		<library name="gobo_parse" location="$ISE_LIBRARY\library\gobo\gobo_parse.ecf"/>
@@ -20,7 +20,7 @@
 		<library name="gobo_test" location="$ISE_LIBRARY\library\gobo\gobo_test.ecf"/>
 		<library name="gobo_utility" location="$ISE_LIBRARY\library\gobo\gobo_utility.ecf"/>
 		<cluster name="parser" location="$REBON\src\parser\"/>
-		<cluster name="scanner" location="\Users\Thomas\Documents\ITU\6. semester\Bachelor\rEBON\src\scanner\"/>
+		<cluster name="scanner" location="$REBON\src\scanner\"/>
 		<cluster name="type_checker" location="$REBON\src\type_checker\" recursive="true"/>
 		<cluster name="type_checker_test" location=".\" recursive="true">
 			<cluster name="mog" location="$REBON\library\mog\" recursive="true"/>

@@ -21,7 +21,9 @@ feature -- Initialization
 			-- Initialize `Current'.
 		do
 			code := an_error_code
-			message := an_error_message.string
+			if an_error_message /= Void then
+				message := an_error_message.string
+			end
 		end
 
 feature -- Access
