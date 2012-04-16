@@ -31,6 +31,11 @@ feature -- Access
 	cluster: TBON_TC_CLUSTER_TYPE
 			-- What cluster is this type in?
 
+	generics: MML_SET[TBON_TC_GENERIC]
+			-- What are the generics of this type?
+
+	features: MML_SET[TBON_TC_FEATURE]
+
 feature -- Element change
 	add_ancestor (a_class: TBON_TC_CLASS_TYPE)
 			-- Add `a_class' to `ancestors'?
@@ -48,7 +53,73 @@ feature -- Element change
 			cluster := a_cluster
 		end
 
+	set_is_root
+			-- Set `is_root' to True.
+		do
+			is_root := True
+		ensure
+			is_root: is_root
+		end
+
+	set_is_deferred
+			-- Set `is_deferred' to True.
+		do
+			is_deferred := True
+		ensure
+			is_deferred: is_deferred
+		end
+
+	set_is_effective
+			-- Set `is_effective' to True.
+		do
+			is_effective := True
+		ensure
+			is_effective: is_effective
+		end
+
+	set_is_reused
+			-- Set `is_reused' to True.
+		do
+			is_reused := True
+		ensure
+			is_reused: is_reused
+		end
+
+	set_is_persistent
+			-- Set `is_persistent' to True.
+		do
+			is_persistent := True
+		ensure
+			is_persistent: is_persistent
+		end
+
+	set_is_interfaced
+			-- Set `is_interfaced' to True.
+		do
+			is_interfaced := True
+		ensure
+			is_interfaced: is_interfaced
+		end
+
 feature -- Status report
+	is_root: BOOLEAN
+			-- Is `Current' a root class?
+
+	is_deferred: BOOLEAN
+			-- Is `Current' a deferred class?
+
+	is_effective: BOOLEAN
+			-- Is `Current' an effective class?
+
+	is_reused: BOOLEAN
+			-- Is `Current' a reused class?
+
+	is_persistent: BOOLEAN
+			-- Is `Current' a persistent class?
+
+	is_interfaced: BOOLEAN
+			-- Is `Current' an interfaced class?
+
 	conforms_to (other: TBON_TC_TYPE): BOOLEAN
 			-- Does `Current' conform to `other'?
 		local

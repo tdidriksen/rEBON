@@ -33,8 +33,9 @@ feature -- Initialization
 			real_type: TBON_TC_REAL_TYPE
 			string_type: TBON_TC_STRING_TYPE
 		do
-			-- Create type context
-			create type_context.default_create
+			-- Create type contexts
+			create informal_type_context.default_create
+			create formal_type_context.default_create
 
 			-- Create default value types
 			create boolean_type.make
@@ -44,22 +45,30 @@ feature -- Initialization
 			create string_type.make
 
 			-- Add default value types to context
-			add_to_type_context (boolean_type)
-			add_to_type_context (character_type)
-			add_to_type_context (integer_type)
-			add_to_type_context (real_type)
-			add_to_type_context (string_type)
+			add_to_informal_type_context (boolean_type)
+			add_to_informal_type_context (character_type)
+			add_to_informal_type_context (integer_type)
+			add_to_informal_type_context (real_type)
+			add_to_informal_type_context (string_type)
 
 			create value_context.default_create
+
+			create {ARRAYED_LIST[STRING]} extended_ids.make (10)
+			extended_ids.compare_objects
 		end
 
 
 feature {NONE} -- Contexts
-	type_context: MML_SET[TBON_TC_TYPE]
-			-- What is the current type context?
+	informal_type_context: MML_SET[TBON_TC_TYPE]
+			-- What is the current informal type context?
+
+	formal_type_context: MML_SET[TBON_TC_TYPE]
+			-- What is the current formal type context?
 
 	value_context: MML_SET[MML_RELATION[STRING, TBON_TC_TYPE]]
 			-- What is the current value context?
+
+	extended_ids: LIST[STRING]
 
 feature -- Status report
 	first_phase: BOOLEAN
@@ -70,39 +79,47 @@ feature -- Status report
 			-- Is the type checker in the second phase?
 			-- During the second phase, all elements and statements are checked.
 
-	class_name_exists_in_context (a_class_name: STRING; a_context: like type_context): BOOLEAN
+	class_name_exists_in_context (a_class_name: STRING; a_context: MML_SET[TBON_TC_TYPE]): BOOLEAN
 			-- Does `a_name' exist in `a_context' as a class type?
 		do
-			Result := name_exists_in_context (a_class_name) and attached {TBON_TC_CLASS_TYPE} type_with_name (a_class_name)
+			Result := name_exists_in_context (a_class_name, a_context) and attached {TBON_TC_CLASS_TYPE} type_with_name (a_class_name, a_context)
 		end
 
-	name_exists_in_context (a_name: STRING): BOOLEAN
-			-- Does `a_name' exist in `type_context'?
+	name_exists_in_context (a_name: STRING; a_context: MML_SET[TBON_TC_TYPE]): BOOLEAN
+			-- Does `a_name' exist in `a_context'?
 		require
 			name_not_void: a_name /= Void
 		do
-			Result := type_context.exists (agent names_are_equal (?, a_name))
+			Result := a_context.exists (agent names_are_equal (?, a_name))
 		end
 
 
 feature {NONE} -- Auxiliary features
-	add_to_type_context (a_type: TBON_TC_TYPE)
+	add_to_formal_type_context (a_type: TBON_TC_TYPE)
 			-- Add `a_type' to `type_context'.
 		require
 			type_not_void: a_type /= Void
 		do
-			type_context := type_context & a_type
+			formal_type_context := formal_type_context & a_type
 		end
 
-	type_with_name (a_name: STRING): TBON_TC_TYPE
+	add_to_informal_type_context (a_type: TBON_TC_TYPE)
+			-- Add `a_type' to `type_context'.
+		require
+			type_not_void: a_type /= Void
+		do
+			informal_type_context := informal_type_context & a_type
+		end
+
+	type_with_name (a_name: STRING; a_type_context: MML_SET[TBON_TC_TYPE]): TBON_TC_TYPE
 			-- What type in `type_context' has the name `a_name'?
 		--require
 			--name_exists: name_exists_in_context (a_name)
 		local
-			filtered_set: like type_context
+			filtered_set: like a_type_context
 		do
-			if name_exists_in_context (a_name) then
-				filtered_set := type_context.filtered (agent names_are_equal (?, a_name))
+			if name_exists_in_context (a_name, informal_type_context) then
+				filtered_set := a_type_context.filtered (agent names_are_equal (?, a_name))
 				check filtered_set.count = 1 end
 				Result := filtered_set.any_item
 			else
@@ -110,7 +127,7 @@ feature {NONE} -- Auxiliary features
 			end
 		ensure
 			--type_not_void: Result /= Void
-			name_exists_means_not_void: name_exists_in_context (a_name) implies Result /= Void
+			name_exists_means_not_void: name_exists_in_context (a_name, informal_type_context) implies Result /= Void
 			names_are_equal: Result /= Void implies names_are_equal (Result, a_name)
 		end
 
@@ -255,16 +272,16 @@ feature -- Type checking, general
 			-- Is the structure of the abstract syntax OK?
 		local
 			i: INTEGER
-			types: like type_context
+			types: like informal_type_context
 			type: TBON_TC_TYPE
 		do
 			Result := True
-			types := type_context.twin
+			types := informal_type_context.twin
 
 			from
 				i := 1
 		 	until
-		 		i >= type_context.count
+		 		i >= informal_type_context.count
 			loop
 				type := types.any_item
 
@@ -304,8 +321,8 @@ feature -- Type checking, informal
 					`an_element' is OK.
 					The inheritance hierarchy is checked in check_structure.
 				]"
-		require
-			second_phase implies name_exists_in_context (an_element.name)
+		--require
+		--	second_phase implies name_exists_in_context (an_element.name, informal_type_context)
 		local
 			class_type, current_class: TBON_TC_CLASS_TYPE
 			parents: CLASS_NAME_LIST
@@ -314,9 +331,9 @@ feature -- Type checking, informal
 
 				Result := True
 
-				if not name_exists_in_context (an_element.name) then
+				if not name_exists_in_context (an_element.name, informal_type_context) then
 					create class_type.make (an_element.name.as_upper)
-					add_to_type_context (class_type)
+					add_to_informal_type_context (class_type)
 				else
 					error_messages.extend (err_class_exists (an_element.name))
 					Result := False
@@ -326,7 +343,7 @@ feature -- Type checking, informal
 
 				Result := True
 
-				if attached {TBON_TC_CLASS_TYPE} type_with_name (an_element.name) as a_class then
+				if attached {TBON_TC_CLASS_TYPE} type_with_name (an_element.name, informal_type_context) as a_class then
 					current_class := a_class
 				else
 					error_messages.extend (err_class_does_not_exist (an_element.name))
@@ -338,7 +355,7 @@ feature -- Type checking, informal
 
 					from parents.start until parents.after
 					loop
-						if attached {TBON_TC_CLASS_TYPE} type_with_name (parents.item_for_iteration.string) as ancestor then
+						if attached {TBON_TC_CLASS_TYPE} type_with_name (parents.item_for_iteration.string, informal_type_context) as ancestor then
 							current_class.add_ancestor (ancestor)
 						else
 							error_messages.extend (err_ancestor_does_not_exist (current_class.name, parents.item_for_iteration.string))
@@ -354,21 +371,21 @@ feature -- Type checking, informal
 		ensure
 			-- First phase
 			not_in_old_environment:
-				(first_phase and Result) implies not (old type_context.exists (
+				(first_phase and Result) implies not (old informal_type_context.exists (
 					agent (a_type: TBON_TC_TYPE; a_class: CLASS_CHART): BOOLEAN
 						do
 							Result := a_type.name ~ a_class.name
 						end (?, an_element))
 					)
 
-			class_name_exists: first_phase implies name_exists_in_context (an_element.name)
+			class_name_exists: first_phase implies name_exists_in_context (an_element.name, informal_type_context)
 
 			-- Second phase
 			ancestors_exist:
 			(second_phase and Result and an_element.has_parents) implies an_element.parents.for_all (
 				agent (name: STRING): BOOLEAN
 					do
-						Result := name_exists_in_context (name) and attached {TBON_TC_CLASS_TYPE} type_with_name (name)
+						Result := class_name_exists_in_context (name, informal_type_context)
 					end
 			)
 		end
@@ -384,8 +401,8 @@ feature -- Type checking, informal
 					and `an_element' is not a subcluster of `an_element', 
 					`an_element' is OK.
 				]"
-		require
-			name_exists: second_phase implies name_exists_in_context (an_element.name)
+		--require
+		--	name_exists: second_phase implies name_exists_in_context (an_element.name, informal_type_context)
 		local
 			cluster_type: TBON_TC_CLUSTER_TYPE
 			current_cluster: TBON_TC_CLUSTER_TYPE
@@ -397,9 +414,9 @@ feature -- Type checking, informal
 
 				Result := True
 
-				if not name_exists_in_context (an_element.name) then
+				if not name_exists_in_context (an_element.name, informal_type_context) then
 					create cluster_type.make (an_element.name.as_upper)
-					add_to_type_context (cluster_type)
+					add_to_informal_type_context (cluster_type)
 				else
 					error_messages.extend (err_cluster_exists (an_element.name))
 					Result := False
@@ -407,7 +424,7 @@ feature -- Type checking, informal
 
 			elseif second_phase then
 
-				if attached {TBON_TC_CLUSTER_TYPE} type_with_name (an_element.name) as cluster then
+				if attached {TBON_TC_CLUSTER_TYPE} type_with_name (an_element.name, informal_type_context) as cluster then
 					current_cluster := cluster
 				end
 
@@ -420,7 +437,7 @@ feature -- Type checking, informal
 					from class_entries.start until class_entries.after
 					loop
 						-- Check if class exists in context
-						if attached {TBON_TC_CLASS_TYPE} type_with_name (class_entries.item_for_iteration.name) as class_type then
+						if attached {TBON_TC_CLASS_TYPE} type_with_name (class_entries.item_for_iteration.name, informal_type_context) as class_type then
 							-- Add class to cluster types
 							current_cluster.add_type (class_type)
 							-- Check that no class is in more than one cluster
@@ -449,7 +466,7 @@ feature -- Type checking, informal
 					from cluster_entries.start until cluster_entries.after
 					loop
 						-- Check if cluster exists in context
-						if attached {TBON_TC_CLUSTER_TYPE} type_with_name (cluster_entries.item_for_iteration.name) as cluster then
+						if attached {TBON_TC_CLUSTER_TYPE} type_with_name (cluster_entries.item_for_iteration.name, informal_type_context) as cluster then
 							-- Add cluster to cluster types
 							current_cluster.add_type (cluster)
 							-- Check that no cluster is in more than one cluster
@@ -481,28 +498,28 @@ feature -- Type checking, informal
 		ensure
 			-- First phase
 			not_in_old_environment:
-				(first_phase and Result) implies not (old type_context.exists (
+				(first_phase and Result) implies not (old informal_type_context.exists (
 					agent (a_type: TBON_TC_TYPE; a_cluster: CLUSTER_CHART): BOOLEAN
 						do
 							Result := a_type.name ~ a_cluster.name
 						end (?, an_element))
 					)
 
-			name_exists: first_phase implies name_exists_in_context (an_element.name)
+			name_exists: first_phase implies name_exists_in_context (an_element.name, informal_type_context)
 				-- This will always hold, no matter the errors.
 
 			-- Second phase
 			subclusters_exist: (second_phase and Result and an_element.has_clusters) implies an_element.clusters.for_all (
 				agent (a_cluster: CLUSTER_ENTRY): BOOLEAN
 					do
-						Result := name_exists_in_context (a_cluster.name) and attached {TBON_TC_CLUSTER_TYPE} type_with_name (a_cluster.name)
+						Result := name_exists_in_context (a_cluster.name, informal_type_context) and attached {TBON_TC_CLUSTER_TYPE} type_with_name (a_cluster.name, informal_type_context)
 					end
 			)
 
 			contained_classes_exist: (second_phase and Result and an_element.has_classes) implies an_element.classes.for_all (
 				agent (a_class: CLASS_ENTRY): BOOLEAN
 					do
-						Result := name_exists_in_context (a_class.name) and attached {TBON_TC_CLASS_TYPE} type_with_name (a_class.name)
+						Result := class_name_exists_in_context (a_class.name, informal_type_context)
 					end
 			)
 
@@ -551,7 +568,7 @@ feature -- Type checking, informal
 				loop
 					current_entry := creation_entries.item_for_iteration
 					-- Check that creator class exists
-					if not class_name_exists_in_context (current_entry.creator, type_context) then
+					if not class_name_exists_in_context (current_entry.creator, informal_type_context) then
 						error_messages.extend (err_creator_does_not_exist (an_element.name, current_entry.creator))
 						Result := False
 					end
@@ -560,7 +577,7 @@ feature -- Type checking, informal
 					from current_entry.targets.start until current_entry.targets.after
 					loop
 						current_target := current_entry.targets.item_for_iteration
-						if not class_name_exists_in_context (current_target, type_context) then
+						if not class_name_exists_in_context (current_target, informal_type_context) then
 							error_messages.extend (err_target_does_not_exist (an_element.name, current_target))
 							Result := False
 						end
@@ -586,7 +603,7 @@ feature -- Type checking, informal
 			(second_phase and Result and an_element.entries_count > 0) implies an_element.entries.for_all (
 				agent (entry: CREATION_ENTRY): BOOLEAN
 					do
-						Result := class_name_exists_in_context (entry.creator, type_context)
+						Result := class_name_exists_in_context (entry.creator, informal_type_context)
 					end
 			)
 
@@ -601,7 +618,7 @@ feature -- Type checking, informal
 						from entry.targets.start until entry.targets.after
 						loop
 							target := entry.targets.item_for_iteration
-							Result := Result and class_name_exists_in_context (target, type_context)
+							Result := Result and class_name_exists_in_context (target, informal_type_context)
 							entry.targets.forth
 						end
 					end
@@ -643,7 +660,7 @@ feature -- Type checking, informal
 					-- Check that all involved classes exist
 					from current_entry.classes_involved.start until current_entry.classes_involved.after
 					loop
-						if not (class_name_exists_in_context (current_entry.classes_involved.item_for_iteration, type_context))
+						if not (class_name_exists_in_context (current_entry.classes_involved.item_for_iteration, informal_type_context))
 						then
 							error_messages.extend (err_involved_class_does_not_exist (an_element.name, current_entry.name, current_entry.classes_involved.item_for_iteration))
 							Result := False
@@ -674,7 +691,7 @@ feature -- Type checking, informal
 							Result := True
 							from entry.classes_involved.start until entry.classes_involved.after
 							loop
-								Result := Result and class_name_exists_in_context (entry.classes_involved.item_for_iteration, type_context)
+								Result := Result and class_name_exists_in_context (entry.classes_involved.item_for_iteration, informal_type_context)
 							end
 						end
 				)
@@ -772,11 +789,11 @@ feature -- Type checking, informal
 				from clusters.start until clusters.after loop
 					cluster := clusters.item_for_iteration
 
-					if not name_exists_in_context (cluster.name) then
+					if not name_exists_in_context (cluster.name, informal_type_context) then
 						error_messages.extend (err_cluster_does_not_exist (cluster.name))
 						Result := False
 					else
-						if attached {TBON_TC_CLUSTER_TYPE} type_with_name (cluster.name) as cluster_type then
+						if attached {TBON_TC_CLUSTER_TYPE} type_with_name (cluster.name, informal_type_context) as cluster_type then
 							if cluster_type.is_in_system_chart then
 								error_messages.extend (err_cluster_already_in_system_chart (cluster_type.name))
 								Result := False
@@ -792,15 +809,302 @@ feature -- Type checking, informal
 				Result := False
 			end
 		ensure
-			all_clusters_exist: (second_phase and Result) implies an_element.clusters.for_all (agent (entry: CLUSTER_ENTRY): BOOLEAN do Result := name_exists_in_context (entry.name) end)
+			all_clusters_exist: (second_phase and Result) implies an_element.clusters.for_all (agent (entry: CLUSTER_ENTRY): BOOLEAN do Result := name_exists_in_context (entry.name, informal_type_context) end)
 				-- for_all entry member_of clusters such_that entry: CLUSTER_ENTRY it_holds exists cluster member_of context such_that cluster: TBON_TC_CLUSTER_TYPE it_holds cluster.name = entry.name
 				-- If the type checker claims that the system chart is OK, all its clusters must exist.
 		end
 
 feature -- Type checking, static diagrams
 
+	check_class_interface (an_element: CLASS_INTERFACE; enclosing_class: TBON_TC_CLASS_TYPE): BOOLEAN
+			-- Does `an_element' type check as a type CLASS_INTERFACE?
+		note
+			rule: "[
+				In an environment where all ancestors of `enclosing_class' exist,
+				and all features are OK,
+				and all contracts are OK,
+				and `enclosing_class' does not inherit from itselt,
+				`an_element' is OK.
+				]"
+		local
+			ancestors: CLASS_TYPE_LIST
+		do
+			if first_phase then
+
+
+
+			elseif second_phase then
+
+				Result := True
+
+				-- Add ancestors as ancestors to enclosing class
+				if an_element.parent_count > 0 then
+					ancestors := an_element.parents
+
+					from ancestors.start until ancestors.after
+					loop
+						if attached {TBON_TC_CLASS_TYPE} type_with_name (ancestors.item_for_iteration.class_name, formal_type_context) as ancestor then
+							enclosing_class.add_ancestor (ancestor)
+						else
+							error_messages.extend (err_class_does_not_exist (ancestors.item_for_iteration.class_name))
+							Result := False
+						end
+
+						ancestors.forth
+					end
+				end
+
+			else
+				Result := False
+			end
+
+		ensure
+			ancestors_exist:
+			(second_phase and Result and an_element.parent_count > 0) implies
+				an_element.parents.for_all (
+					agent (parent: CLASS_TYPE): BOOLEAN
+						do
+							Result := class_name_exists_in_context (parent.class_name, formal_type_context)
+						end
+				)
+		end
+
+	check_class_specification (an_element: CLASS_SPECIFICATION): BOOLEAN
+			-- Does `an_element' type check as a type CLASS_SPECIFICATION?
+		note
+			rule: "[
+				In an environment where `an_element' exists and has a unique name,
+				and all generic arguments are unique (name does not exist in context) and their bounding classes exist,
+				and the class interface is OK,
+				`an_element' is OK.
+				]"
+		local
+			class_type: TBON_TC_CLASS_TYPE
+			ancestors: CLASS_TYPE_LIST
+		do
+			if first_phase then
+
+				Result := True
+
+				if not name_exists_in_context (an_element.name, formal_type_context) then
+					create class_type.make (an_element.name)
+					add_to_formal_type_context (class_type)
+
+					if an_element.is_deferred then
+						class_type.set_is_deferred
+					elseif an_element.is_effective then
+						class_type.set_is_effective
+					elseif an_element.is_root then
+						class_type.set_is_root
+					end
+
+					if an_element.reused then
+						class_type.set_is_reused
+					end
+					if an_element.persistent then
+						class_type.set_is_persistent
+					end
+					if an_element.interfaced then
+						class_type.set_is_interfaced
+					end
+
+					Result := check_formal_generics (an_element.generics, class_type) and Result
+					Result := check_class_interface (an_element.class_interface, class_type) and Result
+
+				else
+					error_messages.extend (err_class_exists (an_element.name))
+					Result := False
+				end
+
+			elseif second_phase then
+
+				-- Add ancestors
+--				if an_element. then
+--					ancestors an_element.class_interface.parents
+--					from an_element.class_interface.parents.start until
+
+--					loop
+
+--					end
+--				end
+
+				-- If a class is declared effective, one of its parents must be deferred
+				if an_element.is_effective then
+
+				end
+
+			end
+		ensure
+			not_in_old_environment:
+			(first_phase and Result) implies not (name_exists_in_context (an_element.name, old formal_type_context))
+
+			exists_in_environment:
+			(first_phase and Result) implies name_exists_in_context (an_element.name, formal_type_context)
+
+			effective_implies_deferred_parent:
+				(second_phase and Result and
+				an_element.has_class_interface and
+				an_element.is_effective) implies
+				not an_element.class_interface.parents.for_all (
+					agent (a_class_type: CLASS_TYPE): BOOLEAN
+						do
+							if attached {TBON_TC_CLASS_TYPE} type_with_name (a_class_type.class_name, formal_type_context) as type then
+								Result := not type.is_deferred
+							else
+								Result := False
+							end
+						end
+				)
+					-- not for_all parents it_holds not is_deferred = exists parent it_holds is_deferred
+
+			formal_generic_names_exist:
+				(second_phase and Result and an_element.has_generics) implies
+				an_element.generics.for_all (
+					agent (generic: FORMAL_GENERIC; class_spec: CLASS_SPECIFICATION): BOOLEAN
+						do
+							if attached {TBON_TC_CLASS_TYPE} type_with_name (class_spec.name, formal_type_context) as type then
+								Result := type.generics.exists (agent (l_generic: FORMAL_GENERIC; tc_generic: TBON_TC_GENERIC): BOOLEAN
+																	do
+																		Result := tc_generic.formal_generic_name ~ l_generic.name
+																	end (generic, ?)
+																)
+							else
+								Result := False
+							end
+						end (?, an_element)
+				)
+					-- for_all generics in class specification exists generic name in corresponding TBON_TC_CLASS_TYPE
+
+		end
+
+	check_client_relation (an_element: CLIENT_RELATION): BOOLEAN
+			-- Does `an_element' type check as a type CLIENT_RELATION?
+		note
+			rule: "[
+				In an environment where...
+				]"
+		do
+			check false end
+		end
+
+	check_cluster_specification (an_element: CLUSTER_SPECIFICATION): BOOLEAN
+			-- Does `an_element' type check as a type CLUSTER_SPECIFICATION?
+		note
+			rule: "[
+				In an environment where...
+				]"
+		do
+			check false end
+		end
+
+	check_extended_id (an_element: STRING): BOOLEAN
+			-- Does `an_element' type check as a an extended ID?
+		note
+			rule: "[
+				In an environment where `an_element' is either an integer or an identifier,
+				`an_element' is OK.
+				]"
+		do
+			Result := True
+			-- If an extended ID exists more than once, emit a warning
+			if extended_ids.has (an_element) then
+				warnings.extend (warn_extended_id_exists (an_element))
+			end
+		end
+
+	check_formal_generics (an_element: FORMAL_GENERIC_LIST; enclosing_class: TBON_TC_CLASS_TYPE): BOOLEAN
+			-- Does `an_element' type check as a type FORMAL_GENERIC_LIST?
+		note
+			rule: "[
+				In an environment where...
+				]"
+		do
+			check false end
+		ensure
+		end
+
+	check_inheritance_relation (an_element: INHERITANCE_RELATION): BOOLEAN
+			-- Does `an_element' type check as a type INHERITANCE_RELATION?
+		note
+			rule: "[
+				In an environment where...
+				]"
+		do
+			check false end
+		end
+
+	check_static_block (some_elements: STATIC_COMPONENTS): BOOLEAN
+			-- Does each element in `some_elements' type check as their respective types?
+		note
+			rule: "[
+				In an environment where all contained components are OK,
+				`some_elements' are OK.
+				]"
+		local
+			component: STATIC_COMPONENT
+		do
+			Result := True
+			from
+				some_elements.start
+			until
+				some_elements.after
+			loop
+				component := some_elements.item_for_iteration
+				if attached {CLUSTER_SPECIFICATION} component as cluster_spec then
+					Result := check_cluster_specification (cluster_spec) and Result
+				elseif attached {CLASS_SPECIFICATION} component as class_spec then
+					Result := check_class_specification (class_spec) and Result
+				elseif attached {STATIC_RELATION} component as relation then
+					Result := check_static_relation (relation) and Result
+				else
+					Result := False
+				end
+
+				some_elements.forth
+			end
+		end
+
 	check_static_diagram (an_element: STATIC_DIAGRAM): BOOLEAN
 			-- Does `an_element' type check as a type STATIC_DIAGRAM?
+		note
+			rule: "[
+				In an environment where the comment and extended ID of `an_element' are OK,
+				and all static components of `an_element' are OK,
+				`an_element' is OK.
+				]"
+		do
+			if first_phase then
+
+				Result := True
+				if an_element.has_comment then
+					Result := Result and check_comment (an_element.comment)
+				end
+				if an_element.has_name then
+					Result := Result and check_extended_id (an_element.name)
+				end
+
+			elseif second_phase then
+
+				Result := True
+
+				if an_element.components_count > 0 then
+					Result := check_static_block (an_element.components)
+				end
+
+			else
+				Result := False
+			end
+		ensure
+			(first_phase and Result and an_element.has_comment) implies check_comment (an_element.comment)
+			(first_phase and Result and an_element.has_name) implies check_extended_id (an_element.name)
+		end
+
+	check_static_relation (an_element: STATIC_RELATION): BOOLEAN
+			-- Does `an_element' type check as a type STATIC_RELATION?
+		note
+			rule: "[
+				In an environment where...
+				]"
 		do
 			check false end
 		end

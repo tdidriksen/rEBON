@@ -29,15 +29,21 @@ feature -- Initialization
 		require
 			some_features /= Void and then some_features.count >= 0
 		do
-			my_index := an_index.twin
-			my_parents := some_parents.twin
+			if an_index /= Void then
+				my_index := an_index.twin
+			end
+			if some_parents /= Void then
+				my_parents := some_parents.twin
+			end
 			my_features := some_features.twin
-			my_class_invariant := an_invariant.twin
+			if an_invariant /= Void then
+				my_class_invariant := an_invariant.twin
+			end
 		ensure
-			equal (my_index, an_index)
-			equal (my_parents, some_parents)
-			equal (my_features, some_features)
-			equal (my_class_invariant, an_invariant)
+			an_index /= Void implies equal (index, an_index)
+			some_parents /= Void implies equal (parents, some_parents)
+			equal (features, some_features)
+			an_invariant /= Void implies equal (my_class_invariant, an_invariant)
 		end
 
 feature -- Access
@@ -85,6 +91,7 @@ feature -- Measurement
 
 	parent_count: INTEGER
 		do
+			Result := 0
 			if my_parents /= Void then
 				Result := my_parents.count
 			end

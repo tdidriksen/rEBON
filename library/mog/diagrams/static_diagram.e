@@ -33,6 +33,8 @@ feature -- Initialization
 
 			if some_components /= Void then
 				my_components := some_components.twin
+			else
+				create my_components.make
 			end
 		ensure
 			a_name /= Void implies name.is_equal (a_name)
@@ -66,6 +68,17 @@ feature -- Access
 		end
 
 feature -- Status report
+	has_comment: BOOLEAN
+			-- Does `Current' have a comment?
+		do
+			Result := my_comment /= Void and then not my_comment.is_empty
+		end
+
+	has_name: BOOLEAN
+			-- Does `Current' have a name?
+		do
+			Result := my_name /= Void and then not my_name.is_empty
+		end
 
 	is_valid: BOOLEAN
 		do

@@ -48,13 +48,19 @@ feature -- Setup
 			Result := parser.bon_specification
 		end
 
+	set_up_test
+		do
+			create type_checker.make
+		end
+
 feature -- Test
 	test_true
 		local
 			bon_spec: BON_SPECIFICATION
 		do
-			
-			assert ("True", True)
+			set_up_test
+			bon_spec := bon_specification_from_file ("../../../class_chart.bon")
+			assert ("Bon spec succeeds", type_checker.check_bon_specification (bon_spec))
 		end
 
 end

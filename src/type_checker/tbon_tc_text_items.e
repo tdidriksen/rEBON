@@ -186,4 +186,11 @@ feature -- Warnings
 			Result.append_string (".")
 		end
 
+	warn_extended_id_exists (an_extended_id: STRING): STRING
+		do
+			Result := "A diagram with extended ID "
+			Result.append_string (an_extended_id.string)
+			Result := " is defined more than once."
+		end
+
 end

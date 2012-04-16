@@ -19,6 +19,7 @@ feature -- Initialization
 		do
 			name := a_name
 			create types.default_create
+			is_reused := False
 		end
 
 feature -- Access
@@ -46,6 +47,14 @@ feature -- Element change
 			is_in_system_chart: is_in_system_chart
 		end
 
+	set_is_reused
+			-- Set `is_reused' to True.
+		do
+			is_reused := True
+		ensure
+			is_reused: is_reused
+		end
+
 	set_parent (a_cluster: TBON_TC_CLUSTER_TYPE)
 			-- Set `a_cluster' to be the parent of cluster of `Current'.
 		require
@@ -57,6 +66,9 @@ feature -- Element change
 feature -- Status report
 	is_in_system_chart: BOOLEAN
 			-- Is `Current' in a system chart?
+
+	is_reused: BOOLEAN
+			-- Is `Current' reused?
 
 	conforms_to (other: TBON_TC_TYPE): BOOLEAN
 			-- Does `Current' conform to `other'?

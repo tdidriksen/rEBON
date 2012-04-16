@@ -215,6 +215,42 @@ feature -- Output
 
 feature -- Status report
 
+	has_class_interface: BOOLEAN
+			-- Does `Current' have a class interface?
+		do
+			Result := my_class_interface /= Void
+		end
+
+	has_classifier: BOOLEAN
+			-- Does `Current' have a classifier?
+		do
+			Result := my_classifier /= Void
+		end
+
+	has_generics: BOOLEAN
+			-- Does `Current' have a classifier?
+		do
+			Result := my_generics /= Void
+		end
+
+	is_deferred: BOOLEAN
+			-- Is `Current' deferred?
+		do
+			Result := has_classifier and then my_classifier ~ "DEFERRED"
+		end
+
+	is_effective: BOOLEAN
+			-- Is `Current' effective?
+		do
+			Result := has_classifier and then my_classifier ~ "EFFECTIVE"
+		end
+
+	is_root: BOOLEAN
+			-- Is `Current' root?
+		do
+			Result := has_classifier and then my_classifier ~ "ROOT"
+		end
+
 	is_part_of (other: like Current): BOOLEAN
 		do
 			check false end
