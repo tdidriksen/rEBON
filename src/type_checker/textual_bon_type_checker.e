@@ -7,8 +7,26 @@ note
 class
 	TEXTUAL_BON_TYPE_CHECKER
 
-inherit
+inherit {NONE}
 	TBON_TC_TEXT_ITEMS
+
+	TBON_TC_ERROR
+		rename
+			make as make_error,
+			code as error_code,
+			message as error_message
+		undefine
+			is_equal
+		end
+
+	TBON_TC_WARNING
+		rename
+			make as make_warning,
+			code as warning_code,
+			message as warning_message
+		undefine
+			is_equal
+		end
 
 create
 	make
@@ -18,8 +36,11 @@ feature -- Initialization
 			-- Create a textual BON type checker.
 		do
 			initialize_contexts
-			create {LINKED_LIST[STRING]} error_messages.make
-			create {LINKED_LIST[STRING]} warnings.make
+			create {LINKED_LIST[TBON_TC_ERROR]} errors.make
+			errors.compare_objects
+			create {LINKED_LIST[TBON_TC_WARNING]} warnings.make
+			warnings.compare_objects
+
 			first_phase := True
 			second_phase := False
 		end
@@ -141,7 +162,19 @@ feature {NONE} -- Auxiliary features
 		end
 
 feature -- Error handling
-	error_messages: LIST[STRING]
+	add_error (an_error_code: INTEGER; an_error_message: STRING)
+			-- Add an error message.
+		do
+			errors.extend (create {TBON_TC_ERROR}.make (an_error_code, an_error_message))
+		end
+
+	add_warning (a_warning_code: INTEGER; a_warning_message: STRING)
+			-- Add a warning message.
+		do
+			warnings.extend (create {TBON_TC_WARNING}.make (a_warning_code, a_warning_message))
+		end
+
+	errors: LIST[TBON_TC_ERROR]
 			-- What error messages have been emitted from this type checker?
 
 --	print_error_messages_to_file (an_output_stream: PLAIN_TEXT_FILE)
@@ -156,7 +189,7 @@ feature -- Error handling
 		do
 			io.set_error_default
 			io.put_string ("%NErrors:%N")
-			error_messages.do_all (agent (msg: STRING) do io.put_string (msg); io.put_string ("%N") end)
+			errors.do_all (agent (error: TBON_TC_ERROR) do io.put_string (error.message); io.put_string ("%N") end)
 		end
 
 	print_error_messages_to_stdout
@@ -164,10 +197,10 @@ feature -- Error handling
 		do
 			io.set_output_default
 			io.put_string ("%NErrors:%N")
-			error_messages.do_all (agent (msg: STRING) do io.put_string (msg); io.put_string ("%N") end)
+			errors.do_all (agent (error: TBON_TC_ERROR) do io.put_string (error.message); io.put_string ("%N") end)
 		end
 
-	warnings: LIST[STRING]
+	warnings: LIST[TBON_TC_WARNING]
 			-- What warnings have been emitted from this type checker?
 
 	print_warnings_to_stderr
@@ -175,7 +208,7 @@ feature -- Error handling
 		do
 			io.set_error_default
 			io.put_string ("%NWarnings:%N")
-			warnings.do_all (agent (msg: STRING) do io.put_string (msg); io.put_string ("%N") end)
+			warnings.do_all (agent (warning: TBON_TC_WARNING) do io.put_string (warning.message); io.put_string ("%N") end)
 		end
 
 	print_warnings_to_stdout
@@ -183,7 +216,7 @@ feature -- Error handling
 		do
 			io.set_output_default
 			io.put_string ("%NWarnings:%N")
-			warnings.do_all (agent (msg: STRING) do io.put_string (msg); io.put_string ("%N") end)
+			warnings.do_all (agent (warning: TBON_TC_WARNING) do io.put_string (warning.message); io.put_string ("%N") end)
 		end
 
 feature -- Type checking, general
@@ -222,7 +255,7 @@ feature -- Type checking, general
 				Result := Result and check_bon_specification (a_bon_spec)
 			elseif second_phase then
 				Result := Result and check_structure
-				if not error_messages.is_empty then
+				if not errors.is_empty then
 					print_error_messages_to_stderr
 					Result := False
 				end
@@ -250,7 +283,7 @@ feature -- Type checking, general
 											end (a_main_class, ?)
 									 )
 			else
-				error_messages.extend (err_class_inherits_from_itself (a_main_class.name, an_ancestor_class.name))
+				add_error (err_code_class_inherits_from_itself, err_class_inherits_from_itself (a_main_class.name, an_ancestor_class.name))
 				Result := False
 			end
 		end
@@ -288,7 +321,7 @@ feature -- Type checking, general
 				if attached {TBON_TC_CLASS_TYPE} type as class_type then
 					-- Check that class is in a cluster
 					if class_type.cluster = Void then
-						error_messages.extend (err_class_not_in_cluster (class_type.name))
+						add_error (err_code_class_not_in_cluster, err_class_not_in_cluster (class_type.name))
 						Result := False
 					end
 
@@ -296,10 +329,10 @@ feature -- Type checking, general
 					Result := check_ancestors (class_type, class_type) and Result
 				elseif attached {TBON_TC_CLUSTER_TYPE} type as cluster_type then
 					if cluster_type.parent = Void and not cluster_type.is_in_system_chart then
-						error_messages.extend (err_cluster_not_in_cluster_or_system (cluster_type.name))
+						add_error (err_code_cluster_not_in_cluster_or_system, err_cluster_not_in_cluster_or_system (cluster_type.name))
 						Result := False
 					elseif cluster_type.parent /= Void and cluster_type.is_in_system_chart then
-						error_messages.extend (err_cluster_in_both_cluster_and_system (cluster_type.name))
+						add_error (err_code_cluster_in_both_cluster_and_system, err_cluster_in_both_cluster_and_system (cluster_type.name))
 						Result := False
 					end
 				end
@@ -335,7 +368,7 @@ feature -- Type checking, informal
 					create class_type.make (an_element.name.as_upper)
 					add_to_informal_type_context (class_type)
 				else
-					error_messages.extend (err_class_exists (an_element.name))
+					add_error (err_code_class_exists, err_class_exists (an_element.name))
 					Result := False
 				end
 
@@ -346,7 +379,7 @@ feature -- Type checking, informal
 				if attached {TBON_TC_CLASS_TYPE} type_with_name (an_element.name, informal_type_context) as a_class then
 					current_class := a_class
 				else
-					error_messages.extend (err_class_does_not_exist (an_element.name))
+					add_error (err_code_class_does_not_exist, err_class_does_not_exist (an_element.name))
 					Result := False
 				end
 
@@ -358,7 +391,7 @@ feature -- Type checking, informal
 						if attached {TBON_TC_CLASS_TYPE} type_with_name (parents.item_for_iteration.string, informal_type_context) as ancestor then
 							current_class.add_ancestor (ancestor)
 						else
-							error_messages.extend (err_ancestor_does_not_exist (current_class.name, parents.item_for_iteration.string))
+							add_error (err_code_ancestor_does_not_exist, err_ancestor_does_not_exist (current_class.name, parents.item_for_iteration.string))
 							Result := False
 						end
 
@@ -418,7 +451,7 @@ feature -- Type checking, informal
 					create cluster_type.make (an_element.name.as_upper)
 					add_to_informal_type_context (cluster_type)
 				else
-					error_messages.extend (err_cluster_exists (an_element.name))
+					add_error (err_code_cluster_exists, err_cluster_exists (an_element.name))
 					Result := False
 				end
 
@@ -445,12 +478,12 @@ feature -- Type checking, informal
 							if class_type.cluster = Void then
 								class_type.set_cluster (current_cluster)
 							else
-								error_messages.extend (err_class_already_in_cluster (current_cluster.name))
+								add_error (err_code_class_already_in_cluster, err_class_already_in_cluster (current_cluster.name))
 								Result := False
 							end
 
 						else
-							error_messages.extend (err_class_does_not_exist (class_entries.item_for_iteration.name))
+							add_error (err_code_class_does_not_exist, err_class_does_not_exist (class_entries.item_for_iteration.name))
 							Result := False
 						end
 
@@ -474,17 +507,17 @@ feature -- Type checking, informal
 							if cluster.parent = Void then
 								cluster.set_parent (current_cluster)
 							else
-								error_messages.extend (err_cluster_already_in_cluster (current_cluster.name))
+								add_error (err_code_cluster_already_in_cluster, err_cluster_already_in_cluster (current_cluster.name))
 								Result := False
 							end
 
 							-- Check that current cluster does not have itself as a subcluster.
 							if cluster.name ~ current_cluster.name then
-								error_messages.extend (err_cluster_contains_itself (current_cluster.name))
+								add_error (err_code_cluster_contains_itself, err_cluster_contains_itself (current_cluster.name))
 								Result := False
 							end
 						else
-							error_messages.extend (err_cluster_does_not_exist (cluster_entries.item_for_iteration.name))
+							add_error (err_code_cluster_does_not_exist, err_cluster_does_not_exist (cluster_entries.item_for_iteration.name))
 							Result := False
 						end
 
@@ -569,7 +602,7 @@ feature -- Type checking, informal
 					current_entry := creation_entries.item_for_iteration
 					-- Check that creator class exists
 					if not class_name_exists_in_context (current_entry.creator, informal_type_context) then
-						error_messages.extend (err_creator_does_not_exist (an_element.name, current_entry.creator))
+						add_error (err_code_creator_does_not_exist, err_creator_does_not_exist (an_element.name, current_entry.creator))
 						Result := False
 					end
 
@@ -578,7 +611,7 @@ feature -- Type checking, informal
 					loop
 						current_target := current_entry.targets.item_for_iteration
 						if not class_name_exists_in_context (current_target, informal_type_context) then
-							error_messages.extend (err_target_does_not_exist (an_element.name, current_target))
+							add_error (err_code_target_does_not_exist, err_target_does_not_exist (an_element.name, current_target))
 							Result := False
 						end
 
@@ -588,7 +621,7 @@ feature -- Type checking, informal
 
 					-- Check for duplicate entries - emit warning if found
 					if seen_entries.has (current_entry) then
-						warnings.extend (warn_duplicate_creation_entry (an_element.name, current_entry.creator))
+						add_warning (warn_code_duplicate_creation_entry, warn_duplicate_creation_entry (an_element.name, current_entry.creator))
 					end
 					seen_entries.extend (current_entry)
 
@@ -662,7 +695,7 @@ feature -- Type checking, informal
 					loop
 						if not (class_name_exists_in_context (current_entry.classes_involved.item_for_iteration, informal_type_context))
 						then
-							error_messages.extend (err_involved_class_does_not_exist (an_element.name, current_entry.name, current_entry.classes_involved.item_for_iteration))
+							add_error (err_code_involved_class_does_not_exist, err_involved_class_does_not_exist (an_element.name, current_entry.name, current_entry.classes_involved.item_for_iteration))
 							Result := False
 						end
 
@@ -671,7 +704,7 @@ feature -- Type checking, informal
 
 					-- Check for duplicate event names - emit warnings if found.
 					if seen_entries.has (current_entry.name) then
-						warnings.extend (warn_duplicate_event_entry (an_element.name, current_entry.name))
+						add_warning (warn_code_duplicate_event_entry, warn_duplicate_event_entry (an_element.name, current_entry.name))
 					end
 					seen_entries.extend (current_entry.name)
 
@@ -754,7 +787,7 @@ feature -- Type checking, informal
 								end
 
 								if occurrences > 1 then
-									warnings.extend (warn_duplicate_scenario_entry (chart.name, entry.name))
+									add_warning (warn_code_duplicate_scenario_entry, warn_duplicate_scenario_entry (chart.name, entry.name))
 								end
 							end (?, scenarios, an_element)
 					)
@@ -790,12 +823,12 @@ feature -- Type checking, informal
 					cluster := clusters.item_for_iteration
 
 					if not name_exists_in_context (cluster.name, informal_type_context) then
-						error_messages.extend (err_cluster_does_not_exist (cluster.name))
+						add_error (err_code_cluster_does_not_exist, err_cluster_does_not_exist (cluster.name))
 						Result := False
 					else
 						if attached {TBON_TC_CLUSTER_TYPE} type_with_name (cluster.name, informal_type_context) as cluster_type then
 							if cluster_type.is_in_system_chart then
-								error_messages.extend (err_cluster_already_in_system_chart (cluster_type.name))
+								add_error (err_code_cluster_already_in_system_chart, err_cluster_already_in_system_chart (cluster_type.name))
 								Result := False
 							else
 								cluster_type.set_is_in_system_chart
@@ -846,7 +879,7 @@ feature -- Type checking, static diagrams
 						if attached {TBON_TC_CLASS_TYPE} type_with_name (ancestors.item_for_iteration.class_name, formal_type_context) as ancestor then
 							enclosing_class.add_ancestor (ancestor)
 						else
-							error_messages.extend (err_class_does_not_exist (ancestors.item_for_iteration.class_name))
+							add_error (err_code_class_does_not_exist, err_class_does_not_exist (ancestors.item_for_iteration.class_name))
 							Result := False
 						end
 
@@ -912,7 +945,7 @@ feature -- Type checking, static diagrams
 					Result := check_class_interface (an_element.class_interface, class_type) and Result
 
 				else
-					error_messages.extend (err_class_exists (an_element.name))
+					add_error (err_code_class_exists, err_class_exists (an_element.name))
 					Result := False
 				end
 
@@ -1008,7 +1041,7 @@ feature -- Type checking, static diagrams
 			Result := True
 			-- If an extended ID exists more than once, emit a warning
 			if extended_ids.has (an_element) then
-				warnings.extend (warn_extended_id_exists (an_element))
+				add_warning (warn_code_extended_id_exists, warn_extended_id_exists (an_element))
 			end
 		end
 
