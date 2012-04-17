@@ -1066,40 +1066,49 @@ feature -- Type checking, static diagrams
 			end
 		end
 
-	check_feature_arguments(an_element: FEATURE_ARGUMENT_LIST; enclosing_feature: FEATURE_SPECIFICATION; enclosing_class: TBON_TC_CLASS_TYPE): BOOLEAN
+	check_feature_arguments(an_element: FEATURE_ARGUMENT_LIST; enclosing_feature: TBON_TC_FEATURE; enclosing_class: TBON_TC_CLASS_TYPE): BOOLEAN
 		note
 			rule: "[
 				In an environment where all arguments are OK,
 				and if the feature is redefined all arguments conform to its precursors,
 				`an_element' is OK.
 				]"
+		require
+			enclosing_feature.arguments /= Void
 		local
-			l_argument: FEATURE_ARGUMENT
-			l_string_list: STRING_LIST
+			argument: FEATURE_ARGUMENT
+			l_argument: TBON_TC_FEATURE_ARGUMENT
+			t_type: TBON_TC_CLASS_TYPE
 		do
 			Result := True
-			if enclosing_feature.has_arguments then
-				if first_phase then
-					from an_element.start until an_element.after loop
-						if an_element.item_for_iteration.identifiers.item_for_iteration.count > 1 then
-							from an_element.item_for_iteration.identifiers.start until an_element.item_for_iteration.identifiers.after loop
-								create l_string_list.make_list (an_element.item_for_iteration.identifiers.item_for_iteration)
-								create l_argument.make (l_string_list, an_element.item_for_iteration.type)
-								an_element.put_last (l_argument)
+			if first_phase then
+				from an_element.start until an_element.after loop
+					argument := an_element.item_for_iteration
+					if argument.type.is_class_type then
+						if attached {TBON_TC_CLASS_TYPE} type_with_name(argument.type.class_type.class_name, formal_type_context) as type then
+							from argument.identifiers.start until argument.identifiers.after
+							loop
+								create l_argument.make (argument.identifiers.item_for_iteration, type)
+								enclosing_feature.arguments.extend (l_argument)
 							end
-							an_element.remove_at
 						else
-							an_element.forth
+							from argument.identifiers.start until argument.identifiers.after
+							loop
+								create t_type.make (argument.identifiers.item_for_iteration)
+								create l_argument.make (argument.identifiers.item_for_iteration, t_type)
+								enclosing_feature.arguments.extend (l_argument)
+							end
+							unresolved_features := unresolved_features.extended (enclosing_feature)
+						end
+					elseif argument.type.is_formal_generic_name then
+						Result := enclosing_class.has_generic_name (argument.type.formal_generic_name)
+						if not Result then
+							
 						end
 					end
-					Result := an_element.for_all (agent (argument: FEATURE_ARGUMENT): BOOLEAN
-													do
-
-													end
-												)
-				elseif second_phase then
-
 				end
+			elseif second_phase then
+
 			end
 		end
 
@@ -1150,9 +1159,9 @@ feature -- Type checking, static diagrams
 
 				]"
 		do
-			if  then
+--			if  then
 
-			end
+			--end
 		end
 
 	check_formal_generics (an_element: FORMAL_GENERIC_LIST; enclosing_class: TBON_TC_CLASS_TYPE): BOOLEAN
