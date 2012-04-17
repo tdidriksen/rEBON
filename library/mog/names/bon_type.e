@@ -11,7 +11,7 @@ class
 inherit
 	HASHABLE
 
-creation
+create
 	make_class_type, make_formal_generic_name
 
 feature -- Initialization
@@ -22,6 +22,8 @@ feature -- Initialization
 			a_class_type /= Void
 		do
 			my_class_type := a_class_type.twin
+			is_class_type := True
+			is_formal_generic_name := False
 		ensure
 			class_type.is_equal (a_class_type)
 		end
@@ -33,6 +35,8 @@ feature -- Initialization
 				not a_formal_generic_name.is_empty
 		do
 			my_formal_generic_name := a_formal_generic_name.twin
+			is_class_type := False
+			is_formal_generic_name := True
 		ensure
 			a_formal_generic_name /= Void and then
 				formal_generic_name.is_equal (a_formal_generic_name)
@@ -62,6 +66,13 @@ feature -- Access
 				Result := my_formal_generic_name.hash_code
 			end
 		end
+
+feature -- Status report
+	is_class_type: BOOLEAN
+			-- Is `Current' a class type?
+
+	is_formal_generic_name: BOOLEAN
+			-- Is `Current' a formal generic name?
 
 feature -- Element change
 

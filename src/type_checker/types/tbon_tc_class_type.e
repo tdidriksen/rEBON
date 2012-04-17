@@ -46,6 +46,14 @@ feature -- Element change
 			ancestors := ancestors & a_class
 		end
 
+	add_feature (a_feature: TBON_TC_FEATURE)
+			-- Add `a_feature' to `features'?
+		require
+			not_void: a_feature /= Void
+		do
+			features := features & a_feature
+		end
+
 	set_cluster (a_cluster: TBON_TC_CLUSTER_TYPE)
 			-- Set `Current' to be in cluster `a_cluster'?
 		require
@@ -120,6 +128,17 @@ feature -- Status report
 
 	is_interfaced: BOOLEAN
 			-- Is `Current' an interfaced class?
+
+	has_generic_name (a_formal_generic_name: STRING): BOOLEAN
+			-- Is `a_formal_generic_name' one of the generic names of `Current'?
+		do
+			Result := generics /= Void and then generics.exists (
+							agent (generic: TBON_TC_GENERIC; other_formal_name: STRING): BOOLEAN
+								do
+									Result := generic.formal_generic_name ~ other_formal_name
+								end (?, a_formal_generic_name)
+						)
+		end
 
 	conforms_to (other: TBON_TC_TYPE): BOOLEAN
 			-- Does `Current' conform to `other'?

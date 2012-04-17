@@ -28,6 +28,12 @@ feature -- Access
 
 	type: TBON_TC_CLASS_TYPE
 
+feature -- Element change
+	set_type (a_type: TBON_TC_CLASS_TYPE)
+		do
+			type := a_type
+		end
+
 invariant
 	formal_name /= Void
 	type /= Void
