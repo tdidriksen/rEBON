@@ -1166,6 +1166,52 @@ feature -- Type checking, static diagrams
 			end
 		end
 
+	check_feature_arguments(an_element: FEATURE_ARGUMENT_LIST; enclosing_feature: TBON_TC_FEATURE; enclosing_class: TBON_TC_CLASS_TYPE): BOOLEAN
+		note
+			rule: "[
+				In an environment where all arguments are OK,
+				and if the feature is redefined all arguments conform to its precursors,
+				`an_element' is OK.
+				]"
+		require
+			enclosing_feature.arguments /= Void
+		local
+			argument: FEATURE_ARGUMENT
+			l_argument: TBON_TC_FEATURE_ARGUMENT
+			t_type: TBON_TC_CLASS_TYPE
+		do
+			Result := True
+			if first_phase then
+				from an_element.start until an_element.after loop
+					argument := an_element.item_for_iteration
+					if argument.type.is_class_type then
+						if attached {TBON_TC_CLASS_TYPE} type_with_name(argument.type.class_type.class_name, formal_type_context) as type then
+							from argument.identifiers.start until argument.identifiers.after
+							loop
+								create l_argument.make (argument.identifiers.item_for_iteration, type)
+								enclosing_feature.arguments.extend (l_argument)
+							end
+						else
+							from argument.identifiers.start until argument.identifiers.after
+							loop
+								create t_type.make (argument.identifiers.item_for_iteration)
+								create l_argument.make (argument.identifiers.item_for_iteration, t_type)
+								enclosing_feature.arguments.extend (l_argument)
+							end
+							unresolved_features := unresolved_features.extended (enclosing_feature)
+						end
+					elseif argument.type.is_formal_generic_name then
+						Result := enclosing_class.has_generic_name (argument.type.formal_generic_name)
+						if not Result then
+							
+						end
+					end
+				end
+			elseif second_phase then
+
+			end
+		end
+
 	check_feature_clause (an_element: FEATURE_CLAUSE; enclosing_class: TBON_TC_CLASS_TYPE): BOOLEAN
 			-- Does `an_element' type check as a type FEATURE_CLAUSE?
 		note

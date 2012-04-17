@@ -143,12 +143,26 @@ feature -- Status report
 	conforms_to (other: TBON_TC_TYPE): BOOLEAN
 			-- Does `Current' conform to `other'?
 		local
-			class_type: TBON_TC_CLASS_TYPE
+			l_ancestors: like Current.ancestors
 		do
-			class_type ?= other
-
-			if class_type /= Void then
-
+			if Current |=| other then
+				Result := True
+			elseif not attached {TBON_TC_CLUSTER_TYPE} other then
+				l_ancestors := Current.ancestors
+				Result := l_ancestors.exists (
+										agent (type: TBON_TC_CLASS_TYPE; l_other: TBON_TC_TYPE): BOOLEAN
+											do
+												Result := type |=| l_other
+											end (?, other)
+										)
+				if not Result then
+					Result := l_ancestors.for_all (
+											agent (type: TBON_TC_CLASS_TYPE; l_other: TBON_TC_TYPE): BOOLEAN
+												do
+													Result := type.conforms_to (l_other)
+												end (?, other)
+											)
+				end
 			else
 				Result := False
 			end

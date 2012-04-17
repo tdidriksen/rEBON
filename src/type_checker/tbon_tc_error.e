@@ -36,6 +36,7 @@ feature -- Access
 feature -- Error codes
 
 	err_code_ancestor_does_not_exist,
+	err_code_argument_type_does_not_exist,
 	err_code_class_already_in_cluster,
 	err_code_class_does_not_exist,
 	err_code_class_exists,
