@@ -137,6 +137,48 @@ feature -- Error messages
 			Result.append_string (" does not exist.")
 		end
 
+	err_enclosing_class_not_generic (a_feature_name, a_generic_name, a_class_name: STRING): STRING
+		do
+			Result := "Feature "
+			Result.append_string (a_feature_name.string)
+			Result.append_string (" in class ")
+			Result.append_string (a_class_name.string)
+			Result.append_string (" specifies a generic name ")
+			Result.append_string (a_generic_name.string)
+			Result.append_string (", but class is not generic.")
+		end
+
+	err_feature_type_does_not_exist (a_feature_name, a_type_name: STRING): STRING
+		do
+			Result := "Feature "
+			Result.append_string (a_feature_name.string)
+			Result.append_string (" specifies type ")
+			Result.append_string (a_type_name.string)
+			Result.append_string (", but type does not exist.")
+		end
+
+	err_feature_argument_type_does_not_exist (a_feature_name, an_argument_name, a_type_name: STRING): STRING
+		do
+			Result := "Feature argument "
+			Result.append_string (an_argument_name.string)
+			Result.append_string (" of feature ")
+			Result.append_string (a_feature_name.string)
+			Result.append_string (" specifies type ")
+			Result.append_string (a_type_name.string)
+			Result.append_string (", but type does not exist.")
+		end
+
+	err_formal_generic_name_does_not_exist (a_feature_name, a_generic_name, a_class_name: STRING): STRING
+		do
+			Result := "Feature "
+			Result.append_string (a_feature_name.string)
+			Result.append_string (" in class ")
+			Result.append_string (a_class_name.string)
+			Result.append_string (" specifies a generic name ")
+			Result.append_string (a_generic_name.string)
+			Result.append_string (", but the generic name does not exist.")
+		end
+
 	err_involved_class_does_not_exist (a_chart_name, an_entry_name, a_class_name: STRING): STRING
 		do
 			Result := "Specified class "

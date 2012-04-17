@@ -232,6 +232,40 @@ feature -- Error handling
 			warnings.do_all (agent (warning: TBON_TC_WARNING) do io.put_string (warning.message); io.put_string ("%N") end)
 		end
 
+	report_unresolved_features
+			-- Add error messages for all unresolved features.
+		local
+			i: INTEGER
+			iteration_set: like unresolved_features
+			current_feature: TBON_TC_FEATURE
+			current_argument: TBON_TC_FEATURE_ARGUMENT
+		do
+			from
+				iteration_set := unresolved_features
+				i := 1
+			until
+				i >= unresolved_features.count
+			loop
+				current_feature := iteration_set.any_item
+				if not class_name_exists_in_context (current_feature.type.name, formal_type_context) then
+				 	add_error (err_code_feature_type_does_not_exist, err_feature_type_does_not_exist (current_feature.name, current_feature.type.name))
+				end
+
+				from
+					current_feature.arguments.start
+				until
+					current_feature.arguments.after
+				loop
+					current_argument := current_feature.arguments.item_for_iteration
+					if not class_name_exists_in_context (current_argument.type.name, formal_type_context) then
+						add_error (err_code_feature_argument_type_does_not_exist, err_feature_argument_type_does_not_exist (current_feature.name, current_argument.formal_name, current_argument.type.name))
+					end
+
+					current_feature.arguments.forth
+				end
+			end
+		end
+
 feature -- Type checking, general
 	check_bon_specification (a_bon_spec: BON_SPECIFICATION): BOOLEAN
 			-- Does `a_bon_spec' type check as a type BON_SPECIFICATION?
@@ -265,6 +299,12 @@ feature -- Type checking, general
 			if first_phase then
 				first_phase := False
 				second_phase := True
+
+				if not unresolved_features.is_empty then
+					report_unresolved_features
+					Result := False
+				end
+
 				Result := Result and check_bon_specification (a_bon_spec)
 			elseif second_phase then
 				Result := Result and check_structure
@@ -352,6 +392,64 @@ feature -- Type checking, general
 
 				types := types / type
 				i := i + 1
+			end
+		end
+
+	resolve_features (a_class_type: TBON_TC_CLASS_TYPE)
+			-- Resolve unresolved features that specifies `a_class_type' as type or argument type.
+		local
+			resolving_set: like unresolved_features
+			iteration_set: like unresolved_features
+			l_feature: TBON_TC_FEATURE
+			i: INTEGER
+		do
+			resolving_set := unresolved_features.filtered (
+				agent (l_l_feature: TBON_TC_FEATURE; l_class: TBON_TC_CLASS_TYPE): BOOLEAN
+					do
+						Result := l_l_feature.type.name ~ l_class.name or (not l_l_feature.arguments.for_all (
+																			agent (argument: TBON_TC_FEATURE_ARGUMENT; l_l_class: TBON_TC_CLASS_TYPE): BOOLEAN
+																				do
+																					Result := not (argument.type.name ~ l_l_class.name)
+																				end (?, l_class)
+																		))
+					end (?, a_class_type)
+				)
+
+			from
+				iteration_set := resolving_set
+				i := 1
+			until
+				i >= resolving_set.count
+			loop
+				l_feature := iteration_set.any_item
+
+				-- If type of features matches type we are resolving for, resolve it.
+				if l_feature.type.name ~ a_class_type.name then
+					l_feature.set_type (a_class_type)
+				end
+
+				-- If any arguments matches type we are resolving for, resolve it.
+				from
+					l_feature.arguments.start
+				until
+					l_feature.arguments.after
+				loop
+					if l_feature.arguments.item_for_iteration.type.name ~ a_class_type.name then
+						l_feature.arguments.item_for_iteration.set_type (a_class_type)
+					end
+
+					l_feature.arguments.forth
+				end
+
+				-- If type of feature and types of all arguments are resolved, remove from unresolved features
+				if class_name_exists_in_context (l_feature.type.name, formal_type_context) and
+					l_feature.arguments.for_all (agent (argument: TBON_TC_FEATURE_ARGUMENT): BOOLEAN do Result := class_name_exists_in_context (argument.type.name, formal_type_context) end)
+				then
+					unresolved_features := unresolved_features / l_feature
+				end
+
+				i := i + 1
+				iteration_set := iteration_set / l_feature
 			end
 		end
 
@@ -943,6 +1041,8 @@ feature -- Type checking, static diagrams
 				if not name_exists_in_context (an_element.name, formal_type_context) then
 					create class_type.make (an_element.name)
 					add_to_formal_type_context (class_type)
+					-- Resolve features for new type.
+					resolve_features (class_type)
 
 					if an_element.is_deferred then
 						class_type.set_is_deferred
@@ -1106,15 +1206,76 @@ feature -- Type checking, static diagrams
 			-- Does `an_element' type check as a type FEATURE_SPECIFICATION?
 		note
 			rule: "[
-				In an environment where the name of `an_element' is unique in its enclosing class,
+				In an environment where the names of `an_element' are unique in its enclosing class,
 				and the type of the feature is in the environment,
 				and all feature arguments are OK,
 				and if renamed is renamed consistently,
-				
+				and the status (deferred/effective/redefined) of `an_element' is OK,
+				`an_element' is OK.
 				]"
+		local
+			l_feature: TBON_TC_FEATURE
+			l_class_type: TBON_TC_CLASS_TYPE
+			current_feature_name: FEATURE_NAME
 		do
-			if  then
+			if first_phase then
 
+				Result := True
+				-- Add types to features
+				-- If type does not exist, add to unresolved types
+				from an_element.feature_names.start	until an_element.feature_names.after
+				loop
+					current_feature_name := an_element.feature_names.item_for_iteration
+					if an_element.has_type and then an_element.type.is_class_type then
+
+						if attached {TBON_TC_CLASS_TYPE} type_with_name (an_element.type.class_type.class_name, formal_type_context) as class_type then
+							-- Create feature
+							create l_feature.make (current_feature_name.feature_name, class_type, enclosing_class)
+
+							-- Add feature to enclosing class
+							enclosing_class.add_feature (l_feature)
+
+						else -- The type of the feature is not known yet
+							-- Create placeholder type
+							create l_class_type.make (an_element.type.class_type.class_name)
+
+							-- Create new feature with placeholder type
+							create l_feature.make (current_feature_name.feature_name, l_class_type, enclosing_class)
+
+							-- Add feature to enclosing class
+							enclosing_class.add_feature (l_feature)
+							-- Add feature to unresolved features
+							unresolved_features := unresolved_features & l_feature
+						end
+
+					elseif an_element.has_type and then an_element.type.is_formal_generic_name then
+						-- If enclosing class has generics
+						if enclosing_class.generics /= Void then
+							-- and the formal generics name exists in enclosing class.
+							if not enclosing_class.has_generic_name (an_element.type.formal_generic_name) then
+								add_error (err_code_formal_generic_name_does_not_exist, err_formal_generic_name_does_not_exist (current_feature_name.feature_name, an_element.type.formal_generic_name, enclosing_class.name))
+								Result := False
+							end
+						else
+							add_error (err_code_enclosing_class_not_generic, err_enclosing_class_not_generic (current_feature_name.feature_name, an_element.type.formal_generic_name, enclosing_class.name))
+							Result := False
+						end
+					end
+
+					an_element.feature_names.forth
+				end
+
+				-- Check feature arguments
+				--Result := check_feature_arguments (an_element.arguments, l_feature, enclosing_class)
+
+			elseif second_phase then
+
+				--Result := check_feature_names (an_element.feature_names, enclosing_class)
+
+				--Result :=
+
+			else
+				Result := False
 			end
 		end
 
