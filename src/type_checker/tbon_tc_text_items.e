@@ -39,6 +39,17 @@ feature -- Error messages
 			Result.append_string (" does not exist.")
 		end
 
+	err_argument_type_does_not_exist(an_argument_name, a_feature_name, a_class_name: STRING): STRING
+		do
+			Result := "Type of argument "
+			Result.append_string (an_argument_name.string)
+			Result.append_string (" in feature ")
+			Result.append_string (a_feature_name.string)
+			Result.append_string (" in class ")
+			Result.append_string (a_class_name.string)
+			Result.append_string (" could not be found.")
+		end
+
 	err_class_already_in_cluster (a_name: STRING): STRING
 		do
 			Result := "Error defining cluster "

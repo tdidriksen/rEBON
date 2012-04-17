@@ -1066,6 +1066,43 @@ feature -- Type checking, static diagrams
 			end
 		end
 
+	check_feature_arguments(an_element: FEATURE_ARGUMENT_LIST; enclosing_feature: FEATURE_SPECIFICATION; enclosing_class: TBON_TC_CLASS_TYPE): BOOLEAN
+		note
+			rule: "[
+				In an environment where all arguments are OK,
+				and if the feature is redefined all arguments conform to its precursors,
+				`an_element' is OK.
+				]"
+		local
+			l_argument: FEATURE_ARGUMENT
+			l_string_list: STRING_LIST
+		do
+			Result := True
+			if enclosing_feature.has_arguments then
+				if first_phase then
+					from an_element.start until an_element.after loop
+						if an_element.item_for_iteration.identifiers.item_for_iteration.count > 1 then
+							from an_element.item_for_iteration.identifiers.start until an_element.item_for_iteration.identifiers.after loop
+								create l_string_list.make_list (an_element.item_for_iteration.identifiers.item_for_iteration)
+								create l_argument.make (l_string_list, an_element.item_for_iteration.type)
+								an_element.put_last (l_argument)
+							end
+							an_element.remove_at
+						else
+							an_element.forth
+						end
+					end
+					Result := an_element.for_all (agent (argument: FEATURE_ARGUMENT): BOOLEAN
+													do
+
+													end
+												)
+				elseif second_phase then
+
+				end
+			end
+		end
+
 	check_feature_clause (an_element: FEATURE_CLAUSE; enclosing_class: TBON_TC_CLASS_TYPE): BOOLEAN
 			-- Does `an_element' type check as a type FEATURE_CLAUSE?
 		note
@@ -1110,7 +1147,7 @@ feature -- Type checking, static diagrams
 				and the type of the feature is in the environment,
 				and all feature arguments are OK,
 				and if renamed is renamed consistently,
-				
+
 				]"
 		do
 			if  then
