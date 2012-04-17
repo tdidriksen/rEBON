@@ -50,6 +50,7 @@ feature -- Error codes
 	err_code_cluster_not_in_cluster_or_system,
 	err_code_creator_does_not_exist,
 	err_code_involved_class_does_not_exist,
+	err_code_selective_export_class_does_not_exist,
 	err_code_target_does_not_exist,
 	err_code_undefined: INTEGER = unique
 

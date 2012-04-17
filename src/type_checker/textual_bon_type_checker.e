@@ -53,6 +53,7 @@ feature -- Initialization
 			integer_type: TBON_TC_INTEGER_TYPE
 			real_type: TBON_TC_REAL_TYPE
 			string_type: TBON_TC_STRING_TYPE
+			any_type: TBON_TC_CLASS_TYPE
 		do
 			-- Create type contexts
 			create informal_type_context.default_create
@@ -64,6 +65,8 @@ feature -- Initialization
 			create integer_type.make
 			create real_type.make
 			create string_type.make
+			-- Create ANY
+			create any_type.make (any_type_name)
 
 			-- Add default value types to context
 			add_to_informal_type_context (boolean_type)
@@ -71,6 +74,14 @@ feature -- Initialization
 			add_to_informal_type_context (integer_type)
 			add_to_informal_type_context (real_type)
 			add_to_informal_type_context (string_type)
+			add_to_informal_type_context (any_type)
+
+			add_to_formal_type_context (boolean_type)
+			add_to_formal_type_context (character_type)
+			add_to_formal_type_context (integer_type)
+			add_to_formal_type_context (real_type)
+			add_to_formal_type_context (string_type)
+			add_to_formal_type_context (any_type)
 
 			create value_context.default_create
 
@@ -90,6 +101,8 @@ feature {NONE} -- Contexts
 			-- What is the current value context?
 
 	extended_ids: LIST[STRING]
+
+	unresolved_features: MML_SET[TBON_TC_FEATURE]
 
 feature -- Status report
 	first_phase: BOOLEAN
@@ -870,7 +883,7 @@ feature -- Type checking, static diagrams
 
 				Result := True
 
-				-- Add ancestors as ancestors to enclosing class
+				-- Add ancestors to enclosing class
 				if an_element.parent_count > 0 then
 					ancestors := an_element.parents
 
@@ -886,6 +899,14 @@ feature -- Type checking, static diagrams
 						ancestors.forth
 					end
 				end
+
+--				Idea:
+--				Put all features with unresolved types in a set.
+--				Every time a new type is added to the context,
+--				give corresponding features a pointer to that type.
+--				If the feature set is not empty after first phase,
+--				an error has occurred, as a feature is mentioning
+--				a non-existing type.
 
 			else
 				Result := False
@@ -1045,6 +1066,58 @@ feature -- Type checking, static diagrams
 			end
 		end
 
+	check_feature_clause (an_element: FEATURE_CLAUSE; enclosing_class: TBON_TC_CLASS_TYPE): BOOLEAN
+			-- Does `an_element' type check as a type FEATURE_CLAUSE?
+		note
+			rule: "[
+				In an environment where all enclosed features specifications are OK,
+				and all classes mentioned in the selective export exist,
+				`an_element' is OK.
+				]"
+		do
+			if first_phase then
+
+				Result := True
+
+				from an_element.feature_specifications.start until an_element.feature_specifications.after
+				loop
+					Result := check_feature_specification (an_element.feature_specifications.item_for_iteration, an_element.selective_export, enclosing_class) and Result
+
+					an_element.feature_specifications.forth
+				end
+
+			elseif second_phase then
+
+				Result := True
+
+				from an_element.feature_specifications.start until an_element.feature_specifications.after
+				loop
+					Result := check_feature_specification (an_element.feature_specifications.item_for_iteration, an_element.selective_export, enclosing_class) and Result
+
+					an_element.feature_specifications.forth
+				end
+
+				Result := check_selective_export (an_element.selective_export, enclosing_class)
+
+			end
+		end
+
+	check_feature_specification (an_element: FEATURE_SPECIFICATION; selective_export: CLASS_NAME_LIST; enclosing_class: TBON_TC_CLASS_TYPE): BOOLEAN
+			-- Does `an_element' type check as a type FEATURE_SPECIFICATION?
+		note
+			rule: "[
+				In an environment where the name of `an_element' is unique in its enclosing class,
+				and the type of the feature is in the environment,
+				and all feature arguments are OK,
+				and if renamed is renamed consistently,
+				
+				]"
+		do
+			if  then
+
+			end
+		end
+
 	check_formal_generics (an_element: FORMAL_GENERIC_LIST; enclosing_class: TBON_TC_CLASS_TYPE): BOOLEAN
 			-- Does `an_element' type check as a type FORMAL_GENERIC_LIST?
 		note
@@ -1064,6 +1137,46 @@ feature -- Type checking, static diagrams
 				]"
 		do
 			check false end
+		end
+
+	check_selective_export (an_element: CLASS_NAME_LIST; enclosing_class: TBON_TC_CLASS_TYPE): BOOLEAN
+			-- Does `an_element' type check as a type CLASS_NAME_LIST?
+		note
+			rule: "[
+				In an environment where all the classes mentioned in the selective export exist,
+				or are otherwise allowable (e.g. NONE),
+				`an_element' is OK.
+				]"
+		do
+			if first_phase then
+
+				Result := True
+					-- Nothing to be checked for first phase
+
+			elseif second_phase then
+
+				from an_element.start until an_element.after
+				loop
+					if not class_name_exists_in_context (an_element.item_for_iteration, formal_type_context) and
+							not (an_element.item_for_iteration ~ none_type_name) then
+						add_error (err_code_selective_export_class_does_not_exist, err_selective_export_class_does_not_exist (an_element.item_for_iteration, enclosing_class.name))
+					end
+					an_element.forth
+				end
+
+			else
+				Result := False
+			end
+		ensure
+			all_selective_export_classes_exist:
+			an_element.for_all (
+				agent (export_class_name: STRING): BOOLEAN
+					do
+						Result := class_name_exists_in_context (export_class_name, formal_type_context) xor
+									export_class_name ~ none_type_name
+					end
+			)
+				-- For all classes it holds that it exists in the environment or is of type NONE.
 		end
 
 	check_static_block (some_elements: STATIC_COMPONENTS): BOOLEAN

@@ -10,7 +10,8 @@ class
 inherit
 	TBON_TC_TYPE
 		redefine
-			is_model_equal
+			is_model_equal,
+			is_equal
 		end
 
 create
@@ -138,6 +139,23 @@ feature -- Status report
 			-- Is this model mathematically equal to `other'?
 		do
 			Result := name ~ other.name
+		end
+
+	is_equal (other: like Current): BOOLEAN
+			-- Is this model mathematically equal to `other'?
+		do
+			Result := name ~ other.name and (generics /= Void implies generics.for_all (
+												agent (generic: TBON_TC_GENERIC; l_other_class: TBON_TC_CLASS_TYPE): BOOLEAN
+													do
+														Result := l_other_class.generics.exists (agent (this_generic, other_generic: TBON_TC_GENERIC): BOOLEAN
+																							do
+																								Result := this_generic |=| (other_generic)
+																							end (generic, ?)
+																						)
+													end (?, other)
+											))
+						-- If other class is a class type and has generics, both names and generics must be equal
+						-- For all generics of Current, there must exist an equal generic in other.
 		end
 
 end

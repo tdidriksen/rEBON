@@ -7,14 +7,22 @@ note
 class
 	TBON_TC_GENERIC
 
+inherit
+	MML_MODEL
+		redefine
+			is_model_equal
+		end
+
 create
 	make
 
 feature -- Initialization
 	make (a_formal_generic_name: STRING; an_actual_generic_type: like actual_generic_type)
 			-- Initialize `Current'.
+		require
+			a_formal_generic_name /= Void
 		do
-			formal_generic_name := a_formal_generic_name
+			formal_generic_name := a_formal_generic_name.string
 			actual_generic_type := an_actual_generic_type
 		end
 
@@ -30,6 +38,12 @@ feature -- Status report
 			-- Does `Current' have an actual generic?
 		do
 			Result := actual_generic_type /= Void
+		end
+
+	is_model_equal alias "|=|" (other: TBON_TC_GENERIC): BOOLEAN
+			-- Is this model mathematically equal to `other'?
+		do
+			Result := formal_generic_name ~ other.formal_generic_name and actual_generic_type ~ other.actual_generic_type
 		end
 
 invariant

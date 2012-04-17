@@ -8,6 +8,9 @@ class
 	TBON_TC_TEXT_ITEMS
 
 feature -- Type names
+	any_type_name: STRING = "ANY"
+			-- Type name for an ANY type.
+
 	boolean_type_name: STRING = "BOOLEAN"
 			-- Type name for a BOOLEAN type.
 
@@ -16,6 +19,9 @@ feature -- Type names
 
 	integer_type_name: STRING = "INTEGER"
 			-- Type name for an INTEGER type.
+
+	none_type_name: STRING = "NONE"
+			-- Type name for a NONE type.
 
 	real_type_name: STRING = "REAL"
 			-- Type name for a REAL type.
@@ -140,6 +146,15 @@ feature -- Error messages
 			Result.append_string (" in event chart ")
 			Result.append_string (a_chart_name.string)
 			Result.append_string (".")
+		end
+
+	err_selective_export_class_does_not_exist (a_class_name, an_enclosing_class_name: STRING): STRING
+		do
+			Result := "Specified selective export class "
+			Result.append_string (a_class_name.string)
+			Result.append_string (" in class specification ")
+			Result.append_string (an_enclosing_class_name.string)
+			Result.append_string (" does not exist.")
 		end
 
 	err_target_does_not_exist (a_chart_name, a_class_name: STRING): STRING
