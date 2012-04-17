@@ -46,7 +46,11 @@ feature -- Access
 	feature_name: STRING
 			-- Feature name of `Current'.
 		do
-			Result := my_feature_name.twin
+			if my_feature_name /= Void then
+				Result := my_feature_name.twin
+			elseif is_infix or is_prefix then
+				Result := operator.string_representation
+			end
 		end
 
 	operator: OPERATOR

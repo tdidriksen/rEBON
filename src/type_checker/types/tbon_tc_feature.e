@@ -28,7 +28,9 @@ feature -- Initialization
 			enclosing_class := an_enclosing_class
 
 			create {LINKED_LIST[STRING]} selective_export.make
+			selective_export.compare_objects
 			create {LINKED_LIST[TBON_TC_FEATURE_ARGUMENT]} arguments.make
+			arguments.compare_objects
 		end
 
 feature -- Access
@@ -50,6 +52,10 @@ feature -- Status report
 	is_effective: BOOLEAN
 
 	is_redefined: BOOLEAN
+
+	is_prefix: BOOLEAN
+
+	is_infix: BOOLEAN
 
 	is_model_equal alias "|=|" (other: TBON_TC_FEATURE): BOOLEAN
 			-- Is this model mathematically equal to `other'?
@@ -92,6 +98,22 @@ feature -- Element change
 			is_renamed: is_renamed
 		end
 
+	set_is_prefix
+		do
+			is_prefix := True
+			is_infix := False
+		ensure
+			is_prefix: is_prefix
+		end
+
+	set_is_infix
+		do
+			is_infix := True
+			is_prefix := False
+		ensure
+			is_infix: is_infix
+		end
+
 	set_type (a_type: TBON_TC_CLASS_TYPE)
 		require
 			a_type /= Void
@@ -109,6 +131,8 @@ feature -- Renaming
 invariant
 	is_unclassified xor is_deferred xor is_effective xor is_redefined
 	is_renamed implies (new_name /= Void and not new_name.is_empty and renamed_from_class /= Void)
+	is_infix implies not is_prefix
+	is_prefix implies not is_infix
 
 
 end
