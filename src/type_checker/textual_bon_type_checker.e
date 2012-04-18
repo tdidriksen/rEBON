@@ -128,7 +128,7 @@ feature -- Status report
 		end
 
 
-feature {NONE} -- Auxiliary features
+feature {NONE} -- Auxiliary features, contexts
 	add_to_formal_type_context (a_type: TBON_TC_TYPE)
 			-- Add `a_type' to `type_context'.
 		require
@@ -172,6 +172,93 @@ feature {NONE} -- Auxiliary features
 			name_not_void: a_name /= Void
 		do
 			Result := a_type.name ~ a_name
+		end
+
+feature -- Auxiliary features, type checking
+
+	all_features (a_class_type: TBON_TC_CLASS_TYPE): MML_SET[TBON_TC_FEATURE]
+			-- What is the set of all the features (including inherited ones) of `a_class_type'?
+		local
+			ancestors: MML_SET[TBON_TC_CLASS_TYPE]
+			ancestor: TBON_TC_CLASS_TYPE
+		do
+			if a_class_type.ancestors.is_empty then
+				Result := a_class_type.features
+			else
+				Result := a_class_type.features
+				from
+					ancestors := a_class_type.ancestors.twin
+				until
+					ancestors.is_empty
+				loop
+					ancestor := ancestors.any_item
+
+					Result := Result + all_features (ancestor)
+
+					ancestors := ancestors / ancestor
+				end
+			end
+		end
+
+	nearest_precursor (a_feature: TBON_TC_FEATURE; origin_class, current_class: TBON_TC_CLASS_TYPE): TBON_TC_FEATURE
+			-- What is the nearest precursor to `a_feature'?
+		require
+			has_precursor: a_feature.is_redefined xor a_feature.is_deferred
+		local
+			l_precursor: TBON_TC_FEATURE
+			ancestors: MML_SET[TBON_TC_CLASS_TYPE]
+			feature_set: MML_SET[TBON_TC_FEATURE]
+			singleton: MML_SET[TBON_TC_FEATURE]
+			ancestor: TBON_TC_CLASS_TYPE
+			precursor_possible: BOOLEAN
+		do
+			-- Create singleton set containing only 'a_feature'
+			create singleton.singleton (a_feature)
+
+			-- Iterate through ancestors
+			from
+				ancestors := current_class.ancestors.twin
+				l_precursor := Void
+			until
+				ancestors.is_empty or l_precursor /= Void
+			loop
+				ancestor := ancestors.any_item
+
+				feature_set := ancestor.features.intersection (singleton)
+
+				if not feature_set.is_empty then
+					check feature_set.count = 1 end
+					l_precursor := feature_set.any_item
+				end
+
+				ancestors := ancestors / ancestor
+			end
+
+			-- Can a precursor exist?
+			precursor_possible := current_class.ancestors.exists (agent (l_ancestor: TBON_TC_CLASS_TYPE): BOOLEAN do Result := l_ancestor.ancestors.count > 0 end)
+			-- If a precursor cannot exist and no precursor is already found, an error has occurred.
+			if not precursor_possible and l_precursor = Void then
+				add_error (err_code_no_precursor_exists_for_feature, err_no_precursor_exists_for_feature (a_feature.name, origin_class.name))
+			end
+
+			-- If no precursor was found, call recursively on ancestors
+			if l_precursor = Void and precursor_possible then
+				from
+					ancestors := current_class.ancestors.twin
+				until
+					ancestors.is_empty or l_precursor /= Void
+				loop
+					ancestor := ancestors.any_item
+
+					l_precursor := nearest_precursor (a_feature, origin_class, ancestor)
+
+					ancestors := ancestors / ancestor
+				end
+			end
+
+			Result := l_precursor
+		ensure
+			Result /= Void
 		end
 
 feature -- Error handling
@@ -235,18 +322,17 @@ feature -- Error handling
 	report_unresolved_features
 			-- Add error messages for all unresolved features.
 		local
-			i: INTEGER
 			iteration_set: like unresolved_features
 			current_feature: TBON_TC_FEATURE
 			current_argument: TBON_TC_FEATURE_ARGUMENT
 		do
 			from
-				iteration_set := unresolved_features
-				i := 1
+				iteration_set := unresolved_features.twin
 			until
-				i >= unresolved_features.count
+				iteration_set.is_empty
 			loop
 				current_feature := iteration_set.any_item
+
 				if not class_name_exists_in_context (current_feature.type.name, formal_type_context) then
 				 	add_error (err_code_feature_type_does_not_exist, err_feature_type_does_not_exist (current_feature.name, current_feature.type.name))
 				end
@@ -263,6 +349,8 @@ feature -- Error handling
 
 					current_feature.arguments.forth
 				end
+
+				iteration_set := iteration_set / current_feature
 			end
 		end
 
@@ -357,17 +445,15 @@ feature -- Type checking, general
 	check_structure: BOOLEAN
 			-- Is the structure of the abstract syntax OK?
 		local
-			i: INTEGER
 			types: like informal_type_context
 			type: TBON_TC_TYPE
 		do
 			Result := True
-			types := informal_type_context.twin
 
 			from
-				i := 1
+				types := informal_type_context.twin
 		 	until
-		 		i >= informal_type_context.count
+		 		types.is_empty
 			loop
 				type := types.any_item
 
@@ -391,7 +477,6 @@ feature -- Type checking, general
 				end
 
 				types := types / type
-				i := i + 1
 			end
 		end
 
@@ -401,7 +486,6 @@ feature -- Type checking, general
 			resolving_set: like unresolved_features
 			iteration_set: like unresolved_features
 			l_feature: TBON_TC_FEATURE
-			i: INTEGER
 		do
 			resolving_set := unresolved_features.filtered (
 				agent (l_l_feature: TBON_TC_FEATURE; l_class: TBON_TC_CLASS_TYPE): BOOLEAN
@@ -416,10 +500,9 @@ feature -- Type checking, general
 				)
 
 			from
-				iteration_set := resolving_set
-				i := 1
+				iteration_set := resolving_set.twin
 			until
-				i >= resolving_set.count
+				iteration_set.is_empty
 			loop
 				l_feature := iteration_set.any_item
 
@@ -448,7 +531,6 @@ feature -- Type checking, general
 					unresolved_features := unresolved_features / l_feature
 				end
 
-				i := i + 1
 				iteration_set := iteration_set / l_feature
 			end
 		end
@@ -1203,7 +1285,7 @@ feature -- Type checking, static diagrams
 					elseif argument.type.is_formal_generic_name then
 						Result := enclosing_class.has_generic_name (argument.type.formal_generic_name)
 						if not Result then
-							
+
 						end
 					end
 				end
@@ -1263,8 +1345,17 @@ feature -- Type checking, static diagrams
 			l_feature: TBON_TC_FEATURE
 			l_class_type: TBON_TC_CLASS_TYPE
 			current_feature_name: FEATURE_NAME
+
+			seen_feature_names: LIST[STRING]
+
+			duplicate_features: MML_SET[TBON_TC_FEATURE]
+
+			features: MML_SET[TBON_TC_FEATURE]
 		do
 			if first_phase then
+
+				create {ARRAYED_LIST[STRING]} seen_feature_names.make (10)
+				seen_feature_names.compare_objects
 
 				Result := True
 				-- Add types to features
@@ -1272,27 +1363,53 @@ feature -- Type checking, static diagrams
 				from an_element.feature_names.start	until an_element.feature_names.after
 				loop
 					current_feature_name := an_element.feature_names.item_for_iteration
+
+					-- Check for duplicate feature names in specification
+					if seen_feature_names.has (current_feature_name.feature_name) then
+						add_error (err_code_duplicate_feature_name, err_duplicate_feature_name (current_feature_name.feature_name, enclosing_class.name))
+						Result := False
+					else
+						seen_feature_names.extend (current_feature_name.feature_name)
+					end
+
+					-- Create feature
+					create l_feature.make (current_feature_name.feature_name, Void, enclosing_class)
+
+					-- Set prefix or infix status
+					if current_feature_name.is_infix then
+						l_feature.set_is_infix
+					elseif current_feature_name.is_prefix then
+						l_feature.set_is_prefix
+					end
+					-- Set feature status
+					if an_element.is_deferred then
+						l_feature.set_is_deferred
+					elseif an_element.is_effective then
+						l_feature.set_is_effective
+					elseif an_element.is_redefined then
+						l_feature.set_is_redefined
+					end
+
+					-- Check if the type of the feature exists - else, mark it as unresolved
 					if an_element.has_type and then an_element.type.is_class_type then
 
 						if attached {TBON_TC_CLASS_TYPE} type_with_name (an_element.type.class_type.class_name, formal_type_context) as class_type then
-							-- Create feature
-							create l_feature.make (current_feature_name.feature_name, class_type, enclosing_class)
-
-							-- Add feature to enclosing class
-							enclosing_class.add_feature (l_feature)
+							-- Set type as type exists
+							l_feature.set_type (class_type)
 
 						else -- The type of the feature is not known yet
 							-- Create placeholder type
 							create l_class_type.make (an_element.type.class_type.class_name)
 
-							-- Create new feature with placeholder type
-							create l_feature.make (current_feature_name.feature_name, l_class_type, enclosing_class)
+							-- Set placeholder type as type
+							l_feature.set_type (l_class_type)
 
-							-- Add feature to enclosing class
-							enclosing_class.add_feature (l_feature)
 							-- Add feature to unresolved features
 							unresolved_features := unresolved_features & l_feature
 						end
+
+						-- Add feature to enclosing class
+						enclosing_class.add_feature (l_feature)
 
 					elseif an_element.has_type and then an_element.type.is_formal_generic_name then
 						-- If enclosing class has generics
@@ -1312,13 +1429,27 @@ feature -- Type checking, static diagrams
 				end
 
 				-- Check feature arguments
-				--Result := check_feature_arguments (an_element.arguments, l_feature, enclosing_class)
+				Result := check_feature_arguments (an_element.arguments, l_feature, enclosing_class) and Result
 
 			elseif second_phase then
 
-				--Result := check_feature_names (an_element.feature_names, enclosing_class)
+				-- Check for duplicate feature names in inheritance hierarchy
+				features := all_features (enclosing_class).twin
 
-				--Result :=
+				duplicate_features := features.filtered (
+					agent (this_feature, other_feature: TBON_TC_FEATURE): BOOLEAN
+						do
+							Result := this_feature.name ~ other_feature.name
+						end (?, l_feature)
+				)
+				if duplicate_features.count > 0 then
+					add_error (err_code_duplicate_inherited_feature_name, err_duplicate_feature_name (l_feature.name, enclosing_class.name))
+				end
+
+				-- Check status
+				-- Check renaming
+				-- Check arguments
+				-- Check contract clause
 
 			else
 				Result := False

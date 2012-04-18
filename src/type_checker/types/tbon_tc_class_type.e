@@ -23,6 +23,8 @@ feature -- Initialization
 		do
 			name := a_name
 			create ancestors.default_create
+			create features.default_create
+			create generics.default_create
 		end
 
 feature -- Access
@@ -132,7 +134,7 @@ feature -- Status report
 	has_generic_name (a_formal_generic_name: STRING): BOOLEAN
 			-- Is `a_formal_generic_name' one of the generic names of `Current'?
 		do
-			Result := generics /= Void and then generics.exists (
+			Result := (generics.count > 0) and then generics.exists (
 							agent (generic: TBON_TC_GENERIC; other_formal_name: STRING): BOOLEAN
 								do
 									Result := generic.formal_generic_name ~ other_formal_name
@@ -145,7 +147,7 @@ feature -- Status report
 		local
 			l_ancestors: like Current.ancestors
 		do
-			if Current |=| other then
+			if Current ~ other then -- @didriksen - changed from model equality to object equality, as generics have to match.
 				Result := True
 			elseif not attached {TBON_TC_CLUSTER_TYPE} other then
 				l_ancestors := Current.ancestors
@@ -177,7 +179,7 @@ feature -- Status report
 	is_equal (other: like Current): BOOLEAN
 			-- Is this model mathematically equal to `other'?
 		do
-			Result := name ~ other.name and (generics /= Void implies generics.for_all (
+			Result := name ~ other.name and ((generics.count > 0) implies generics.for_all (
 												agent (generic: TBON_TC_GENERIC; l_other_class: TBON_TC_CLASS_TYPE): BOOLEAN
 													do
 														Result := l_other_class.generics.exists (agent (this_generic, other_generic: TBON_TC_GENERIC): BOOLEAN

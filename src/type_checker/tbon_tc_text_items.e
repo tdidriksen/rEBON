@@ -148,6 +148,26 @@ feature -- Error messages
 			Result.append_string (" does not exist.")
 		end
 
+	err_duplicate_feature_name (a_feature_name, a_class_name: STRING): STRING
+		do
+			Result := "Feature name "
+			Result.append_string (a_feature_name.string)
+			Result.append_string (" is specified more than once in class ")
+			Result.append_string (a_class_name.string)
+			Result.append_string (".")
+		end
+
+	err_duplicate_inherited_feature_name (a_feature_name: STRING; a_class_name: STRING): STRING
+		local
+			is_first_item: BOOLEAN
+		do
+			Result := "Feature "
+			Result.append_string (a_feature_name.string)
+			Result.append_string (" appears in class ")
+			Result.append_string (a_class_name.string)
+			Result.append_string (" more than once due to inheritance of feature with the same name.")
+		end
+
 	err_enclosing_class_not_generic (a_feature_name, a_generic_name, a_class_name: STRING): STRING
 		do
 			Result := "Feature "
@@ -199,6 +219,15 @@ feature -- Error messages
 			Result.append_string (" in event chart ")
 			Result.append_string (a_chart_name.string)
 			Result.append_string (".")
+		end
+
+	err_no_precursor_exists_for_feature (a_feature_name, a_class_name: STRING): STRING
+		do
+			Result := "Feature "
+			Result.append_string (a_feature_name.string)
+			Result.append_string (" in class ")
+			Result.append_string (a_class_name.string)
+			Result.append_string (" is declared as redefined or deferred, but has no precursor feature.")
 		end
 
 	err_selective_export_class_does_not_exist (a_class_name, an_enclosing_class_name: STRING): STRING

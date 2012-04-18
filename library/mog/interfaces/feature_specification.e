@@ -148,6 +148,24 @@ feature -- Status report
 			Result := my_contracts /= Void
 		end
 
+	is_deferred: BOOLEAN
+			-- Is `Current' deferred?
+		do
+			Result := has_status and my_feature_status ~ "DEFERRED"
+		end
+
+	is_effective: BOOLEAN
+			-- Is `Current' effective?
+		do
+			Result := has_status and my_feature_status ~ "EFFECTIVE"
+		end
+
+	is_redefined: BOOLEAN
+			-- Is `Current' redefined?
+		do
+			Result := has_status and my_feature_status ~ "REDEFINED"
+		end
+
 feature {NONE} -- Implementation
 
 	my_feature_status: STRING -- enumeration of deferred, effective, redefined

@@ -20,7 +20,6 @@ feature -- Initialization
 	make (a_name: STRING; a_type: TBON_TC_CLASS_TYPE; an_enclosing_class: TBON_TC_CLASS_TYPE)
 		require
 			a_name /= Void and then not a_name.is_empty
-			a_type /= Void
 			an_enclosing_class /= Void
 		do
 			name := a_name.string
@@ -114,7 +113,15 @@ feature -- Element change
 			is_infix: is_infix
 		end
 
-	set_type (a_type: TBON_TC_CLASS_TYPE)
+	set_selective_export (an_export_list: like selective_export)
+		require
+			an_export_list /= Void
+		do
+			selective_export := an_export_list
+		end
+
+
+	set_type (a_type: like type)
 		require
 			a_type /= Void
 		do
@@ -124,13 +131,13 @@ feature -- Element change
 feature -- Renaming
 	is_renamed: BOOLEAN
 
-	new_name: STRING
+	inherited_name: STRING
 
 	renamed_from_class: TBON_TC_CLASS_TYPE
 
 invariant
 	is_unclassified xor is_deferred xor is_effective xor is_redefined
-	is_renamed implies (new_name /= Void and not new_name.is_empty and renamed_from_class /= Void)
+	is_renamed implies (inherited_name /= Void and not inherited_name.is_empty and renamed_from_class /= Void)
 	is_infix implies not is_prefix
 	is_prefix implies not is_infix
 
