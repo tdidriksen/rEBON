@@ -37,6 +37,7 @@ feature -- Error codes
 
 	err_code_ancestor_does_not_exist,
 	err_code_argument_type_does_not_exist,
+	err_code_argument_types_does_not_match_precursor,
 	err_code_class_already_in_cluster,
 	err_code_class_does_not_exist,
 	err_code_class_exists,
@@ -50,6 +51,7 @@ feature -- Error codes
 	err_code_cluster_in_both_cluster_and_system,
 	err_code_cluster_not_in_cluster_or_system,
 	err_code_creator_does_not_exist,
+	err_code_duplicate_argument_name,
 	err_code_duplicate_feature_name,
 	err_code_duplicate_inherited_feature_name,
 	err_code_enclosing_class_not_generic,

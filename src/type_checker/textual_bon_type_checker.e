@@ -200,6 +200,32 @@ feature -- Auxiliary features, type checking
 			end
 		end
 
+	feature_arguments_conform (first_feature, second_feature: TBON_TC_FEATURE): BOOLEAN
+			-- Does `first_feature' arguments conform to `second_feature' arguments?
+		require
+			not_void: first_feature /= Void and second_feature /= Void
+		local
+
+		do
+			if first_feature.arguments.count = second_feature.arguments.count then
+				Result := True
+				from
+					first_feature.arguments.start
+					second_feature.arguments.start
+				until
+					first_feature.arguments.exhausted and second_feature.arguments.exhausted
+				loop
+					if not (first_feature.arguments.item_for_iteration.type.conforms_to (second_feature.arguments.item_for_iteration.type)) then
+						Result := False
+					end
+					first_feature.arguments.forth
+					second_feature.arguments.forth
+				end
+			else
+				Result := False
+			end
+		end
+
 	nearest_precursor (a_feature: TBON_TC_FEATURE; origin_class, current_class: TBON_TC_CLASS_TYPE): TBON_TC_FEATURE
 			-- What is the nearest precursor to `a_feature'?
 		require
@@ -1261,36 +1287,72 @@ feature -- Type checking, static diagrams
 			argument: FEATURE_ARGUMENT
 			l_argument: TBON_TC_FEATURE_ARGUMENT
 			t_type: TBON_TC_CLASS_TYPE
+			seen_argument_names: LIST[STRING]
+			l_precursor: TBON_TC_FEATURE
 		do
 			Result := True
 			if first_phase then
+				create {ARRAYED_LIST[STRING]} seen_argument_names.make(5)
+				seen_argument_names.compare_objects
+				-- Check all arguments in the argument list.
 				from an_element.start until an_element.after loop
 					argument := an_element.item_for_iteration
+					--  Argument is a class type
 					if argument.type.is_class_type then
+						-- Argument exists in context
 						if attached {TBON_TC_CLASS_TYPE} type_with_name(argument.type.class_type.class_name, formal_type_context) as type then
 							from argument.identifiers.start until argument.identifiers.after
 							loop
-								create l_argument.make (argument.identifiers.item_for_iteration, type)
-								enclosing_feature.arguments.extend (l_argument)
+								if seen_argument_names.has (argument.identifiers.item_for_iteration) then
+									Result := False
+									add_error (err_code_duplicate_argument_name, err_duplicate_argument_name (argument.identifiers.item_for_iteration, enclosing_feature.name, enclosing_class.name))
+								else
+									seen_argument_names.extend (argument.identifiers.item_for_iteration.string)
+									create l_argument.make (argument.identifiers.item_for_iteration.string, type)
+									enclosing_feature.arguments.extend (l_argument)
+								end
 							end
+						-- Argument doens't exist in context. Feature is unresolved.
 						else
 							from argument.identifiers.start until argument.identifiers.after
 							loop
-								create t_type.make (argument.identifiers.item_for_iteration)
-								create l_argument.make (argument.identifiers.item_for_iteration, t_type)
+								seen_argument_names.extend (argument.identifiers.item_for_iteration.string)
+								create t_type.make (argument.identifiers.item_for_iteration.string)
+								create l_argument.make (argument.identifiers.item_for_iteration.string, t_type)
 								enclosing_feature.arguments.extend (l_argument)
 							end
 							unresolved_features := unresolved_features.extended (enclosing_feature)
 						end
+					-- Argument is a formal generic
 					elseif argument.type.is_formal_generic_name then
 						Result := enclosing_class.has_generic_name (argument.type.formal_generic_name)
+						-- Enclosing class doesn't a generic of this type.
 						if not Result then
-
+							add_error (err_code_argument_type_does_not_exist, err_argument_type_does_not_exist (argument.identifiers.first, enclosing_feature.name, enclosing_class.name))
+						-- Enclosing class has a generic of this type.
+						else
+							from argument.identifiers.start until argument.identifiers.after
+							loop
+								seen_argument_names.extend (argument.identifiers.item_for_iteration)
+								create t_type.make (argument.identifiers.item_for_iteration)
+								create l_argument.make (argument.identifiers.item_for_iteration, t_type)
+							end
 						end
 					end
 				end
-			elseif second_phase then
 
+			elseif second_phase then
+				if enclosing_feature.is_redefined then
+					l_precursor := nearest_precursor (enclosing_feature, enclosing_class, enclosing_class)
+					if l_precursor /= Void then
+						Result := feature_arguments_conform (enclosing_feature, l_precursor)
+						if not Result then
+							add_error (err_code_argument_types_does_not_match_precursor, err_argument_types_does_not_match_precursers (enclosing_feature.name, l_precursor.name, enclosing_class.name))
+						end
+					else
+						Result := False
+					end
+				end
 			end
 		end
 

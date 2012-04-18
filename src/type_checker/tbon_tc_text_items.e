@@ -50,6 +50,17 @@ feature -- Error messages
 			Result.append_string (" could not be found.")
 		end
 
+	err_argument_types_does_not_match_precursers(a_feature_name, a_precursor_feature_name, a_class_name: STRING): STRING
+		do
+			Result := "Types of arguments in redefined feature "
+			Result.append_string (a_feature_name.string)
+			Result.append_string (" in class ")
+			Result.append_string (a_class_name.string)
+			Result.append_string (" does not match those of its precursor ")
+			Result.append_string (a_precursor_feature_name)
+			Result.append_string (".")
+		end
+
 	err_class_already_in_cluster (a_name: STRING): STRING
 		do
 			Result := "Error defining cluster "
@@ -146,6 +157,17 @@ feature -- Error messages
 			Result.append_string (" in creation chart ")
 			Result.append_string (a_chart_name.string)
 			Result.append_string (" does not exist.")
+		end
+
+	err_duplicate_argument_name (an_argument_name, a_feature_name, a_class_name: STRING): STRING
+		do
+			Result := "Argument name "
+			Result.append_string (an_argument_name.string)
+			Result.append_string (" in feature ")
+			Result.append_string (a_feature_name.string)
+			Result.append_string (" in class ")
+			Result.append_string (a_class_name)
+			Result.append_string (" is specified more than once.")
 		end
 
 	err_duplicate_feature_name (a_feature_name, a_class_name: STRING): STRING
