@@ -200,10 +200,21 @@ feature -- Auxiliary features, type checking
 			end
 		end
 
-	nearest_precursor (a_feature: TBON_TC_FEATURE; origin_class, current_class: TBON_TC_CLASS_TYPE): TBON_TC_FEATURE
+	deferred_features (a_class_type: TBON_TC_CLASS_TYPE): MML_SET[TBON_TC_FEATURE]
+			-- What is the set of all the deferred features (including inherited ones) of `a_class_type'?
+		do
+			Result := all_features (a_class_type).filtered (
+				agent (l_feature: TBON_TC_FEATURE): BOOLEAN
+					do
+						Result := l_feature.is_deferred
+					end
+			)
+		end
+
+	nearest_precursor (a_feature: TBON_TC_FEATURE; current_class: TBON_TC_CLASS_TYPE): TBON_TC_FEATURE
 			-- What is the nearest precursor to `a_feature'?
 		require
-			has_precursor: a_feature.is_redefined xor a_feature.is_deferred
+			has_precursor: a_feature.is_redefined xor a_feature.is_deferred xor a_feature.is_effective
 		local
 			l_precursor: TBON_TC_FEATURE
 			ancestors: MML_SET[TBON_TC_CLASS_TYPE]
@@ -234,13 +245,6 @@ feature -- Auxiliary features, type checking
 				ancestors := ancestors / ancestor
 			end
 
-			-- Can a precursor exist?
-			precursor_possible := current_class.ancestors.exists (agent (l_ancestor: TBON_TC_CLASS_TYPE): BOOLEAN do Result := l_ancestor.ancestors.count > 0 end)
-			-- If a precursor cannot exist and no precursor is already found, an error has occurred.
-			if not precursor_possible and l_precursor = Void then
-				add_error (err_code_no_precursor_exists_for_feature, err_no_precursor_exists_for_feature (a_feature.name, origin_class.name))
-			end
-
 			-- If no precursor was found, call recursively on ancestors
 			if l_precursor = Void and precursor_possible then
 				from
@@ -250,15 +254,13 @@ feature -- Auxiliary features, type checking
 				loop
 					ancestor := ancestors.any_item
 
-					l_precursor := nearest_precursor (a_feature, origin_class, ancestor)
+					l_precursor := nearest_precursor (a_feature, ancestor)
 
 					ancestors := ancestors / ancestor
 				end
 			end
 
 			Result := l_precursor
-		ensure
-			Result /= Void
 		end
 
 feature -- Error handling
@@ -412,7 +414,7 @@ feature -- Type checking, general
 			Result := an_ancestor_class.ancestors.for_all (
 				agent (a_descendant, an_ancestor: TBON_TC_CLASS_TYPE): BOOLEAN
 					do
-						Result := not (a_descendant |=| an_ancestor)
+						Result := not (a_descendant ~ an_ancestor)
 					end (a_main_class, ?)
 			)
 
@@ -1154,17 +1156,6 @@ feature -- Type checking, static diagrams
 
 			elseif second_phase then
 
-				-- Add ancestors
---				if an_element. then
---					ancestors an_element.class_interface.parents
---					from an_element.class_interface.parents.start until
-
---					loop
-
---					end
---				end
-
-				-- If a class is declared effective, one of its parents must be deferred
 				if an_element.is_effective then
 
 				end
@@ -1345,6 +1336,7 @@ feature -- Type checking, static diagrams
 			l_feature: TBON_TC_FEATURE
 			l_class_type: TBON_TC_CLASS_TYPE
 			current_feature_name: FEATURE_NAME
+			l_precursor: TBON_TC_FEATURE
 
 			seen_feature_names: LIST[STRING]
 
@@ -1389,6 +1381,8 @@ feature -- Type checking, static diagrams
 					elseif an_element.is_redefined then
 						l_feature.set_is_redefined
 					end
+					-- Set visibility
+					selective_export.do_all (agent (class_name: STRING; l_l_feature: TBON_TC_FEATURE) do l_l_feature.selective_export.extend (class_name) end (?, l_feature))
 
 					-- Check if the type of the feature exists - else, mark it as unresolved
 					if an_element.has_type and then an_element.type.is_class_type then
@@ -1408,9 +1402,6 @@ feature -- Type checking, static diagrams
 							unresolved_features := unresolved_features & l_feature
 						end
 
-						-- Add feature to enclosing class
-						enclosing_class.add_feature (l_feature)
-
 					elseif an_element.has_type and then an_element.type.is_formal_generic_name then
 						-- If enclosing class has generics
 						if enclosing_class.generics /= Void then
@@ -1425,6 +1416,9 @@ feature -- Type checking, static diagrams
 						end
 					end
 
+					-- Add feature to enclosing class
+					enclosing_class.add_feature (l_feature)
+
 					an_element.feature_names.forth
 				end
 
@@ -1433,20 +1427,63 @@ feature -- Type checking, static diagrams
 
 			elseif second_phase then
 
-				-- Check for duplicate feature names in inheritance hierarchy
-				features := all_features (enclosing_class).twin
+				from
+					an_element.feature_names.start
+				until
+					an_element.feature_names.after
+				loop
+					current_feature_name := an_element.feature_names.item_for_iteration
+					l_feature := enclosing_class.feature_with_name (current_feature_name.feature_name)
+					-- Get precursor
+					l_precursor := nearest_precursor (l_feature, enclosing_class)
 
-				duplicate_features := features.filtered (
-					agent (this_feature, other_feature: TBON_TC_FEATURE): BOOLEAN
-						do
-							Result := this_feature.name ~ other_feature.name
-						end (?, l_feature)
-				)
-				if duplicate_features.count > 0 then
-					add_error (err_code_duplicate_inherited_feature_name, err_duplicate_feature_name (l_feature.name, enclosing_class.name))
+					if an_element.is_deferred or an_element.is_redefined and l_precursor = Void then
+						add_error (err_code_no_precursor_exists_for_feature, err_no_precursor_exists_for_feature (current_feature_name.feature_name, enclosing_class.name))
+						Result := False
+					end
+
+					-- Get status
+					if an_element.is_deferred then
+						if l_precursor /= Void then
+							if not enclosing_class.is_deferred then
+								-- Error enclosing class must be deferred.
+							end
+							if not l_feature.type.conforms_to (l_precursor.type) then
+
+							end
+						end
+
+					elseif an_element.is_effective then
+
+					elseif an_element.is_redefined then
+
+					else
+						-- Check for duplicate feature names in inheritance hierarchy
+						features := all_features (enclosing_class).twin
+						from
+							an_element.feature_names.start
+						until
+							an_element.feature_names.after
+						loop
+							current_feature_name := an_element.feature_names.item_for_iteration
+
+							duplicate_features := features.filtered (
+								agent (this_feature: TBON_TC_FEATURE other_feature_name: FEATURE_NAME): BOOLEAN
+									do
+										Result := this_feature.name ~ other_feature_name.feature_name
+									end (?, current_feature_name)
+							)
+							if duplicate_features.count > 1 then
+								add_error (err_code_duplicate_inherited_feature_name, err_duplicate_feature_name (l_feature.name, enclosing_class.name))
+							end
+
+							an_element.feature_names.forth
+						end
+					end
+
+					an_element.feature_names.forth
 				end
 
-				-- Check status
 				-- Check renaming
 				-- Check arguments
 				-- Check contract clause
@@ -1454,6 +1491,9 @@ feature -- Type checking, static diagrams
 			else
 				Result := False
 			end
+		ensure
+			deferred_feature_means_deferred_class:
+			an_element.is_deferred implies enclosing_class.is_deferred
 		end
 
 	check_formal_generics (an_element: FORMAL_GENERIC_LIST; enclosing_class: TBON_TC_CLASS_TYPE): BOOLEAN

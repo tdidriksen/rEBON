@@ -27,7 +27,10 @@ feature -- Initialization
 
 			some_feature_names /= Void and then not some_feature_names.is_empty
 		do
-			my_feature_status := a_feature_status.twin
+			if a_feature_status /= Void then
+				my_feature_status := a_feature_status.twin
+			end
+			
 			my_feature_name_list := some_feature_names.twin
 
 			if a_type /= Void then

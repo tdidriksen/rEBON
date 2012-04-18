@@ -158,8 +158,6 @@ feature -- Error messages
 		end
 
 	err_duplicate_inherited_feature_name (a_feature_name: STRING; a_class_name: STRING): STRING
-		local
-			is_first_item: BOOLEAN
 		do
 			Result := "Feature "
 			Result.append_string (a_feature_name.string)
@@ -227,7 +225,7 @@ feature -- Error messages
 			Result.append_string (a_feature_name.string)
 			Result.append_string (" in class ")
 			Result.append_string (a_class_name.string)
-			Result.append_string (" is declared as redefined or deferred, but has no precursor feature.")
+			Result.append_string (" is declared as redefined or deferred, but has no precursor.")
 		end
 
 	err_selective_export_class_does_not_exist (a_class_name, an_enclosing_class_name: STRING): STRING

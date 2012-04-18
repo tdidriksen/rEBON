@@ -131,10 +131,28 @@ feature -- Status report
 	is_interfaced: BOOLEAN
 			-- Is `Current' an interfaced class?
 
+	feature_with_name (a_feature_name: STRING): TBON_TC_FEATURE
+			-- Which of the features of `Current' has the name `a_feature_name'?
+		local
+			feature_set: like features
+		do
+			feature_set := features.filtered (
+				agent (l_feature: TBON_TC_FEATURE; l_feature_name: STRING): BOOLEAN
+					do
+						Result := l_feature.name ~ l_feature_name
+					end (?, a_feature_name)
+			)
+			Result := Void
+			if not feature_set.is_empty then
+				check feature_set.count = 1 end
+				Result := feature_set.any_item
+			end
+		end
+
 	has_generic_name (a_formal_generic_name: STRING): BOOLEAN
 			-- Is `a_formal_generic_name' one of the generic names of `Current'?
 		do
-			Result := (generics.count > 0) and then generics.exists (
+			Result := (not generics.is_empty) and then generics.exists (
 							agent (generic: TBON_TC_GENERIC; other_formal_name: STRING): BOOLEAN
 								do
 									Result := generic.formal_generic_name ~ other_formal_name
@@ -177,18 +195,9 @@ feature -- Status report
 		end
 
 	is_equal (other: like Current): BOOLEAN
-			-- Is this model mathematically equal to `other'?
+			-- Is this `Current' equal to `other'?
 		do
-			Result := name ~ other.name and ((generics.count > 0) implies generics.for_all (
-												agent (generic: TBON_TC_GENERIC; l_other_class: TBON_TC_CLASS_TYPE): BOOLEAN
-													do
-														Result := l_other_class.generics.exists (agent (this_generic, other_generic: TBON_TC_GENERIC): BOOLEAN
-																							do
-																								Result := this_generic |=| (other_generic)
-																							end (generic, ?)
-																						)
-													end (?, other)
-											))
+			Result := name ~ other.name and then generics |=| other.generics
 						-- If other class is a class type and has generics, both names and generics must be equal
 						-- For all generics of Current, there must exist an equal generic in other.
 		end
