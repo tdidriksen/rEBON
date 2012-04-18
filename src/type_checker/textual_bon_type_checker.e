@@ -1437,25 +1437,53 @@ feature -- Type checking, static diagrams
 					-- Get precursor
 					l_precursor := nearest_precursor (l_feature, enclosing_class)
 
-					if an_element.is_deferred or an_element.is_redefined and l_precursor = Void then
+					-- If current feature is deferred or redefined, a precursor must exist
+					if (an_element.is_deferred or an_element.is_redefined) and l_precursor = Void then
 						add_error (err_code_no_precursor_exists_for_feature, err_no_precursor_exists_for_feature (current_feature_name.feature_name, enclosing_class.name))
 						Result := False
 					end
 
-					-- Get status
+					-- If precursor exists, the type of current feature must conform to type of precursor
+					if not l_feature.type.conforms_to (l_precursor.type) then
+						-- Error type does not conform to precursor.
+						Result := False
+					end
+
+					-- If precursor is deferred, current feature must be effective
+					if l_precursor /= Void and then l_precursor.is_deferred then
+						if not l_feature.is_effective and not l_feature.is_deferred then
+							-- Error - non-deferred feature with deferred precursor must be effective
+						end
+					end
+
+					-- Do status-specific checking
 					if an_element.is_deferred then
+
 						if l_precursor /= Void then
 							if not enclosing_class.is_deferred then
 								-- Error enclosing class must be deferred.
-							end
-							if not l_feature.type.conforms_to (l_precursor.type) then
-
+								Result := False
 							end
 						end
 
 					elseif an_element.is_effective then
 
+						if l_precursor /= Void then
+							if not l_precursor.is_deferred then
+								-- Error effective feature redefines effective feature - mark as redefined.
+								Result := False
+							end
+						end
+						-- If feature has no precursor, it can always be marked as effective to emphasize implementation.
+
 					elseif an_element.is_redefined then
+
+						if l_precursor /= Void then
+							if l_precursor.is_deferred then
+								-- Error - feature should be marked as effective, not redefined.
+								Result := False
+							end
+						end
 
 					else
 						-- Check for duplicate feature names in inheritance hierarchy
@@ -1492,8 +1520,65 @@ feature -- Type checking, static diagrams
 				Result := False
 			end
 		ensure
+			features_not_in_old_environment:
+			(first_phase and Result) implies an_element.feature_names.for_all (
+				agent (l_feature_name: FEATURE_NAME; l_enclosing_class: TBON_TC_CLASS_TYPE): BOOLEAN
+					do
+						Result := l_enclosing_class.feature_with_name (l_feature_name.feature_name) = Void
+					end (?, old enclosing_class)
+			)
+
+			features_in_new_environment:
+			(first_phase and Result) implies an_element.feature_names.for_all (
+				agent (l_feature_name: FEATURE_NAME; l_enclosing_class: TBON_TC_CLASS_TYPE): BOOLEAN
+					do
+						Result := l_enclosing_class.feature_with_name (l_feature_name.feature_name) /= Void
+					end (?, enclosing_class)
+			)
+
+			feature_type_in_environment:
+			(second_phase and Result) implies an_element.feature_names.for_all (
+				agent (l_feature_name: FEATURE_NAME; l_enclosing_class: TBON_TC_CLASS_TYPE): BOOLEAN
+					do
+						Result := class_name_exists_in_context (l_enclosing_class.feature_with_name (l_feature_name.feature_name).type.name, formal_type_context)
+					end (?, enclosing_class)
+			)
+
+			feature_type_conforms_to_precursor_type:
+			(an_element.has_type and second_phase and Result) implies an_element.feature_names.for_all (
+				agent (l_feature_name: FEATURE_NAME; l_enclosing_class: TBON_TC_CLASS_TYPE): BOOLEAN
+					local
+						l_l_precursor: TBON_TC_FEATURE
+					do
+						l_l_precursor := nearest_precursor (l_enclosing_class.feature_with_name (l_feature_name.feature_name), l_enclosing_class)
+						Result := l_enclosing_class.feature_with_name (l_feature_name.feature_name).type.conforms_to (l_l_precursor.type)
+					end (?, enclosing_class)
+			)
+
 			deferred_feature_means_deferred_class:
-			an_element.is_deferred implies enclosing_class.is_deferred
+			(an_element.is_deferred and second_phase and Result) implies enclosing_class.is_deferred
+
+			effective_means_deferred_or_no_precursor:
+			(an_element.is_effective and second_phase and Result) implies an_element.feature_names.for_all (
+				agent (l_feature_name: FEATURE_NAME; l_enclosing_class: TBON_TC_CLASS_TYPE): BOOLEAN
+					local
+						l_l_precursor: TBON_TC_FEATURE
+					do
+						l_l_precursor := nearest_precursor (l_enclosing_class.feature_with_name (l_feature_name.feature_name), l_enclosing_class)
+						Result := (l_l_precursor /= Void implies l_l_precursor.is_deferred) or l_l_precursor = Void
+					end (?, enclosing_class)
+			)
+
+			redefined_means_non_deferred_precursor:
+			(an_element.is_redefined and second_phase and Result) implies an_element.feature_names.for_all (
+				agent (l_feature_name: FEATURE_NAME; l_enclosing_class: TBON_TC_CLASS_TYPE): BOOLEAN
+					local
+						l_l_precursor: TBON_TC_FEATURE
+					do
+						l_l_precursor := nearest_precursor (l_enclosing_class.feature_with_name (l_feature_name.feature_name), l_enclosing_class)
+						Result := l_l_precursor /= Void and then not l_l_precursor.is_deferred
+					end (?, enclosing_class)
+			)
 		end
 
 	check_formal_generics (an_element: FORMAL_GENERIC_LIST; enclosing_class: TBON_TC_CLASS_TYPE): BOOLEAN
