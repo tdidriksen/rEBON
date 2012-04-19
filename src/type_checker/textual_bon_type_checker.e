@@ -237,48 +237,6 @@ feature -- Auxiliary features, type checking
 			end
 		end
 
-	nearest_precursor (a_feature: TBON_TC_FEATURE; current_class: TBON_TC_CLASS_TYPE): TBON_TC_FEATURE
-			-- What is the nearest precursor to `a_feature'?
-		require
-			has_precursor: a_feature.is_redefined xor a_feature.is_deferred xor a_feature.is_effective
-		local
-			l_precursor: TBON_TC_FEATURE
-			ancestors: MML_SET[TBON_TC_CLASS_TYPE]
-			feature_set: MML_SET[TBON_TC_FEATURE]
-			ancestor: TBON_TC_CLASS_TYPE
-		do
-			-- Iterate through ancestors
-			from
-				ancestors := current_class.ancestors.twin
-				l_precursor := Void
-			until
-				ancestors.is_empty or l_precursor /= Void
-			loop
-				ancestor := ancestors.any_item
-
-				l_precursor := ancestor.feature_with_name (a_feature.name)
-
-				ancestors := ancestors / ancestor
-			end
-
-			-- If no precursor was found, call recursively on ancestors
-			if l_precursor = Void then
-				from
-					ancestors := current_class.ancestors.twin
-				until
-					ancestors.is_empty or l_precursor /= Void
-				loop
-					ancestor := ancestors.any_item
-
-					l_precursor := nearest_precursor (a_feature, ancestor)
-
-					ancestors := ancestors / ancestor
-				end
-			end
-
-			Result := l_precursor
-		end
-
 feature -- Error handling
 	add_error (an_error_code: INTEGER; an_error_message: STRING)
 			-- Add an error message.
@@ -1332,7 +1290,7 @@ feature -- Type checking, static diagrams
 			elseif second_phase then
 
 				if enclosing_feature.is_redefined then
-					l_precursor := nearest_precursor (enclosing_feature, enclosing_class)
+					l_precursor := enclosing_feature.nearest_precursor
 					if l_precursor /= Void then
 						Result := feature_arguments_conform (enclosing_feature, l_precursor)
 						if not Result then
@@ -1496,7 +1454,7 @@ feature -- Type checking, static diagrams
 					current_feature_name := an_element.feature_names.item_for_iteration
 					l_feature := enclosing_class.feature_with_name (current_feature_name.feature_name)
 					-- Get precursor
-					l_precursor := nearest_precursor (l_feature, enclosing_class)
+					l_precursor := l_feature.nearest_precursor
 
 					-- If current feature is deferred or redefined, a precursor must exist
 					if (an_element.is_deferred or an_element.is_redefined) and l_precursor = Void then
@@ -1613,7 +1571,7 @@ feature -- Type checking, static diagrams
 						l_l_feature: TBON_TC_FEATURE
 					do
 						l_l_feature := l_enclosing_class.feature_with_name (l_feature_name.feature_name)
-						l_l_precursor := nearest_precursor (l_l_feature, l_enclosing_class)
+						l_l_precursor := l_l_feature.nearest_precursor
 						Result := l_enclosing_class.feature_with_name (l_feature_name.feature_name).type.conforms_to (l_l_precursor.type)
 					end (?, enclosing_class)
 			)
@@ -1627,7 +1585,7 @@ feature -- Type checking, static diagrams
 					local
 						l_l_precursor: TBON_TC_FEATURE
 					do
-						l_l_precursor := nearest_precursor (l_enclosing_class.feature_with_name (l_feature_name.feature_name), l_enclosing_class)
+						l_l_precursor := l_enclosing_class.feature_with_name (l_feature_name.feature_name).nearest_precursor
 						Result := (l_l_precursor /= Void implies l_l_precursor.is_deferred) or l_l_precursor = Void
 					end (?, enclosing_class)
 			)
@@ -1638,7 +1596,7 @@ feature -- Type checking, static diagrams
 					local
 						l_l_precursor: TBON_TC_FEATURE
 					do
-						l_l_precursor := nearest_precursor (l_enclosing_class.feature_with_name (l_feature_name.feature_name), l_enclosing_class)
+						l_l_precursor := l_enclosing_class.feature_with_name (l_feature_name.feature_name).nearest_precursor
 						Result := l_l_precursor /= Void and then not l_l_precursor.is_deferred
 					end (?, enclosing_class)
 			)
@@ -1651,7 +1609,7 @@ feature -- Type checking, static diagrams
 						l_l_feature: TBON_TC_FEATURE
 					do
 						l_l_feature := l_enclosing_class.feature_with_name (l_feature_name.feature_name)
-						l_l_precursor := nearest_precursor (l_l_feature, l_enclosing_class)
+						l_l_precursor := l_l_feature.nearest_precursor
 						Result := (l_l_precursor /= Void and then l_l_precursor.is_deferred) implies (l_l_feature.is_deferred or l_l_feature.is_effective)
 					end (?, enclosing_class)
 			)

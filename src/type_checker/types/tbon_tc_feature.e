@@ -43,6 +43,52 @@ feature -- Access
 
 	arguments: LIST[TBON_TC_FEATURE_ARGUMENT]
 
+	nearest_precursor: TBON_TC_FEATURE
+			-- What is the nearest precursor to `a_feature'?
+		do
+			Result := precursor_feature (enclosing_class)
+		end
+
+feature {NONE} -- Implementation
+	precursor_feature (current_class: TBON_TC_CLASS_TYPE): TBON_TC_FEATURE
+			-- What is the precursor to `a_feature' from class `current_class'?
+		local
+			l_precursor: TBON_TC_FEATURE
+			ancestors: MML_SET[TBON_TC_CLASS_TYPE]
+			ancestor: TBON_TC_CLASS_TYPE
+		do
+			-- Iterate through ancestors
+			from
+				ancestors := current_class.ancestors.twin
+				l_precursor := Void
+			until
+				ancestors.is_empty or l_precursor /= Void
+			loop
+				ancestor := ancestors.any_item
+
+				l_precursor := ancestor.feature_with_name (Current.name)
+
+				ancestors := ancestors / ancestor
+			end
+
+			-- If no precursor was found, call recursively on ancestors
+			if l_precursor = Void then
+				from
+					ancestors := current_class.ancestors.twin
+				until
+					ancestors.is_empty or l_precursor /= Void
+				loop
+					ancestor := ancestors.any_item
+
+					l_precursor := precursor_feature (ancestor)
+
+					ancestors := ancestors / ancestor
+				end
+			end
+
+			Result := l_precursor
+		end
+
 feature -- Status report
 	is_unclassified: BOOLEAN
 

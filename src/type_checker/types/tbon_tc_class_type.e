@@ -59,27 +59,48 @@ feature -- Access
 
 	interface: MML_SET[TBON_TC_FEATURE]
 			-- What is the set of features that can be called on `Current'?
+		do
+			-- Call recursive implementation on empty set
+			Result := rec_interface (create {MML_SET[TBON_TC_FEATURE]}.default_create)
+		end
+
+feature {TBON_TC_CLASS_TYPE} -- Implementation
+	rec_interface (an_accumulator: MML_SET[TBON_TC_FEATURE]): MML_SET[TBON_TC_FEATURE]
+			-- What is the set of features that can be called on `Current' (recursive implementation)?
 		local
 			l_ancestors: like ancestors
 			l_ancestor: TBON_TC_CLASS_TYPE
-
-			l_features: like features
-			l_feature: TBON_TC_FEATURE
+			unique_features: like features
+			acc: like an_accumulator
 		do
---			Result := features
---			from
---				l_ancestors := ancestors.twin
---			until
---				l_ancestors.is_empty
---			loop
---				l_ancestor := l_ancestors.any_item
+			unique_features := features.filtered (
+					agent (l_l_feature: TBON_TC_FEATURE; l_feature_set: MML_SET[TBON_TC_FEATURE]): BOOLEAN
+						do
+							Result := not l_feature_set.exists (
+								agent (this_feature, other_feature: TBON_TC_FEATURE): BOOLEAN
+									do
+										Result := this_feature.name ~ other_feature.name
+									end (?, l_l_feature)
+							)
+						end (?, an_accumulator)
+				)
 
---				l_features := l_ancestor.features.twin
+			if ancestors.is_empty then
+				Result := an_accumulator + unique_features
+			else
+				acc := an_accumulator + unique_features
+				from
+					l_ancestors := ancestors.twin
+				until
+					l_ancestors.is_empty
+				loop
+					l_ancestor := l_ancestors.any_item
 
+					Result := Result + l_ancestor.rec_interface (acc)
 
---				l_ancestors := l_ancestors / l_ancestor
---			end
-			-- TODO
+					l_ancestors := l_ancestors / l_ancestor
+				end
+			end
 		end
 
 feature -- Element change
