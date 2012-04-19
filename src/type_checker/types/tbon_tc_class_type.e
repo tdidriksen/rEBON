@@ -39,6 +39,49 @@ feature -- Access
 
 	features: MML_SET[TBON_TC_FEATURE]
 
+	feature_with_name (a_feature_name: STRING): TBON_TC_FEATURE
+			-- Which of the features of `Current' has the name `a_feature_name'?
+		local
+			feature_set: like features
+		do
+			feature_set := features.filtered (
+				agent (l_feature: TBON_TC_FEATURE; l_feature_name: STRING): BOOLEAN
+					do
+						Result := l_feature.name ~ l_feature_name
+					end (?, a_feature_name)
+			)
+			Result := Void
+			if not feature_set.is_empty then
+				check feature_set.count = 1 end
+				Result := feature_set.any_item
+			end
+		end
+
+	interface: MML_SET[TBON_TC_FEATURE]
+			-- What is the set of features that can be called on `Current'?
+		local
+			l_ancestors: like ancestors
+			l_ancestor: TBON_TC_CLASS_TYPE
+
+			l_features: like features
+			l_feature: TBON_TC_FEATURE
+		do
+--			Result := features
+--			from
+--				l_ancestors := ancestors.twin
+--			until
+--				l_ancestors.is_empty
+--			loop
+--				l_ancestor := l_ancestors.any_item
+
+--				l_features := l_ancestor.features.twin
+
+
+--				l_ancestors := l_ancestors / l_ancestor
+--			end
+			-- TODO
+		end
+
 feature -- Element change
 	add_ancestor (a_class: TBON_TC_CLASS_TYPE)
 			-- Add `a_class' to `ancestors'?
@@ -131,24 +174,6 @@ feature -- Status report
 	is_interfaced: BOOLEAN
 			-- Is `Current' an interfaced class?
 
-	feature_with_name (a_feature_name: STRING): TBON_TC_FEATURE
-			-- Which of the features of `Current' has the name `a_feature_name'?
-		local
-			feature_set: like features
-		do
-			feature_set := features.filtered (
-				agent (l_feature: TBON_TC_FEATURE; l_feature_name: STRING): BOOLEAN
-					do
-						Result := l_feature.name ~ l_feature_name
-					end (?, a_feature_name)
-			)
-			Result := Void
-			if not feature_set.is_empty then
-				check feature_set.count = 1 end
-				Result := feature_set.any_item
-			end
-		end
-
 	has_generic_name (a_formal_generic_name: STRING): BOOLEAN
 			-- Is `a_formal_generic_name' one of the generic names of `Current'?
 		do
@@ -165,8 +190,11 @@ feature -- Status report
 		local
 			l_ancestors: like Current.ancestors
 		do
-			if Current ~ other then -- @didriksen - changed from model equality to object equality, as generics have to match.
+			if Current ~ other or other.name ~ any_type_name then -- @didriksen - changed from model equality to object equality, as generics have to match.
 				Result := True
+			elseif other.name ~ none_type_name then
+				-- You can never conform to NONE
+				Result := False
 			elseif not attached {TBON_TC_CLUSTER_TYPE} other then
 				l_ancestors := Current.ancestors
 				Result := l_ancestors.exists (

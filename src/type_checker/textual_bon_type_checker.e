@@ -245,13 +245,8 @@ feature -- Auxiliary features, type checking
 			l_precursor: TBON_TC_FEATURE
 			ancestors: MML_SET[TBON_TC_CLASS_TYPE]
 			feature_set: MML_SET[TBON_TC_FEATURE]
-			singleton: MML_SET[TBON_TC_FEATURE]
 			ancestor: TBON_TC_CLASS_TYPE
-			precursor_possible: BOOLEAN
 		do
-			-- Create singleton set containing only 'a_feature'
-			create singleton.singleton (a_feature)
-
 			-- Iterate through ancestors
 			from
 				ancestors := current_class.ancestors.twin
@@ -261,18 +256,13 @@ feature -- Auxiliary features, type checking
 			loop
 				ancestor := ancestors.any_item
 
-				feature_set := ancestor.features.intersection (singleton)
-
-				if not feature_set.is_empty then
-					check feature_set.count = 1 end
-					l_precursor := feature_set.any_item
-				end
+				l_precursor := ancestor.feature_with_name (a_feature.name)
 
 				ancestors := ancestors / ancestor
 			end
 
 			-- If no precursor was found, call recursively on ancestors
-			if l_precursor = Void and precursor_possible then
+			if l_precursor = Void then
 				from
 					ancestors := current_class.ancestors.twin
 				until
@@ -1283,8 +1273,10 @@ feature -- Type checking, static diagrams
 		do
 			Result := True
 			if first_phase then
-				create {ARRAYED_LIST[STRING]} seen_argument_names.make(5)
+
+				create {ARRAYED_LIST[STRING]} seen_argument_names.make (5)
 				seen_argument_names.compare_objects
+
 				-- Check all arguments in the argument list.
 				from an_element.start until an_element.after loop
 					argument := an_element.item_for_iteration
@@ -1302,8 +1294,9 @@ feature -- Type checking, static diagrams
 									create l_argument.make (argument.identifiers.item_for_iteration.string, type)
 									enclosing_feature.arguments.extend (l_argument)
 								end
+								argument.identifiers.forth
 							end
-						-- Argument doens't exist in context. Feature is unresolved.
+						-- Argument doesn't exist in context. Feature is unresolved.
 						else
 							from argument.identifiers.start until argument.identifiers.after
 							loop
@@ -1311,6 +1304,8 @@ feature -- Type checking, static diagrams
 								create t_type.make (argument.identifiers.item_for_iteration.string)
 								create l_argument.make (argument.identifiers.item_for_iteration.string, t_type)
 								enclosing_feature.arguments.extend (l_argument)
+
+								argument.identifiers.forth
 							end
 							unresolved_features := unresolved_features.extended (enclosing_feature)
 						end
@@ -1327,12 +1322,15 @@ feature -- Type checking, static diagrams
 								seen_argument_names.extend (argument.identifiers.item_for_iteration)
 								create t_type.make (argument.identifiers.item_for_iteration)
 								create l_argument.make (argument.identifiers.item_for_iteration, t_type)
+
+								argument.identifiers.forth
 							end
 						end
 					end
 				end
 
 			elseif second_phase then
+
 				if enclosing_feature.is_redefined then
 					l_precursor := nearest_precursor (enclosing_feature, enclosing_class)
 					if l_precursor /= Void then
@@ -1344,6 +1342,7 @@ feature -- Type checking, static diagrams
 						Result := False
 					end
 				end
+
 			end
 		end
 
@@ -1511,10 +1510,10 @@ feature -- Type checking, static diagrams
 						Result := False
 					end
 
-					-- If precursor is deferred, current feature must be effective
+					-- If precursor is deferred, current feature must be effective or deferred
 					if l_precursor /= Void and then l_precursor.is_deferred then
 						if not l_feature.is_effective and not l_feature.is_deferred then
-							-- Error - non-deferred feature with deferred precursor must be effective
+							-- Error - non-deferred feature with deferred precursor must be effective or deferred
 						end
 					end
 
@@ -1611,8 +1610,10 @@ feature -- Type checking, static diagrams
 				agent (l_feature_name: FEATURE_NAME; l_enclosing_class: TBON_TC_CLASS_TYPE): BOOLEAN
 					local
 						l_l_precursor: TBON_TC_FEATURE
+						l_l_feature: TBON_TC_FEATURE
 					do
-						l_l_precursor := nearest_precursor (l_enclosing_class.feature_with_name (l_feature_name.feature_name), l_enclosing_class)
+						l_l_feature := l_enclosing_class.feature_with_name (l_feature_name.feature_name)
+						l_l_precursor := nearest_precursor (l_l_feature, l_enclosing_class)
 						Result := l_enclosing_class.feature_with_name (l_feature_name.feature_name).type.conforms_to (l_l_precursor.type)
 					end (?, enclosing_class)
 			)
@@ -1639,6 +1640,19 @@ feature -- Type checking, static diagrams
 					do
 						l_l_precursor := nearest_precursor (l_enclosing_class.feature_with_name (l_feature_name.feature_name), l_enclosing_class)
 						Result := l_l_precursor /= Void and then not l_l_precursor.is_deferred
+					end (?, enclosing_class)
+			)
+
+			deferred_precursor_means_deferred_or_effective:
+			(second_phase and Result) implies an_element.feature_names.for_all (
+				agent (l_feature_name: FEATURE_NAME; l_enclosing_class: TBON_TC_CLASS_TYPE): BOOLEAN
+					local
+						l_l_precursor: TBON_TC_FEATURE
+						l_l_feature: TBON_TC_FEATURE
+					do
+						l_l_feature := l_enclosing_class.feature_with_name (l_feature_name.feature_name)
+						l_l_precursor := nearest_precursor (l_l_feature, l_enclosing_class)
+						Result := (l_l_precursor /= Void and then l_l_precursor.is_deferred) implies (l_l_feature.is_deferred or l_l_feature.is_effective)
 					end (?, enclosing_class)
 			)
 		end
