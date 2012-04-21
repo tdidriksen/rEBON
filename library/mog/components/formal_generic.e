@@ -50,6 +50,13 @@ feature -- Access
 			Result := my_class_type.twin
 		end
 
+feature -- Status report
+	has_class_type: BOOLEAN
+			-- Does `Current' have a bounding class type?
+		do
+			Result := my_class_type /= Void
+		end
+
 feature -- Element change
 
 	set_name (a_name: STRING)

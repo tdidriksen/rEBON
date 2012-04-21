@@ -57,6 +57,25 @@ feature -- Access
 			Result := my_feature_specifications.twin
 		end
 
+feature -- Status report
+	has_selective_export: BOOLEAN
+			-- Does `Current' have a selective export clause?
+		do
+			Result := my_selective_exports /= Void and then not my_selective_exports.is_empty
+		end
+
+	has_feature_specifications: BOOLEAN
+			-- Does `Current' have any feature specifications clause?
+		do
+			Result := my_feature_specifications /= Void and then not my_feature_specifications.is_empty
+		end
+
+	has_comment: BOOLEAN
+			-- Does `Current' have a comment clause?
+		do
+			Result := my_comment /= Void and then not my_comment.is_empty
+		end
+
 feature {NONE} -- Implementation
 
 	my_selective_exports: CLASS_NAME_LIST

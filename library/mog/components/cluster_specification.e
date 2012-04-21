@@ -101,7 +101,7 @@ feature -- Transformation
 
 feature -- Output
 
-	bon_out: STRING is
+	bon_out: STRING
 		do
 			check false end
 		end

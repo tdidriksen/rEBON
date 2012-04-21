@@ -61,11 +61,15 @@ feature -- Error messages
 			Result.append_string (".")
 		end
 
-	err_class_already_in_cluster (a_name: STRING): STRING
+	err_class_already_in_cluster (a_cluster_name, a_class_name, a_class_parent_name: STRING): STRING
 		do
 			Result := "Error defining cluster "
-			Result.append_string (a_name.string)
-			Result.append_string (": a class is specified more than once.")
+			Result.append_string (a_cluster_name.string)
+			Result.append_string (": class ")
+			Result.append_string (a_class_name.string)
+			Result.append_string (" is already in cluster ")
+			Result.append_string (a_class_parent_name.string)
+			Result.append_string (".")
 		end
 
 	err_class_does_not_exist (a_name: STRING): STRING
@@ -99,11 +103,15 @@ feature -- Error messages
 			Result.append_string (" is not in a cluster.")
 		end
 
-	err_cluster_already_in_cluster (a_name: STRING): STRING
+	err_cluster_already_in_cluster (a_cluster_name, a_subcluster_name, a_subcluster_parent_name: STRING): STRING
 		do
 			Result := "Error defining cluster "
-			Result.append_string (a_name.string)
-			Result.append_string (": a subcluster is specified more than once.")
+			Result.append_string (a_cluster_name.string)
+			Result.append_string (": subcluster ")
+			Result.append_string (a_subcluster_name.string)
+			Result.append_string ("is already specified in cluster ")
+			Result.append_string (a_subcluster_parent_name.string)
+			Result.append_string (".")
 		end
 
 	err_cluster_already_in_system_chart (a_name: STRING): STRING

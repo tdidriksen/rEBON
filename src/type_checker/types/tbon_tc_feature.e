@@ -18,6 +18,7 @@ create
 
 feature -- Initialization
 	make (a_name: STRING; a_type: TBON_TC_CLASS_TYPE; an_enclosing_class: TBON_TC_CLASS_TYPE)
+			-- Initialize `Current'.
 		require
 			a_name /= Void and then not a_name.is_empty
 			an_enclosing_class /= Void
@@ -25,6 +26,7 @@ feature -- Initialization
 			name := a_name.string
 			type := a_type
 			enclosing_class := an_enclosing_class
+			is_unclassified := True
 
 			create {LINKED_LIST[STRING]} selective_export.make
 			selective_export.compare_objects
@@ -66,7 +68,11 @@ feature {NONE} -- Implementation
 			loop
 				ancestor := ancestors.any_item
 
-				l_precursor := ancestor.feature_with_name (Current.name)
+				if Current.is_renamed then
+					l_precursor := ancestor.feature_with_name (Current.inherited_name)
+				else
+					l_precursor := ancestor.feature_with_name (Current.name)
+				end
 
 				ancestors := ancestors / ancestor
 			end
@@ -90,6 +96,14 @@ feature {NONE} -- Implementation
 		end
 
 feature -- Status report
+	equal_status (other: like Current): BOOLEAN
+		do
+			Result := (is_deferred and other.is_deferred) or
+					  (is_effective and other.is_effective) or
+					  (is_redefined and other.is_redefined) or
+					  (is_unclassified and other.is_unclassified)
+		end
+
 	is_unclassified: BOOLEAN
 
 	is_deferred: BOOLEAN

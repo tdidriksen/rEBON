@@ -59,36 +59,89 @@ feature -- Access
 
 	interface: MML_SET[TBON_TC_FEATURE]
 			-- What is the set of features that can be called on `Current'?
+		local
+			tuple_set: like rec_interface
+			tuple: TBON_TC_TUPLE[TBON_TC_FEATURE, INTEGER]
 		do
+			create Result.default_create
 			-- Call recursive implementation on empty set
-			Result := rec_interface (create {MML_SET[TBON_TC_FEATURE]}.default_create)
+			from
+				tuple_set := rec_interface (create {MML_SET[TBON_TC_TUPLE[TBON_TC_FEATURE, INTEGER]]}.default_create, 0)
+			until
+				tuple_set.is_empty
+			loop
+				tuple := tuple_set.any_item
+
+				Result := Result & tuple.first
+
+				tuple_set := tuple_set / tuple
+			end
 		end
 
 feature {TBON_TC_CLASS_TYPE} -- Implementation
-	rec_interface (an_accumulator: MML_SET[TBON_TC_FEATURE]): MML_SET[TBON_TC_FEATURE]
+	rec_interface (an_accumulator: like rec_interface; level: INTEGER): MML_SET[TBON_TC_TUPLE[TBON_TC_FEATURE, INTEGER]]
 			-- What is the set of features that can be called on `Current' (recursive implementation)?
+		require
+			level >= 0
 		local
 			l_ancestors: like ancestors
 			l_ancestor: TBON_TC_CLASS_TYPE
 			unique_features: like features
 			acc: like an_accumulator
+			i: INTEGER
 		do
 			unique_features := features.filtered (
-					agent (l_l_feature: TBON_TC_FEATURE; l_feature_set: MML_SET[TBON_TC_FEATURE]): BOOLEAN
+					agent (l_l_feature: TBON_TC_FEATURE; l_feature_set: MML_SET[TBON_TC_TUPLE[TBON_TC_FEATURE, INTEGER]]; current_level: INTEGER): BOOLEAN
 						do
 							Result := not l_feature_set.exists (
-								agent (this_feature, other_feature: TBON_TC_FEATURE): BOOLEAN
+								agent (acc_tuple: TBON_TC_TUPLE[TBON_TC_FEATURE, INTEGER];
+									   other_feature: TBON_TC_FEATURE;
+									   l_current_level: INTEGER): BOOLEAN
+									local
+										acc_feature: TBON_TC_FEATURE
+										acc_level: INTEGER
 									do
-										Result := this_feature.name ~ other_feature.name
-									end (?, l_l_feature)
+										acc_feature := acc_tuple.first
+										acc_level := acc_tuple.second
+										-- If Result is True, l_l_feature will not be in unique_features
+										-- acc_feature is in accumulator, other_feature is tested for inclusion
+										Result := (acc_feature.name ~ other_feature.name) or
+											 	  (acc_feature.is_renamed implies acc_feature.inherited_name ~ other_feature.name)
+										if Result then -- Names are equal
+											if acc_level = l_current_level and not (acc_feature.inherited_name ~ other_feature.name) then
+												Result := False
+													-- If name and level is equal, include.
+													-- Duplicate names will be found in type checker.
+											elseif acc_level < l_current_level and acc_feature.enclosing_class.conforms_to (other_feature.enclosing_class) then
+												Result := True
+													-- Never include a feature that is higher up
+													-- in the same inheritance hierarchy than one we already know of.
+											elseif acc_level < l_current_level then
+												Result := False
+													-- If two features have the same name,
+													-- but are not part of the same inheritance hierarchy,
+													-- they are in effect two different features.
+											end
+										end
+
+									end (?, l_l_feature, current_level)
 							)
-						end (?, an_accumulator)
+						end (?, an_accumulator, level)
 				)
 
+			acc := an_accumulator
+			from
+				i := 1
+			until
+				i > unique_features.array.count
+			loop
+				acc := acc & (create {TBON_TC_TUPLE[TBON_TC_FEATURE, INTEGER]}.make (unique_features.array[i], level))
+				i := i + 1
+			end
+
 			if ancestors.is_empty then
-				Result := an_accumulator + unique_features
+				Result := acc
 			else
-				acc := an_accumulator + unique_features
 				from
 					l_ancestors := ancestors.twin
 				until
@@ -96,7 +149,7 @@ feature {TBON_TC_CLASS_TYPE} -- Implementation
 				loop
 					l_ancestor := l_ancestors.any_item
 
-					Result := Result + l_ancestor.rec_interface (acc)
+					Result := Result + l_ancestor.rec_interface (acc, level + 1)
 
 					l_ancestors := l_ancestors / l_ancestor
 				end

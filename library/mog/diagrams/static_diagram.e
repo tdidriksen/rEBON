@@ -74,6 +74,12 @@ feature -- Status report
 			Result := my_comment /= Void and then not my_comment.is_empty
 		end
 
+	has_components: BOOLEAN
+			-- Does `Current' have a comment?
+		do
+			Result := my_components /= Void and then not my_components.is_empty
+		end
+
 	has_name: BOOLEAN
 			-- Does `Current' have a name?
 		do
