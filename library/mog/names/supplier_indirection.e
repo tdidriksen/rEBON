@@ -1,5 +1,5 @@
 note
-	description: "Objects that..."
+	description: "A supplier indirection."
 	author: "Joseph R. Kiniry <kiniry@kindsoftware.com>"
 	date: "$Date: 2005/12/21 14:06:18 $"
 	revision: "$Revision: 1.2 $"

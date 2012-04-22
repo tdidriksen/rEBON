@@ -110,6 +110,10 @@ feature {NONE} -- Contexts
 
 	unresolved_features: MML_SET[TBON_TC_FEATURE]
 
+	unresolved_inheritance_relations: LIST[INHERITANCE_RELATION]
+
+	unresolved_static_references: LIST[STATIC_REF]
+
 feature -- Status report
 	first_phase: BOOLEAN
 			-- Is the type checker in the first phase?
@@ -379,6 +383,7 @@ feature -- Type checking, general
 			elseif second_phase then
 				Result := Result and check_structure (informal_type_context)
 				Result := Result and check_structure (formal_type_context)
+				Result := Result and resolve_static_references
 				if not errors.is_empty then
 					print_error_messages_to_stderr
 					Result := False
@@ -516,6 +521,33 @@ feature -- Type checking, general
 
 				iteration_set := iteration_set / l_feature
 			end
+		end
+
+	resolve_inheritance_relations: BOOLEAN
+			-- Resolve inheritance relations with respect to inheritance strucure.
+		do
+			Result := unresolved_inheritance_relations.for_all (
+				agent (relation: INHERITANCE_RELATION): BOOLEAN
+					do
+						Result := attached {TBON_TC_CLASS_TYPE} type_with_name (relation.child.class_name, formal_type_context) as child and then
+								  attached {TBON_TC_CLASS_TYPE} type_with_name (relation.parent.class_name, formal_type_context) as parent and then
+								  child.conforms_to (parent)
+						if not Result then
+							add_error (err_code_class_does_not_inherit_from_class, err_class_does_not_inherit_from_class (relation.child.class_name, relation.parent.class_name))
+						end
+					end
+			)
+		end
+
+	resolve_static_references: BOOLEAN
+			-- Resolve static references with respect to the cluster structure.
+		do
+			Result := unresolved_static_references.for_all (
+				agent (ref: STATIC_REF): BOOLEAN
+					do
+						Result := check_static_reference (ref)
+					end
+			)
 		end
 
 feature -- Type checking, informal
@@ -1329,14 +1361,89 @@ feature -- Type checking, static diagrams
 			(second_phase and Result) implies class_name_exists_in_context (an_element.class_name, formal_type_context)
 		end
 
+	check_client_entities (an_element: CLIENT_ENTITIES; client_class: TBON_TC_CLASS_TYPE; relation: CLIENT_RELATION): BOOLEAN
+			-- Does `an_element' type check as a type CLIENT_ENTITIES?
+		note
+			rule: "[
+				In an environment where each entity of `an_element' is a feature name,
+				a supplier indirection or a parent indirection,
+				`an_element' is OK.
+				]"
+		do
+			Result := True
+			from
+				an_element.start
+			until
+				an_element.after
+			loop
+				Result := Result and check_client_entity (an_element.item_for_iteration, client_class, relation)
+			end
+		end
+
+	check_client_entity (an_element: CLIENT_ENTITY; client_class: TBON_TC_CLASS_TYPE; relation: CLIENT_RELATION): BOOLEAN
+			-- Does `an_element' type check as a type CLIENT_ENTITY?
+		note
+			rule: "[
+				In an environment where `an_element' is a feature name,
+				a supplier indirection or a parent indirection,
+				`an_element' is OK.
+				]"
+		do
+			if attached {FEATURE_NAME} an_element as feature_name then
+				Result := check_feature_name (feature_name, client_class)
+
+			elseif attached {SUPPLIER_INDIRECTION} an_element as supplier_indirection then
+
+			elseif attached {PARENT_INDIRECTION} an_element as parent_indirection then
+				--parent_indirection
+			else
+				Result := False
+			end
+
+		ensure
+			feature_name_is_in_enclosing_class:
+				(second_phase and Result) implies (attached {FEATURE_NAME} an_element as l_feature_name implies
+					client_class.feature_with_name (l_feature_name.feature_name) /= Void)
+		end
+
 	check_client_relation (an_element: CLIENT_RELATION): BOOLEAN
 			-- Does `an_element' type check as a type CLIENT_RELATION?
 		note
 			rule: "[
-				In an environment where...
+				In an environment where client and supplier references are OK,
+				and the client entities of `an_element' are OK,
+				`an_element' is OK.
 				]"
 		do
-			check false end
+			if first_phase then
+
+				Result := True
+					-- Nothing to be done for first phase.
+
+			elseif second_phase then
+
+				Result := True
+
+				-- Mark static refs as unresolved
+				unresolved_static_references.extend (an_element.client)
+				unresolved_static_references.extend (an_element.supplier)
+
+				if attached {TBON_TC_CLASS_TYPE} type_with_name (an_element.client.class_name, formal_type_context) as client_class then
+					-- Check client entities
+					Result := Result and check_client_entities (an_element.client_entities, client_class, an_element)
+				else
+					add_error (err_code_class_does_not_exist, err_class_does_not_exist (an_element.client.class_name))
+					Result := False
+				end
+
+				-- Check multiplicity for shared type mark
+				if an_element.has_type_mark and then an_element.type_mark.shared then
+					Result := Result and check_multiplicity (an_element.type_mark.multiplicity)
+				end
+
+			else
+				Result := False
+			end
 		end
 
 	check_cluster_specification (an_element: CLUSTER_SPECIFICATION): BOOLEAN
@@ -1615,6 +1722,7 @@ feature -- Type checking, static diagrams
 					an_element.forth
 				end
 
+				-- Check that types match precursor argument types
 				l_precursor := enclosing_feature.nearest_precursor
 				if l_precursor /= Void then
 					Result := feature_arguments_conform (enclosing_feature, l_precursor)
@@ -1623,6 +1731,24 @@ feature -- Type checking, static diagrams
 					end
 				else
 					Result := False
+				end
+
+				-- Check that prefix feature has exactly one argument
+				if enclosing_feature.is_prefix then
+					if not (enclosing_feature.arguments.count = 1) then
+						-- Error - prefix feature can only have one argument
+						add_error (err_code_prefix_feature_must_have_one_argument, err_prefix_feature_must_have_one_argument (enclosing_feature.name, enclosing_class.name))
+						Result := False
+					end
+				end
+
+				-- Check that infix feature has exactly two arguments
+				if enclosing_feature.is_infix then
+					if not (enclosing_feature.arguments.count = 2) then
+						-- Error - infix feature must have two arguments
+						add_error (err_code_infix_feature_must_have_two_arguments, err_infix_feature_must_have_two_arguments (enclosing_feature.name, enclosing_class.name))
+						Result := False
+					end
 				end
 
 			end
@@ -1678,6 +1804,34 @@ feature -- Type checking, static diagrams
 
 			end
 		end
+
+	check_feature_name (an_element: FEATURE_NAME; enclosing_class: TBON_TC_CLASS_TYPE): BOOLEAN
+			-- Does `an_element' type check as a type FEATURE_NAME?
+		note
+			rule: "[
+				In an environment where `an_element' exists in enclosing class,
+				`an_element' is OK.
+				]"
+		do
+			if first_phase then
+				Result := True
+					-- Nothing to do for first phase.
+
+			elseif second_phase then
+
+				Result := enclosing_class.feature_with_name (an_element.feature_name) /= Void
+
+				if not Result then
+					add_error (err_code_feature_not_defined_in_class, err_feature_not_defined_in_class (an_element.feature_name, enclosing_class.name))
+				end
+			else
+				Result := False
+			end
+		ensure
+			feature_exists_in_class:
+			(second_phase and Result) implies enclosing_class.feature_with_name (an_element.feature_name) /= Void
+		end
+
 
 	check_feature_specification (an_element: FEATURE_SPECIFICATION; selective_export: CLASS_NAME_LIST; enclosing_class: TBON_TC_CLASS_TYPE): BOOLEAN
 			-- Does `an_element' type check as a type FEATURE_SPECIFICATION?
@@ -2071,7 +2225,7 @@ feature -- Type checking, static diagrams
 
 				if enclosing_class.has_generic_name (an_element) then
 					elem_index := enclosing_class.index_of_generic_name (an_element)
-					if elem_index < class_arg_no or class_arg_no < 1 then
+					if elem_index < class_arg_no and class_arg_no > 0 then
 						-- Check that formal generic name participates consistently in bound
 						if not enclosing_type.generics[type_arg_no].is_valid_actual_type (enclosing_class.generics[elem_index].bounding_type) then
 							-- Error - Bound of formal generic name does not conform to bound of enclosing type
@@ -2135,6 +2289,82 @@ feature -- Type checking, static diagrams
 			end
 		end
 
+	check_generic_indirection (an_element: GENERIC_INDIRECTION; enclosing_class: TBON_TC_CLASS_TYPE): BOOLEAN
+			-- Does `an_element' type check as a type PARENT_INDIRECTION?
+		note
+			rule: "[
+				In an environment where is a formal generic name or a named indirection,
+				`an_element' is OK.
+				]"
+		do
+			if first_phase then
+
+				Result := True
+					-- Nothing to do for first phase.
+
+			elseif second_phase then
+
+				Result := True
+
+				if an_element.is_formal_generic_name then
+					Result := check_formal_generic_name (an_element.formal_generic_name, enclosing_class, Void, 0, 0)
+				elseif an_element.is_named_indirection then
+					Result := check_named_indirection (an_element.named_indirection)
+				end
+
+			else
+				Result := False
+			end
+		end
+
+	check_indirection_list (an_element: INDIRECTION_LIST; indirection: NAMED_INDIRECTION): BOOLEAN
+			-- Does `an_element' type check as a type ASSERTION_CLAUSE_LIST?
+		note
+			rule: "[
+				In an environment where each element of `an_element' is either named indirection
+				or a unspecified/ellipses element,
+				`an_element' is OK.
+				]"
+		local
+			arg_no: INTEGER
+		do
+			if first_phase then
+				Result := True
+						-- Nothing to be done for first phase.
+
+			elseif second_phase then
+
+				Result := True
+
+				from
+					an_element.start
+				until
+					an_element.after
+				loop
+					if not an_element.item_for_iteration.ellipses then
+						Result := check_named_indirection (an_element.item_for_iteration.named_indirection)
+						-- Get enclosing class
+						if Result and indirection.has_class_name and then attached {TBON_TC_CLASS_TYPE} type_with_name (indirection.class_name, formal_type_context) as enclosing_class then
+							-- Get indirection class
+							if attached {TBON_TC_CLASS_TYPE} type_with_name (an_element.item_for_iteration.class_name, formal_type_context) as indirection_class then
+								-- Check that type conforms to bound of type parameter of enclosing type.
+								if not enclosing_class.generics[arg_no].is_valid_actual_type (indirection_class) then
+									add_error (err_code_actual_type_does_not_match_bounding_type, err_actual_type_does_not_match_bounding_type (enclosing_class.generics[arg_no].formal_generic_name, indirection_class.name))
+									Result := False
+								end
+							end
+						end
+					end
+						-- If current item is an ellipses placeholder, do nothing.
+					arg_no := arg_no + 1
+					an_element.forth
+				end
+
+			else
+				Result := False
+			end
+		end
+
 	check_inheritance_relation (an_element: INHERITANCE_RELATION): BOOLEAN
 			-- Does `an_element' type check as a type INHERITANCE_RELATION?
 		note
@@ -2152,8 +2382,9 @@ feature -- Type checking, static diagrams
 
 				Result := True
 
-				Result := check_static_reference (an_element.child) and Result
-				Result := check_static_reference (an_element.parent) and Result
+				unresolved_static_references.extend (an_element.child)
+				unresolved_static_references.extend (an_element.parent)
+				unresolved_inheritance_relations.extend (an_element)
 				Result := check_multiplicity (an_element.multiplicity) and Result
 
 			else
@@ -2174,6 +2405,52 @@ feature -- Type checking, static diagrams
 			end
 		ensure
 			Result implies an_element > 0
+		end
+
+	check_named_indirection (an_element: NAMED_INDIRECTION): BOOLEAN
+			-- Does `an_element' type check as a type NAMED_INDIRECTION?
+		note
+			rule: "[
+				In an environment where the class name of `an_element' exists in the environment,
+				and the number of indirection elements match the parameters of the class name,
+				`an_element' is OK.
+				]"
+		do
+			if first_phase then
+
+				Result := True
+						-- Nothing to be done for first phase.
+
+			elseif second_phase then
+
+				Result := True
+
+				if an_element.has_class_name then
+					-- Check that class name exists
+					if attached {TBON_TC_CLASS_TYPE} type_with_name (an_element.class_name, formal_type_context) as class_type then
+						if an_element.has_indirection_list then
+							if not (class_type.generics.count = an_element.indirection_list.count) then
+								add_error (err_code_number_of_parameters_in_named_indirection_does_not_match_number_of_type_parameters_in_class,
+											err_number_of_parameters_in_named_indirection_does_not_match_number_of_type_parameters_in_class (an_element.class_name, class_type.name))
+								Result := False
+							end
+						end
+					else
+						add_error (err_code_class_does_not_exist, err_class_does_not_exist (an_element.class_name))
+						Result := False
+					end
+				end
+
+				if an_element.has_indirection_list then
+					Result := Result and check_indirection_list (an_element.indirection_list, an_element)
+				end
+
+			else
+				Result := False
+			end
+		ensure
+			class_name_exists:
+			(second_phase and Result) implies attached {TBON_TC_CLASS_TYPE} type_with_name (an_element.class_name, formal_type_context)
 		end
 
 	check_selective_export (an_element: CLASS_NAME_LIST; enclosing_class: TBON_TC_CLASS_TYPE): BOOLEAN
@@ -2297,6 +2574,8 @@ feature -- Type checking, static diagrams
 				Result := check_inheritance_relation (inheritance_relation)
 			elseif attached {CLIENT_RELATION} an_element as client_relation then
 				Result := check_client_relation (client_relation)
+			else
+				Result := False
 			end
 		end
 
@@ -2308,8 +2587,50 @@ feature -- Type checking, static diagrams
 				and the cluster prefix of `an_element' is consistent with the cluster hierarchy,
 				`an_element' is OK.
 				]"
+		local
+			cluster_index: INTEGER
+			current_cluster: TBON_TC_CLUSTER_TYPE
 		do
-			check false end
+			if first_phase then
+
+				Result := True
+					-- Nothing to be done for first phase.
+
+			elseif second_phase then
+
+				Result := True
+
+				if attached {TBON_TC_CLASS_TYPE} type_with_name (an_element.class_name, formal_type_context) as class_type then
+
+					from
+						cluster_index := an_element.clusters_count
+						current_cluster := class_type.cluster
+					until
+						cluster_index < 1 or current_cluster = Void
+					loop
+						if attached {TBON_TC_CLUSTER_TYPE} type_with_name (an_element.cluster (cluster_index), formal_type_context) as cluster_type then
+							if not (current_cluster.name ~ an_element.cluster (cluster_index)) then
+								-- Error - cluster in static reference does not match cluster for class exist
+								Result := False
+							end
+						else
+							-- Error - cluster in prefix does not exist
+							Result := False
+						end
+
+						current_cluster := current_cluster.parent
+						cluster_index := cluster_index - 1
+					end
+
+				else
+					-- Error - class does not exist
+					add_error (err_code_class_does_not_exist, err_class_does_not_exist (an_element.class_name))
+					Result := False
+				end
+
+			else
+				Result := False
+			end
 		end
 
 

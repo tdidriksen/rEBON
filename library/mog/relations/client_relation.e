@@ -123,6 +123,10 @@ feature -- Output
 		end
 
 feature -- Status report
+	has_type_mark: BOOLEAN
+		do
+			Result := my_type_mark /= Void
+		end
 
 	is_part_of (other: like Current): BOOLEAN
 		do

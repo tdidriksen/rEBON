@@ -89,6 +89,15 @@ feature -- Error messages
 			Result.append_string (" was specified, but never defined.")
 		end
 
+	err_class_does_not_inherit_from_class (a_child_name, a_parent_name: STRING): STRING
+		do
+			Result := "Class "
+			Result.append_string (a_child_name.string)
+			Result.append_string (" does not inherit from ")
+			Result.append_string (a_parent_name.string)
+			Result.append_string (" in its specification.")
+		end
+
 	err_class_exists (a_name: STRING): STRING
 			-- Error message for when a class is defined more than once.
 		do
@@ -216,6 +225,15 @@ feature -- Error messages
 			Result.append_string (", but class is not generic.")
 		end
 
+	err_feature_not_defined_in_class (a_feature_name, a_class_name: STRING): STRING
+		do
+			Result := "Feature "
+			Result.append_string (a_feature_name.string)
+			Result.append_string (" is not specified in class ")
+			Result.append_string (a_class_name.string)
+			Result.append_string (".")
+		end
+
 	err_feature_type_does_not_exist (a_feature_name, a_type_name: STRING): STRING
 		do
 			Result := "Feature "
@@ -265,6 +283,15 @@ feature -- Error messages
 			Result.append_string (".")
 		end
 
+	err_infix_feature_must_have_two_arguments (a_feature_name, a_class_name: STRING): STRING
+		do
+			Result := "Infix feature "
+			Result.append_string (a_feature_name.string)
+			Result.append_string (" of class ")
+			Result.append_string (a_class_name.string)
+			Result.append_string (" must have exactly two arguments.")
+		end
+
 	err_involved_class_does_not_exist (a_chart_name, an_entry_name, a_class_name: STRING): STRING
 		do
 			Result := "Specified class "
@@ -285,6 +312,15 @@ feature -- Error messages
 			Result.append_string (" is declared as redefined or deferred, but has no precursor.")
 		end
 
+	err_number_of_parameters_in_named_indirection_does_not_match_number_of_type_parameters_in_class (a_class_name, a_type_name: STRING): STRING
+		do
+			Result := "The number of parameters in named indirection involving class "
+			Result.append_string (a_class_name.string)
+			Result.append_string (" does not match the number of type parameters in type ")
+			Result.append_string (a_type_name.string)
+			Result.append_string (".")
+		end
+
 	err_number_of_type_parameters_do_not_match (a_class_name, other_class_name: STRING): STRING
 		do
 			Result := "The number of type parameters for classes "
@@ -292,6 +328,15 @@ feature -- Error messages
 			Result.append_string (" and ")
 			Result.append_string (other_class_name.string)
 			Result.append_string (" do not match.")
+		end
+
+	err_prefix_feature_must_have_one_argument (a_feature_name, a_class_name: STRING): STRING
+		do
+			Result := "Prefix feature "
+			Result.append_string (a_feature_name.string)
+			Result.append_string (" of class ")
+			Result.append_string (a_class_name.string)
+			Result.append_string (" must have exactly one argument.")
 		end
 
 	err_selective_export_class_does_not_exist (a_class_name, an_enclosing_class_name: STRING): STRING

@@ -22,6 +22,8 @@ feature -- Initialization
 			a_formal_generic_name /= Void and then not a_formal_generic_name.is_empty
 		do
 			my_formal_generic_name := a_formal_generic_name.twin
+			is_named_indirection := False
+			is_formal_generic_name := True
 		ensure
 			formal_generic_name.is_equal (a_formal_generic_name)
 		end
@@ -32,6 +34,8 @@ feature -- Initialization
 			a_named_indirection /= Void
 		do
 			my_named_indirection := a_named_indirection.twin
+			is_named_indirection := True
+			is_formal_generic_name := False
 		ensure
 			named_indirection.is_equal (a_named_indirection)
 		end
@@ -69,6 +73,13 @@ feature -- Access
 			end
 		end
 
+feature -- Status report
+	is_formal_generic_name: BOOLEAN
+				-- Is `Current' a formal generic name?
+
+	is_named_indirection: BOOLEAN
+			-- Is `Current' a named indirection?
+
 feature -- Output
 
 	bon_out: STRING
@@ -88,5 +99,6 @@ feature {GENERIC_INDIRECTION} -- Implementation
 invariant
 	(my_formal_generic_name /= Void and then not my_formal_generic_name.is_empty) xor
 	my_named_indirection /= Void
+	is_formal_generic_name xor is_named_indirection
 
 end -- class GENERIC_INDIRECTION

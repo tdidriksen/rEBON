@@ -11,7 +11,7 @@ inherit
 
 	HASHABLE
 
-creation
+create
 	make
 
 feature -- Initialization
@@ -57,6 +57,19 @@ feature -- Access
 			else
 				Result := 0
 			end
+		end
+
+feature -- Status report
+	has_class_name: BOOLEAN
+			-- Does this named indirection have a class name?
+		do
+			Result := my_class_name /= Void and then not my_class_name.is_empty
+		end
+
+	has_indirection_list: BOOLEAN
+			-- Does this named indirection have a class name?
+		do
+			Result := my_indirection_list /= Void and then not my_indirection_list.is_empty
 		end
 
 feature -- Output
