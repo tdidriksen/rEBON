@@ -74,14 +74,18 @@ feature -- Status report
 feature -- Element change
 	set_actual_type (an_actual_type: TBON_TC_CLASS_TYPE)
 			-- Set `actual_type' to `an_actual_type'?
-		require
-			is_valid_actual_type (an_actual_type)
 		do
 			actual_type := an_actual_type
 		end
 
+	set_bounding_type (a_class_type: TBON_TC_CLASS_TYPE)
+			-- Set `bounding_type' to `a_class_type'?
+		do
+			bounding_type := a_class_type
+		end
+
 invariant
 	formal_generic_name /= Void
-	actual_type /= Void implies is_valid_actual_type (actual_type)
+	--actual_type /= Void implies is_valid_actual_type (actual_type)
 
 end

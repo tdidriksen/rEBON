@@ -30,6 +30,15 @@ feature -- Type names
 			-- Type name for a STRING type.
 
 feature -- Error messages
+	err_actual_type_does_not_match_bounding_type (a_generic_name, an_actual_type: STRING): STRING
+		do
+			Result := "Type "
+			Result.append_string (an_actual_type.string)
+			Result.append_string (" does not conform to bounding type of type parameter ")
+			Result.append_string (a_generic_name.string)
+			Result.append_string (".")
+		end
+
 	err_ancestor_does_not_exist (a_descendant_name, an_ancestor_name: STRING): STRING
 		do
 			Result := "Specified ancestor "
@@ -227,6 +236,15 @@ feature -- Error messages
 			Result.append_string (", but type does not exist.")
 		end
 
+	err_formal_generic_name_appears_more_than_once (a_generic_name, a_class_name: STRING): STRING
+		do
+			Result := "Formal generic name "
+			Result.append_string (a_generic_name.string)
+			Result.append_string (" appears more than once in definition of class ")
+			Result.append_string (a_class_name.string)
+			Result.append_string (".")
+		end
+
 	err_formal_generic_name_does_not_exist (a_feature_name, a_generic_name, a_class_name: STRING): STRING
 		do
 			Result := "Feature "
@@ -236,6 +254,15 @@ feature -- Error messages
 			Result.append_string (" specifies a generic name ")
 			Result.append_string (a_generic_name.string)
 			Result.append_string (", but the generic name does not exist.")
+		end
+
+	err_formal_generic_name_is_bounded_by_enclosing_class (a_generic_name, a_class_name: STRING): STRING
+		do
+			Result := "Formal generic name "
+			Result.append_string (a_generic_name.string)
+			Result.append_string (" is bounded by its enclosing class ")
+			Result.append_string (a_class_name.string)
+			Result.append_string (".")
 		end
 
 	err_involved_class_does_not_exist (a_chart_name, an_entry_name, a_class_name: STRING): STRING
@@ -256,6 +283,15 @@ feature -- Error messages
 			Result.append_string (" in class ")
 			Result.append_string (a_class_name.string)
 			Result.append_string (" is declared as redefined or deferred, but has no precursor.")
+		end
+
+	err_number_of_type_parameters_do_not_match (a_class_name, other_class_name: STRING): STRING
+		do
+			Result := "The number of type parameters for classes "
+			Result.append_string (a_class_name.string)
+			Result.append_string (" and ")
+			Result.append_string (other_class_name.string)
+			Result.append_string (" do not match.")
 		end
 
 	err_selective_export_class_does_not_exist (a_class_name, an_enclosing_class_name: STRING): STRING

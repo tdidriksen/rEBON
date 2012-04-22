@@ -34,8 +34,21 @@ feature -- Access
 	cluster: TBON_TC_CLUSTER_TYPE
 			-- What cluster is this type in?
 
-	generics: MML_SET[TBON_TC_GENERIC]
+	generics: MML_SEQUENCE[TBON_TC_GENERIC]
 			-- What are the generics of this type?
+
+	index_of_generic_name (a_formal_generic_name: STRING): INTEGER
+			-- What is the index of `a_formal_generic_name' in `generics'?
+		require
+			has_generic_name (a_formal_generic_name)
+		do
+			Result := generics.array.index_satisfying (
+				agent (generic: TBON_TC_GENERIC; a_name: STRING): BOOLEAN
+					do
+						Result := generic.formal_generic_name ~ a_name
+					end
+			)
+		end
 
 	features: MML_SET[TBON_TC_FEATURE]
 
@@ -173,6 +186,14 @@ feature -- Element change
 			features := features & a_feature
 		end
 
+	add_type_parameter (a_generic: TBON_TC_GENERIC)
+			-- Add `a_generic' to `generics'?
+		require
+			not_void: a_generic /= Void
+		do
+			generics := generics & a_generic
+		end
+
 	set_cluster (a_cluster: TBON_TC_CLUSTER_TYPE)
 			-- Set `Current' to be in cluster `a_cluster'?
 		require
@@ -251,7 +272,7 @@ feature -- Status report
 	has_generic_name (a_formal_generic_name: STRING): BOOLEAN
 			-- Is `a_formal_generic_name' one of the generic names of `Current'?
 		do
-			Result := (not generics.is_empty) and then generics.exists (
+			Result := (not generics.is_empty) and then generics.range.exists (
 							agent (generic: TBON_TC_GENERIC; other_formal_name: STRING): BOOLEAN
 								do
 									Result := generic.formal_generic_name ~ other_formal_name

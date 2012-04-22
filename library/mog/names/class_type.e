@@ -10,7 +10,7 @@ class
 inherit
 	HASHABLE
 
-creation
+create
 	make
 
 feature -- Initialization
@@ -62,8 +62,7 @@ feature -- Measurement
 			-- The number of actual generics of `Current'.
 		do
 			if my_actual_generics /= Void then
-				-- Result := my_actual_generics.count
-				check false end
+				Result := my_actual_generics.count
 			else
 				Result := 0
 			end
