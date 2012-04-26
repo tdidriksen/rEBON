@@ -60,13 +60,23 @@ feature -- Initialization
 			create formal_type_context.default_create
 
 			-- Create default value types
-			create boolean_type.make
-			create character_type.make
-			create integer_type.make
-			create real_type.make
-			create string_type.make
+			create boolean_type.make_default_type
+			create character_type.make_default_type
+			create integer_type.make_default_type
+			create real_type.make_default_type
+			create string_type.make_default_type
 			-- Create ANY
 			create any_type.make (any_type_name)
+
+			integer_type.add_ancestor (real_type)
+
+			-- Add standard as the set of types that do not need to be in a cluster
+			create exempt_from_structure.default_create
+			exempt_from_structure := exempt_from_structure &
+									 boolean_type & character_type &
+									 integer_type & real_type &
+									 string_type &
+									 any_type
 
 			-- Add default value types to context
 			add_to_informal_type_context (boolean_type)
@@ -83,14 +93,17 @@ feature -- Initialization
 			add_to_formal_type_context (string_type)
 			add_to_formal_type_context (any_type)
 
-			create value_context.default_create
-
 			create {ARRAYED_LIST[STRING]} extended_ids.make (10)
 			extended_ids.compare_objects
 
 			create {ARRAYED_LIST[STRING]} disallowed_names.make (1)
 			disallowed_names.extend (none_type_name)
 			disallowed_names.compare_objects
+
+			create unresolved_features.default_create
+			create {ARRAYED_LIST[TBON_TC_TUPLE[TBON_TC_GENERIC, TBON_TC_CLASS_TYPE]]} unresolved_generics.make (10)
+			create {ARRAYED_LIST[INHERITANCE_RELATION]} unresolved_inheritance_relations.make (10)
+			create {ARRAYED_LIST[STATIC_REF]} unresolved_static_references.make (10)
 		end
 
 
@@ -101,14 +114,19 @@ feature {NONE} -- Contexts
 	formal_type_context: MML_SET[TBON_TC_TYPE]
 			-- What is the current formal type context?
 
-	value_context: MML_SET[MML_RELATION[STRING, TBON_TC_TYPE]]
-			-- What is the current value context?
-
 	disallowed_names: LIST[STRING]
+
+	enumerable_types: MML_SET[TBON_TC_CLASS_TYPE]
+
+	exempt_from_structure: MML_SET[TBON_TC_CLASS_TYPE]
 
 	extended_ids: LIST[STRING]
 
+	variable_context: LIST[TBON_TC_TUPLE[STRING, TBON_TC_CLASS_TYPE]]
+
 	unresolved_features: MML_SET[TBON_TC_FEATURE]
+
+	unresolved_generics: LIST[TBON_TC_TUPLE[TBON_TC_GENERIC, TBON_TC_CLASS_TYPE]]
 
 	unresolved_inheritance_relations: LIST[INHERITANCE_RELATION]
 
@@ -155,6 +173,15 @@ feature {NONE} -- Auxiliary features, contexts
 			informal_type_context := informal_type_context & a_type
 		end
 
+	names_are_equal (a_type: TBON_TC_TYPE; a_name: STRING): BOOLEAN
+			-- Is the name of `a_type' equal to `a_name'? (Object equality)
+		require
+			type_not_void: a_type /= Void
+			name_not_void: a_name /= Void
+		do
+			Result := a_type.name ~ a_name
+		end
+
 	type_with_name (a_name: STRING; a_type_context: MML_SET[TBON_TC_TYPE]): TBON_TC_TYPE
 			-- What type in `type_context' has the name `a_name'?
 		--require
@@ -175,13 +202,37 @@ feature {NONE} -- Auxiliary features, contexts
 			names_are_equal: Result /= Void implies names_are_equal (Result, a_name)
 		end
 
-	names_are_equal (a_type: TBON_TC_TYPE; a_name: STRING): BOOLEAN
-			-- Is the name of `a_type' equal to `a_name'? (Object equality)
+	type_of_variable (a_var_name: STRING): TBON_TC_CLASS_TYPE
+			-- What is the type of the variable identified by `a_var_name'?
+			-- Void if no variable with the given name is present in the context.
 		require
-			type_not_void: a_type /= Void
-			name_not_void: a_name /= Void
+			a_var_name /= Void and then not a_var_name.is_empty
+		local
+			relation: TBON_TC_TUPLE[STRING, TBON_TC_CLASS_TYPE]
 		do
-			Result := a_type.name ~ a_name
+			Result := Void
+			relation := variable_type_relation_from_name (a_var_name)
+			if relation /= Void then
+				Result := relation.second
+			end
+		end
+
+	variable_type_relation_from_name (a_var_name: STRING): TBON_TC_TUPLE[STRING, TBON_TC_CLASS_TYPE]
+			-- What is the variable-type relation for the variable identified by `a_var_name'?
+		require
+			a_var_name /= Void and then not a_var_name.is_empty
+		do
+			Result := Void
+			from
+				variable_context.start
+			until
+				variable_context.exhausted or Result /= Void
+			loop
+				if variable_context.item.first ~ a_var_name then
+					Result := variable_context.item
+				end
+				variable_context.forth
+			end
 		end
 
 feature -- Auxiliary features, type checking
@@ -244,6 +295,53 @@ feature -- Auxiliary features, type checking
 				end
 			else
 				Result := False
+			end
+		end
+
+	instantiated_type (a_type: TBON_TC_CLASS_TYPE; a_class_type: CLASS_TYPE; enclosing_class: TBON_TC_CLASS_TYPE): TBON_TC_CLASS_TYPE
+			-- Instantiate `a_type' with actual parameters from `a_class_type'.
+		require
+			a_type /= Void
+			a_class_type /= Void
+			enclosing_class /= Void
+		local
+			type_instance: TBON_TC_CLASS_TYPE
+			type_arg_no: INTEGER
+			success: BOOLEAN
+		do
+			if a_type.generics.count > 0 and a_class_type.actual_generic_count > 0 then
+				-- If type has arguments, assign copy of type to feature in order to not overwrite type in context.
+				type_instance := a_type.deep_twin
+				from
+					a_class_type.actual_generics.start
+					type_arg_no := 1
+					success := True
+				until
+					a_class_type.actual_generics.after
+				loop
+					-- Check class type
+					if a_class_type.actual_generics.item_for_iteration.is_class_type then
+
+						success := success and check_class_type (a_class_type.actual_generics.item_for_iteration.class_type, enclosing_class, type_instance, 0, type_arg_no)
+
+					elseif a_class_type.actual_generics.item_for_iteration.is_formal_generic_name then
+
+						success := success and check_formal_generic_name (a_class_type.actual_generics.item_for_iteration.formal_generic_name, enclosing_class, type_instance, 0, type_arg_no)
+
+					end
+
+					type_arg_no := type_arg_no + 1
+					a_class_type.actual_generics.forth
+				end
+
+				if success then
+					Result := type_instance
+				else
+					Result := a_type
+				end
+
+			else
+				Result := a_type
 			end
 		end
 
@@ -379,9 +477,13 @@ feature -- Type checking, general
 					Result := False
 				end
 
+				-- Resolve generics
+				Result := Result and resolve_generics
+
 				Result := Result and check_bon_specification (a_bon_spec)
 			elseif second_phase then
 				Result := Result and check_structure (informal_type_context)
+				-- Formal structure should be different!
 				Result := Result and check_structure (formal_type_context)
 				Result := Result and resolve_static_references
 				if not errors.is_empty then
@@ -445,7 +547,8 @@ feature -- Type checking, general
 			loop
 				type := types.any_item
 
-				if attached {TBON_TC_CLASS_TYPE} type as class_type then
+				if attached {TBON_TC_CLASS_TYPE} type as class_type and then
+					not exempt_from_structure.exists (agent (a_class, other_class: TBON_TC_CLASS_TYPE): BOOLEAN do Result := a_class |=| other_class end (?, class_type)) then
 					-- Check that class is in a cluster
 					if class_type.cluster = Void then
 						add_error (err_code_class_not_in_cluster, err_class_not_in_cluster (class_type.name))
@@ -520,6 +623,34 @@ feature -- Type checking, general
 				end
 
 				iteration_set := iteration_set / l_feature
+			end
+		end
+
+	resolve_generics: BOOLEAN
+			-- Resolve generics with respect to class names in context.
+		do
+			Result := True
+					-- If no generics are present in system, it should not fail.
+			from
+				unresolved_generics.start
+			until
+				unresolved_generics.after
+			loop
+				Result := not formal_type_context.exists (
+					agent (type: TBON_TC_CLASS_TYPE; generic: TBON_TC_GENERIC): BOOLEAN
+						do
+							Result := type.name ~ generic.formal_generic_name
+						end (?, unresolved_generics.item.first)
+				)
+
+				if Result then
+					unresolved_generics.item.second.add_type_parameter (unresolved_generics.item.first)
+				else
+					add_error (err_code_formal_generic_name_has_same_name_as_class, err_formal_generic_name_has_same_name_as_class (unresolved_generics.item.first.formal_generic_name, unresolved_generics.item.second.name))
+					Result := False
+				end
+
+				unresolved_generics.forth
 			end
 		end
 
@@ -1112,7 +1243,7 @@ feature -- Type checking, static diagrams
 
 				-- Check invariant
 				if an_element.class_invariant_count > 0 then
-					Result := check_assertion (an_element.class_invariant, enclosing_class)
+					Result := check_assertion (an_element.class_invariant, enclosing_class, Void)
 				end
 
 			else
@@ -1395,7 +1526,7 @@ feature -- Type checking, static diagrams
 			elseif attached {SUPPLIER_INDIRECTION} an_element as supplier_indirection then
 
 			elseif attached {PARENT_INDIRECTION} an_element as parent_indirection then
-				--parent_indirection
+				Result := check_generic_indirection (parent_indirection, client_class)
 			else
 				Result := False
 			end
@@ -1403,7 +1534,7 @@ feature -- Type checking, static diagrams
 		ensure
 			feature_name_is_in_enclosing_class:
 				(second_phase and Result) implies (attached {FEATURE_NAME} an_element as l_feature_name implies
-					client_class.feature_with_name (l_feature_name.feature_name) /= Void)
+					client_class.feature_with_name (l_feature_name.feature_name, l_feature_name.is_prefix, l_feature_name.is_infix) /= Void)
 		end
 
 	check_client_relation (an_element: CLIENT_RELATION): BOOLEAN
@@ -1571,7 +1702,7 @@ feature -- Type checking, static diagrams
 				)
 		end
 
-	check_contract_clause (an_element: CONTRACT_CLAUSE; enclosing_class: TBON_TC_CLASS_TYPE): BOOLEAN
+	check_contract_clause (an_element: CONTRACT_CLAUSE; enclosing_class: TBON_TC_CLASS_TYPE; enclosing_feature: TBON_TC_FEATURE): BOOLEAN
 			-- Does `an_element' type check as a type CONTRACT_CLAUSE?
 		note
 			rule: "[
@@ -1581,10 +1712,10 @@ feature -- Type checking, static diagrams
 		do
 			Result := True
 			if an_element.has_precondition then
-				Result := check_assertion (an_element.precondition, enclosing_class) and Result
+				Result := check_assertion (an_element.precondition, enclosing_class, enclosing_feature) and Result
 			end
 			if an_element.has_postcondition then
-				Result := check_assertion (an_element.postcondition, enclosing_class) and Result
+				Result := check_assertion (an_element.postcondition, enclosing_class, enclosing_feature) and Result
 			end
 		end
 
@@ -1601,6 +1732,7 @@ feature -- Type checking, static diagrams
 			if extended_ids.has (an_element) then
 				add_warning (warn_code_extended_id_exists, warn_extended_id_exists (an_element))
 			end
+			extended_ids.extend (an_element)
 		end
 
 	check_feature_arguments (an_element: FEATURE_ARGUMENT_LIST; enclosing_feature: TBON_TC_FEATURE; enclosing_class: TBON_TC_CLASS_TYPE): BOOLEAN
@@ -1618,7 +1750,7 @@ feature -- Type checking, static diagrams
 			t_type: TBON_TC_CLASS_TYPE
 			seen_argument_names: LIST[STRING]
 			l_precursor: TBON_TC_FEATURE
-			type_arg_no: INTEGER
+			type_instance: TBON_TC_CLASS_TYPE
 		do
 			Result := True
 			if first_phase then
@@ -1630,12 +1762,22 @@ feature -- Type checking, static diagrams
 				from an_element.start until an_element.after loop
 					argument := an_element.item_for_iteration
 
-					-- Check for duplicate argument names
-					if seen_argument_names.has (argument.identifiers.item_for_iteration) then
-						add_error (err_code_duplicate_argument_name, err_duplicate_argument_name (argument.identifiers.item_for_iteration, enclosing_feature.name, enclosing_class.name))
-						Result := False
+					from argument.identifiers.start until argument.identifiers.after
+					loop
+						-- Check for duplicate argument names
+						if seen_argument_names.has (argument.identifiers.item_for_iteration) then
+							add_error (err_code_duplicate_argument_name, err_duplicate_argument_name (argument.identifiers.item_for_iteration, enclosing_feature.name, enclosing_class.name))
+							Result := False
+						end
+						seen_argument_names.extend (argument.identifiers.item_for_iteration.string)
+
+						if argument.identifiers.item_for_iteration ~ enclosing_feature.name then
+							add_error (err_code_argument_has_same_name_as_feature, err_argument_has_same_name_as_feature (argument.identifiers.item_for_iteration, enclosing_feature.name, enclosing_class.name))
+							Result := False
+						end
+
+						argument.identifiers.forth
 					end
-					seen_argument_names.extend (argument.identifiers.item_for_iteration.string)
 
 					--  Argument is a class type
 					if argument.type.is_class_type then
@@ -1691,28 +1833,7 @@ feature -- Type checking, static diagrams
 						-- Check type of argument
 						if l_argument.has_type and then not l_argument.type.generics.is_empty then
 							if an_element.item_for_iteration.type.is_class_type then
-								-- If type has arguments, assign copy of type to feature in order to not overwrite type in context.
-								l_argument.set_type (l_argument.type.deep_twin)
-								from
-									an_element.item_for_iteration.type.class_type.actual_generics.start
-									type_arg_no := 1
-								until
-									an_element.item_for_iteration.type.class_type.actual_generics.after
-								loop
-									-- Check class type
-									if an_element.item_for_iteration.type.class_type.actual_generics.item_for_iteration.is_class_type then
-
-										Result := Result and check_class_type (an_element.item_for_iteration.type.class_type.actual_generics.item_for_iteration.class_type, enclosing_class, l_argument.type, 0, type_arg_no)
-
-									elseif an_element.item_for_iteration.type.class_type.actual_generics.item_for_iteration.is_formal_generic_name then
-
-										Result := Result and check_formal_generic_name (an_element.item_for_iteration.type.class_type.actual_generics.item_for_iteration.formal_generic_name, enclosing_class, l_argument.type, 0, type_arg_no)
-
-									end
-									type_arg_no := type_arg_no + 1
-
-									an_element.item_for_iteration.type.class_type.actual_generics.forth
-								end
+								type_instance := instantiated_type (l_argument.type, an_element.item_for_iteration.type.class_type, enclosing_class)
 							end
 						end
 
@@ -1727,26 +1848,17 @@ feature -- Type checking, static diagrams
 				if l_precursor /= Void then
 					Result := feature_arguments_conform (enclosing_feature, l_precursor)
 					if not Result then
-						add_error (err_code_argument_types_does_not_match_precursor, err_argument_types_does_not_match_precursers (enclosing_feature.name, l_precursor.name, enclosing_class.name))
+						add_error (err_code_argument_types_do_not_match_precursor, err_argument_types_do_not_match_precursor (enclosing_feature.name, l_precursor.name, enclosing_class.name))
 					end
 				else
 					Result := False
 				end
 
-				-- Check that prefix feature has exactly one argument
-				if enclosing_feature.is_prefix then
-					if not (enclosing_feature.arguments.count = 1) then
-						-- Error - prefix feature can only have one argument
-						add_error (err_code_prefix_feature_must_have_one_argument, err_prefix_feature_must_have_one_argument (enclosing_feature.name, enclosing_class.name))
-						Result := False
-					end
-				end
-
-				-- Check that infix feature has exactly two arguments
+				-- Check that infix feature has exactly one argument
 				if enclosing_feature.is_infix then
-					if not (enclosing_feature.arguments.count = 2) then
+					if not (enclosing_feature.arguments.count = 1) then
 						-- Error - infix feature must have two arguments
-						add_error (err_code_infix_feature_must_have_two_arguments, err_infix_feature_must_have_two_arguments (enclosing_feature.name, enclosing_class.name))
+						add_error (err_code_infix_feature_must_have_one_argument, err_infix_feature_must_have_one_argument (enclosing_feature.name, enclosing_class.name))
 						Result := False
 					end
 				end
@@ -1819,7 +1931,12 @@ feature -- Type checking, static diagrams
 
 			elseif second_phase then
 
-				Result := enclosing_class.feature_with_name (an_element.feature_name) /= Void
+				Result := enclosing_class.interface.exists (
+					agent (l_feature: TBON_TC_FEATURE; l_name: STRING): BOOLEAN
+						do
+							Result := l_feature.name ~ l_name
+						end (?, an_element.feature_name)
+				)
 
 				if not Result then
 					add_error (err_code_feature_not_defined_in_class, err_feature_not_defined_in_class (an_element.feature_name, enclosing_class.name))
@@ -1829,7 +1946,7 @@ feature -- Type checking, static diagrams
 			end
 		ensure
 			feature_exists_in_class:
-			(second_phase and Result) implies enclosing_class.feature_with_name (an_element.feature_name) /= Void
+			(second_phase and Result) implies enclosing_class.feature_with_name (an_element.feature_name, an_element.is_prefix, an_element.is_infix) /= Void
 		end
 
 
@@ -1856,7 +1973,7 @@ feature -- Type checking, static diagrams
 			seen_feature_names: LIST[STRING]
 			has_duplicates: BOOLEAN
 
-			type_arg_no: INTEGER
+			type_instance: TBON_TC_CLASS_TYPE
 		do
 			if first_phase then
 
@@ -1900,6 +2017,12 @@ feature -- Type checking, static diagrams
 						selective_export.do_all (agent (class_name: STRING; l_l_feature: TBON_TC_FEATURE) do l_l_feature.selective_export.extend (class_name) end (?, l_feature))
 					end
 
+					-- Check that prefix feature has no arguments
+					if current_feature_name.is_prefix and an_element.has_arguments then
+						-- Error - prefix feature has arguments
+						Result := False
+					end
+
 					-- Check if the type of the feature exists - else, mark it as unresolved
 					if an_element.has_type and then an_element.type.is_class_type then
 
@@ -1941,7 +2064,9 @@ feature -- Type checking, static diagrams
 				end
 
 				-- Check feature arguments
-				Result := check_feature_arguments (an_element.arguments, l_feature, enclosing_class) and Result
+				if Result and an_element.has_arguments then
+					Result := check_feature_arguments (an_element.arguments, l_feature, enclosing_class) and Result
+				end
 
 			elseif second_phase then
 
@@ -1951,29 +2076,13 @@ feature -- Type checking, static diagrams
 					an_element.feature_names.after
 				loop
 					current_feature_name := an_element.feature_names.item_for_iteration
-					l_feature := enclosing_class.feature_with_name (current_feature_name.feature_name)
+					l_feature := enclosing_class.feature_with_name (current_feature_name.feature_name, current_feature_name.is_prefix, current_feature_name.is_infix)
 
 					-- Check type of feature
 					if l_feature.has_type and then not l_feature.type.generics.is_empty then
 						if an_element.type.is_class_type then
-							-- If type has arguments, assign copy of type to feature in order to not overwrite type in context.
-							l_feature.set_type (l_feature.type.deep_twin)
-							from
-								an_element.type.class_type.actual_generics.start
-								type_arg_no := 1
-							until
-								an_element.type.class_type.actual_generics.after
-							loop
-								-- Check class type
-								if an_element.type.class_type.actual_generics.item_for_iteration.is_class_type then
-									Result := Result and check_class_type (an_element.type.class_type.actual_generics.item_for_iteration.class_type, enclosing_class, l_feature.type, 0, type_arg_no)
-								elseif an_element.type.class_type.actual_generics.item_for_iteration.is_formal_generic_name then
-									Result := Result and check_formal_generic_name (an_element.type.class_type.actual_generics.item_for_iteration.formal_generic_name, enclosing_class, l_feature.type, 0, type_arg_no)
-								end
-								type_arg_no := type_arg_no + 1
-
-								an_element.type.class_type.actual_generics.forth
-							end
+							type_instance := instantiated_type (l_feature.type, an_element.type.class_type, enclosing_class)
+							l_feature.set_type (type_instance)
 						end
 					end
 
@@ -2033,7 +2142,9 @@ feature -- Type checking, static diagrams
 					has_duplicates := enclosing_class.interface.exists (
 						agent (set_feature, other_feature: TBON_TC_FEATURE): BOOLEAN
 							do
-								Result := set_feature.name ~ other_feature.name and not (set_feature |=| other_feature)
+								Result := set_feature.name ~ other_feature.name and not (set_feature |=| other_feature) and
+										  (set_feature.is_prefix implies other_feature.is_prefix) and
+										  (set_feature.is_infix implies other_feature.is_infix)
 							end (?, l_feature)
 					)
 					if has_duplicates then
@@ -2046,10 +2157,14 @@ feature -- Type checking, static diagrams
 				-- Check renaming
 
 				-- Check arguments
-				Result := check_feature_arguments (an_element.arguments, l_feature, enclosing_class) and Result
+				if an_element.has_arguments then
+					Result := check_feature_arguments (an_element.arguments, l_feature, enclosing_class) and Result
+				end
 
 				-- Check contract clause
-				Result := check_contract_clause (an_element.contracts, enclosing_class) and Result
+				if an_element.has_contract then
+					Result := check_contract_clause (an_element.contracts, enclosing_class, l_feature) and Result
+				end
 
 			else
 				Result := False
@@ -2059,7 +2174,7 @@ feature -- Type checking, static diagrams
 			(first_phase and Result) implies an_element.feature_names.for_all (
 				agent (l_feature_name: FEATURE_NAME; l_enclosing_class: TBON_TC_CLASS_TYPE): BOOLEAN
 					do
-						Result := l_enclosing_class.feature_with_name (l_feature_name.feature_name) = Void
+						Result := l_enclosing_class.feature_with_name (l_feature_name.feature_name, l_feature_name.is_prefix, l_feature_name.is_infix) = Void
 					end (?, old enclosing_class)
 			)
 
@@ -2067,7 +2182,7 @@ feature -- Type checking, static diagrams
 			(first_phase and Result) implies an_element.feature_names.for_all (
 				agent (l_feature_name: FEATURE_NAME; l_enclosing_class: TBON_TC_CLASS_TYPE): BOOLEAN
 					do
-						Result := l_enclosing_class.feature_with_name (l_feature_name.feature_name) /= Void
+						Result := l_enclosing_class.feature_with_name (l_feature_name.feature_name, l_feature_name.is_prefix, l_feature_name.is_infix) /= Void
 					end (?, enclosing_class)
 			)
 
@@ -2075,8 +2190,8 @@ feature -- Type checking, static diagrams
 			(second_phase and Result) implies an_element.feature_names.for_all (
 				agent (l_feature_name: FEATURE_NAME; l_enclosing_class: TBON_TC_CLASS_TYPE): BOOLEAN
 					do
-						Result := class_name_exists_in_context (l_enclosing_class.feature_with_name (l_feature_name.feature_name).type.name, formal_type_context) xor
-									l_enclosing_class.has_generic_name (l_enclosing_class.feature_with_name (l_feature_name.feature_name).formal_generic_name)
+						Result := class_name_exists_in_context (l_enclosing_class.feature_with_name (l_feature_name.feature_name, l_feature_name.is_prefix, l_feature_name.is_infix).type.name, formal_type_context) xor
+									l_enclosing_class.has_generic_name (l_enclosing_class.feature_with_name (l_feature_name.feature_name, l_feature_name.is_prefix, l_feature_name.is_infix).formal_generic_name)
 					end (?, enclosing_class)
 			)
 
@@ -2087,9 +2202,9 @@ feature -- Type checking, static diagrams
 						l_l_precursor: TBON_TC_FEATURE
 						l_l_feature: TBON_TC_FEATURE
 					do
-						l_l_feature := l_enclosing_class.feature_with_name (l_feature_name.feature_name)
+						l_l_feature := l_enclosing_class.feature_with_name (l_feature_name.feature_name, l_feature_name.is_prefix, l_feature_name.is_infix)
 						l_l_precursor := l_l_feature.nearest_precursor
-						Result := l_enclosing_class.feature_with_name (l_feature_name.feature_name).has_type implies l_enclosing_class.feature_with_name (l_feature_name.feature_name).type.conforms_to (l_l_precursor.type)
+						Result := l_enclosing_class.feature_with_name (l_feature_name.feature_name, l_feature_name.is_prefix, l_feature_name.is_infix).has_type implies l_enclosing_class.feature_with_name (l_feature_name.feature_name, l_feature_name.is_prefix, l_feature_name.is_infix).type.conforms_to (l_l_precursor.type)
 					end (?, enclosing_class)
 			)
 
@@ -2102,7 +2217,7 @@ feature -- Type checking, static diagrams
 					local
 						l_l_precursor: TBON_TC_FEATURE
 					do
-						l_l_precursor := l_enclosing_class.feature_with_name (l_feature_name.feature_name).nearest_precursor
+						l_l_precursor := l_enclosing_class.feature_with_name (l_feature_name.feature_name, l_feature_name.is_prefix, l_feature_name.is_infix).nearest_precursor
 						Result := (l_l_precursor /= Void implies l_l_precursor.is_deferred) or l_l_precursor = Void
 					end (?, enclosing_class)
 			)
@@ -2113,7 +2228,7 @@ feature -- Type checking, static diagrams
 					local
 						l_l_precursor: TBON_TC_FEATURE
 					do
-						l_l_precursor := l_enclosing_class.feature_with_name (l_feature_name.feature_name).nearest_precursor
+						l_l_precursor := l_enclosing_class.feature_with_name (l_feature_name.feature_name, l_feature_name.is_prefix, l_feature_name.is_infix).nearest_precursor
 						Result := l_l_precursor /= Void and then not l_l_precursor.is_deferred
 					end (?, enclosing_class)
 			)
@@ -2125,7 +2240,7 @@ feature -- Type checking, static diagrams
 						l_l_precursor: TBON_TC_FEATURE
 						l_l_feature: TBON_TC_FEATURE
 					do
-						l_l_feature := l_enclosing_class.feature_with_name (l_feature_name.feature_name)
+						l_l_feature := l_enclosing_class.feature_with_name (l_feature_name.feature_name, l_feature_name.is_prefix, l_feature_name.is_infix)
 						l_l_precursor := l_l_feature.nearest_precursor
 						Result := (l_l_precursor /= Void and then l_l_precursor.is_deferred) implies (l_l_feature.is_deferred or l_l_feature.is_effective)
 					end (?, enclosing_class)
@@ -2157,7 +2272,8 @@ feature -- Type checking, static diagrams
 
 				if is_unique_name then
 					create generic.make (an_element.name, Void)
-					enclosing_class.add_type_parameter (generic)
+
+					unresolved_generics.extend (create {TBON_TC_TUPLE[TBON_TC_GENERIC, TBON_TC_CLASS_TYPE]}.make (generic, enclosing_class))
 
 					if an_element.has_class_type then
 						Result := check_class_type (an_element.class_type, enclosing_class, Void, arg_no, 1) and Result
@@ -2214,7 +2330,7 @@ feature -- Type checking, static diagrams
 
 				-- Check that formal generic name is not bounded by itself.
 				-- E.g. E -> LIST[E]
-				if enclosing_class.generics[class_arg_no].formal_generic_name ~ an_element  then
+				if enclosing_class.generics[class_arg_no].formal_generic_name ~ an_element then
 					-- Error - formal generic name is bounded by itself.
 					Result := False
 				end
@@ -2225,7 +2341,7 @@ feature -- Type checking, static diagrams
 
 				if enclosing_class.has_generic_name (an_element) then
 					elem_index := enclosing_class.index_of_generic_name (an_element)
-					if elem_index < class_arg_no and class_arg_no > 0 then
+					if (elem_index < class_arg_no and class_arg_no > 0) or class_arg_no = 0 then
 						-- Check that formal generic name participates consistently in bound
 						if not enclosing_type.generics[type_arg_no].is_valid_actual_type (enclosing_class.generics[elem_index].bounding_type) then
 							-- Error - Bound of formal generic name does not conform to bound of enclosing type
@@ -2290,7 +2406,7 @@ feature -- Type checking, static diagrams
 		end
 
 	check_generic_indirection (an_element: GENERIC_INDIRECTION; enclosing_class: TBON_TC_CLASS_TYPE): BOOLEAN
-			-- Does `an_element' type check as a type PARENT_INDIRECTION?
+			-- Does `an_element' type check as a type GENERIC_INDIRECTION?
 		note
 			rule: "[
 				In an environment where is a formal generic name or a named indirection,
@@ -2545,6 +2661,9 @@ feature -- Type checking, static diagrams
 				if an_element.has_name then
 					Result := Result and check_extended_id (an_element.name)
 				end
+				if an_element.has_components then
+					Result := check_static_block (an_element.components)
+				end
 
 			elseif second_phase then
 
@@ -2636,14 +2755,858 @@ feature -- Type checking, static diagrams
 
 feature -- Type checking, formal assertions
 
-	check_assertion (an_element: ASSERTION_CLAUSE_LIST; enclosing_class: TBON_TC_CLASS_TYPE): BOOLEAN
+	check_assertion (an_element: ASSERTION_CLAUSE_LIST; enclosing_class: TBON_TC_CLASS_TYPE; enclosing_feature: TBON_TC_FEATURE): BOOLEAN
 			-- Does `an_element' type check as a type ASSERTION_CLAUSE_LIST?
+		note
+			rule: "[
+				In an environment where `an_element' is a boolean expression or an assertion comment,
+				`an_element' is OK.
+				]"
+		do
+			if first_phase then
+
+				Result := False
+
+			elseif second_phase then
+
+				from
+					an_element.start
+				until
+					an_element.after
+				loop
+					-- Clear scope for new assertion
+					variable_context.wipe_out
+
+					if attached {BOOLEAN_EXPRESSION} an_element.item_for_iteration as bool_expression then
+						Result := check_boolean_expression (bool_expression, enclosing_class, enclosing_feature) and Result
+
+					elseif attached {ASSERTION_COMMENT} an_element.item_for_iteration as comment then
+						Result := check_comment (comment) and Result
+					end
+
+					an_element.forth
+				end
+
+			else
+				Result := False
+			end
+		end
+
+	check_binary_expression (an_element: BINARY_EXPRESSION; enclosing_class: TBON_TC_CLASS_TYPE; enclosing_feature: TBON_TC_FEATURE): BOOLEAN
+			-- Does `an_element' type check as a type BINARY_EXPRESSION?
+		note
+			rule: "[
+				In an environment where the type of the left expression of `an_element' has
+				an infix feature that matches the operator of `an_element',
+				and the type of the right expression of `an_element' conforms to the
+				type of the input to that infix feature,
+				`an_element' is OK.
+				]"
+		local
+			left_type, right_type: TBON_TC_CLASS_TYPE
+			infix_feature: TBON_TC_FEATURE
+		do
+			Result := True
+			left_type := type_of_expression (an_element.left_expression, enclosing_class, enclosing_feature)
+			right_type := type_of_expression (an_element.right_expression, enclosing_class, enclosing_feature)
+			infix_feature := left_type.interface_feature_with_name (an_element.operator.string_representation, False, True)
+
+			if infix_feature /= Void then
+				if not right_type.conforms_to (infix_feature.arguments.first.type) then -- A correct infix feature has only one argument
+					-- Error - input type does not conform to argument type
+					add_error (err_code_input_type_does_not_conform_to_argument_type, err_input_type_does_not_conform_to_argument_type (infix_feature.enclosing_class.name, infix_feature.name, infix_feature.arguments.first.formal_name, right_type.name))
+					Result := False
+				end
+			else
+				-- Error - left type has no infix feature assigned for 'operator'
+				add_error (err_code_infix_feature_not_defined_in_class, err_infix_feature_not_defined_in_class (an_element.operator.string_representation, left_type.name, right_type.name))
+				Result := False
+			end
+		end
+
+	check_boolean_expression (an_element: BOOLEAN_EXPRESSION; enclosing_class: TBON_TC_CLASS_TYPE; enclosing_feature: TBON_TC_FEATURE): BOOLEAN
+			-- Does `an_element' type check as a type BOOLEAN_EXPRESSION?
+		note
+			rule: "[
+				In an environment where `an_element' is
+				a quantification,
+				a call,
+				an operator expression,
+				or a constant,
+				`an_element' is OK.
+				]"
+		do
+			if attached {QUANTIFICATION} an_element as quantification then
+				Result := check_quantification (quantification, enclosing_class, enclosing_feature)
+			elseif attached {CALL} an_element as call then
+				Result := check_call (call, enclosing_class, enclosing_feature)
+			elseif attached {OPERATOR_EXPRESSION} an_element as operator_expression then
+
+			elseif attached {CONSTANT} an_element as constant then
+
+			else
+				Result := False
+			end
+		end
+
+	check_call (an_element: CALL; enclosing_class: TBON_TC_CLASS_TYPE; enclosing_feature: TBON_TC_FEATURE): BOOLEAN
+			-- Does `an_element' type check as a type CALL?
+		note
+			rule: "[
+				In an environment where the first call in the call chain is,
+					in the interface of the enclosing class
+					or if assertion is in a pre- or postcondition to a feature,
+					an argument to that feature, and is not the enclosing feature itself.
+				and the call
+
+				]"
+		local
+			prev_call_type: like last_call_type
+			is_first_call: BOOLEAN
+		do
+			if an_element.has_parenthesized_qualifier then
+				prev_call_type := type_of_expression (an_element.parenthesized_qualifier, enclosing_class, enclosing_feature)
+			else
+				prev_call_type := enclosing_class
+			end
+
+			-- Check call chain.
+			-- First call must be in interface of enclosing class
+			-- or, if enclosing feature is present, an argument of that feature - but NOT the feature itself!
+			from
+				an_element.call_chain.start
+				is_first_call := not an_element.has_parenthesized_qualifier
+					-- Only if no qualifier is present is the first call in the chain _the_ first call.
+			until
+				an_element.call_chain.after
+			loop
+				-- Check unqualified call - will update last_call_type
+				Result := check_unqualified_call (an_element.call_chain.item_for_iteration, prev_call_type, enclosing_feature, is_first_call) and Result
+
+				is_first_call := False
+				prev_call_type := last_call_type
+
+				an_element.call_chain.forth
+			end
+		end
+
+	check_enumerated_set (an_element: ENUMERATED_SET; enclosing_class: TBON_TC_CLASS_TYPE; enclosing_feature: TBON_TC_FEATURE): BOOLEAN
+			-- Does `an_element' type check as a type ENUMERATED_SET?
+		note
+			rule: "[
+				In an environment where all the elements in the `an_element' conform to the same type,
+				 `an_element' is OK.
+				]"
+		local
+			current_element: ENUMERATION_ELEMENT
+			current_type: TBON_TC_CLASS_TYPE
+			ref_type: TBON_TC_CLASS_TYPE
+				-- All types in the set must either be an ancestor to ref_type or conform to ref_type.
+		do
+			if first_phase then
+				Result := True
+					-- Nothing to be done for first phase.
+
+			elseif second_phase then
+
+				Result := True
+
+				from
+					an_element.start
+				until
+					an_element.after
+				loop
+					current_element := an_element.item_for_iteration
+
+					if attached {EXPRESSION} current_element as expression then
+						-- Set ref_type if not set.
+						if ref_type = Void then
+							ref_type := type_of_expression (expression, enclosing_class, enclosing_feature)
+						end
+						current_type := type_of_expression (expression, enclosing_class, enclosing_feature)
+
+					elseif attached {INTEGER_INTERVAL} current_element as int_interval then
+						-- Set ref_type if not set.
+						if attached {TBON_TC_INTEGER_TYPE} type_with_name (integer_type_name, formal_type_context) as integer_type then
+							if ref_type = Void then
+								ref_type := integer_type
+							end
+							current_type := integer_type
+						else
+							add_error (err_code_undefined, err_undefined ("Type INTEGER does not exist"))
+							Result := False
+						end
+
+					elseif attached {CHARACTER_INTERVAL} current_element as char_interval then
+						if attached {TBON_TC_CHARACTER_TYPE} type_with_name (integer_type_name, formal_type_context) as character_type then
+							-- Set ref_type if not set.
+							if ref_type = Void then
+								ref_type := character_type
+							end
+							current_type := character_type
+						else
+							add_error (err_code_undefined, err_undefined ("Type CHARACTER does not exist"))
+							Result := False
+						end
+					end
+
+					if ref_type = Void or current_type = Void then
+						-- Error - Void or undefined type appeared in enumerated set.
+						add_error (err_code_void_type_in_set, err_void_type_in_set (enclosing_class.name))
+						Result := False
+					end
+
+					if Result then
+						-- Check if type of current element conforms to referenc type.
+						if not current_type.conforms_to (ref_type) and not ref_type.conforms_to (current_type) then
+							-- Error - types in enumerated set does not match.
+							add_error (err_code_types_in_enumerated_set_do_not_match, err_types_in_enumerated_set_do_not_match (enclosing_class.name))
+							Result := False
+						-- If reference type conforms to current type, set current type as reference type.
+						elseif ref_type.conforms_to (current_type) then
+							current_type := ref_type
+						end
+					end
+
+					an_element.forth
+				end
+
+				last_set_type := ref_type
+			else
+				Result := False
+			end
+		end
+
+
+	check_identifier_list (an_element: STRING_LIST; enclosing_class: TBON_TC_CLASS_TYPE): BOOLEAN
+			-- Does `an_element' type check as a type STRING_LIST?
+		note
+			rule: "[
+				In an environment where all elements are unique,
+				`an_element' is OK.
+				]"
+		local
+			seen_elements: LIST[STRING]
+			already_in_scope: BOOLEAN
+		do
+			create {ARRAYED_LIST[STRING]} seen_elements.make (10)
+			seen_elements.compare_objects
+
+			Result := True
+
+			from
+				an_element.start
+			until
+				an_element.after
+			loop
+				if seen_elements.has (an_element.item_for_iteration) then
+					add_error (err_code_duplicate_identifiers, err_duplicate_identifiers (an_element.item_for_iteration, enclosing_class.name))
+					Result := False
+				end
+				seen_elements.extend (an_element.item_for_iteration)
+
+				already_in_scope := variable_context.there_exists (
+					agent (entry: TBON_TC_TUPLE[STRING, TBON_TC_CLASS_TYPE]; identifier: STRING): BOOLEAN
+						do
+							Result := entry.first ~ identifier
+						end (?, an_element.item_for_iteration)
+				)
+
+				if already_in_scope then
+					add_error (err_code_identifier_already_in_scope, err_identifier_already_in_scope (an_element.item_for_iteration, enclosing_class.name))
+					Result := False
+				end
+
+				an_element.forth
+			end
+		ensure
+			no_duplicates_in_context:
+			(second_phase and Result) implies an_element.for_all (
+				agent (id: STRING; ids: STRING_LIST): BOOLEAN
+					local
+						occurrences: INTEGER
+					do
+						from ids.start until ids.after
+						loop
+							if id ~ ids.item_for_iteration then
+								occurrences := occurrences + 1
+							end
+							ids.forth
+						end
+						Result := occurrences = 1
+					end (?, an_element)
+			)
+				-- For all identifiers it holds that there does not exist another variable with the same name.
+		end
+
+	check_member_range (an_element: MEMBER_RANGE; enclosing_class: TBON_TC_CLASS_TYPE; enclosing_feature: TBON_TC_FEATURE): BOOLEAN
+			-- Does `an_element' type check as a type MEMBER_RANGE?
+		note
+			rule: "[
+				In an environment where the identifiers of `an_element' is OK,
+				and the type of the set expression of `an_element' is OK,
+				and the types of the identifiers match the type of the set expression,
+				`an_element' is OK.
+				]"
+		local
+			identifier_type: TBON_TC_CLASS_TYPE
+			relation: TBON_TC_TUPLE[STRING, TBON_TC_CLASS_TYPE]
+		do
+			if first_phase then
+				Result := True
+					-- Nothing to be done for first phase
+
+			elseif second_phase then
+
+				Result := check_identifier_list (an_element.identifiers, enclosing_class)
+				Result := Result and check_set_expression (an_element.set_expression, enclosing_class, enclosing_feature)
+
+				if Result then
+
+					-- Each identifier must either not be present in the variable context,
+					-- or if present, it must a have a type that conforms to the type of the set.
+					from
+						an_element.identifiers.start
+					until
+						an_element.identifiers.after
+					loop
+						-- Get type of variable
+						identifier_type := type_of_variable (an_element.identifiers.item_for_iteration)
+
+						-- If variable is not present in context, set its type to the type of the set expression
+						if identifier_type = Void then
+
+							create relation.make (an_element.identifiers.item_for_iteration, last_set_type)
+							variable_context.extend (relation)
+
+						elseif identifier_type /= Void and then not identifier_type.conforms_to (last_set_type) then
+							add_error (err_code_identifier_in_member_range_expression_does_not_match_type_of_set, err_identifier_in_member_range_expression_does_not_match_type_of_set (an_element.identifiers.item_for_iteration, identifier_type.name, last_set_type.name, enclosing_class.name))
+							Result := False
+						end
+
+						an_element.identifiers.forth
+					end
+				end
+			end
+		ensure
+			all_identifiers_in_context:
+			(second_phase and Result) implies an_element.identifiers.for_all (
+				agent (id: STRING): BOOLEAN
+					do
+						Result := variable_type_relation_from_name (id) /= Void and then
+								  type_of_variable (id).conforms_to (last_set_type)
+					end
+			)
+		end
+
+	check_operator_expression (an_element: OPERATOR_EXPRESSION; enclosing_class: TBON_TC_CLASS_TYPE; enclosing_feature: TBON_TC_FEATURE): BOOLEAN
+			-- Does `an_element' type check as a type OPERATOR_EXPRESSION?
+		note
+			rule: "[
+				In an environment where `an_element' is either a unary or a binary expression,
+				`an_element' is OK.
+				]"
+		do
+			if attached {UNARY_EXPRESSION} an_element as unary_expression then
+				Result := check_unary_expression (unary_expression, enclosing_class, enclosing_feature)
+			elseif attached {BINARY_EXPRESSION} an_element as binary_expression then
+				Result := check_binary_expression (binary_expression, enclosing_class, enclosing_feature)
+			else
+				Result := False
+			end
+		end
+
+	check_quantification (an_element: QUANTIFICATION; enclosing_class: TBON_TC_CLASS_TYPE; enclosing_feature: TBON_TC_FEATURE): BOOLEAN
+			-- Does `an_element' type check as a type QUANTIFICATION?
+		note
+			rule: "[
+				In an environment where
+				then quantifier of `an_element' is either 'for_all' or 'exists',
+				and the range expression of `an_element' is either a type or member range expression,
+				and the restriction, if present, has boolean type,
+				and the proposition has boolean type,
+				`an_element' is OK.
+				]"
+		do
+			-- Check quantifier
+			Result := check_quantifier (an_element.quantifier)
+
+			-- Check range expression
+			Result := check_range_expression (an_element.range_expression, enclosing_class, enclosing_feature) and Result
+
+
+			-- Check restriction
+			if an_element.has_restriction and then not is_boolean_expression (an_element.restriction, enclosing_class, enclosing_feature) then
+				-- Error - restriction is not a boolean expression
+				Result := False
+			end
+
+			-- Check proposition
+			if not is_boolean_expression (an_element.proposition, enclosing_class, enclosing_feature) then
+				-- Error - proposition is not a boolean expression
+				Result := False
+			end
+		end
+
+	check_quantifier (an_element: QUANTIFIER): BOOLEAN
+			-- Does `an_element' type check as a type QUANTIFIER?
+		note
+			rule: "[
+				In an environment where `an_element' is either a universal quantifier ('for_all')
+				or an existential quantifier ('exists'),
+				`an_element' is OK.
+				]"
+		do
+			Result := (an_element.is_for_all and an_element.string_representation ~ "for_all") xor
+					  (an_element.is_exists and an_element.string_representation ~ "exists")
+		ensure
+			an_element.is_for_all implies an_element.string_representation ~ "for_all"
+			an_element.is_exists implies an_element.string_representation ~ "exists"
+			an_element.is_for_all xor an_element.is_exists
+		end
+
+	check_range_expression (an_element: VARIABLE_RANGE_LIST; enclosing_class: TBON_TC_CLASS_TYPE; enclosing_feature: TBON_TC_FEATURE): BOOLEAN
+			-- Does `an_element' type check as a type BOOLEAN_EXPRESSION?
+		note
+			rule: "[
+				In an environment where each element is either a member range or a type range,
+				`an_element' is OK.
+				]"
+		do
+			if first_phase then
+				Result := False
+					-- Nothing to do for first phase.
+
+			elseif second_phase then
+
+				Result := True
+
+				from
+					an_element.start
+				until
+					an_element.after
+				loop
+					if attached {MEMBER_RANGE} an_element.item_for_iteration as member_range then
+
+						Result := check_member_range (member_range, enclosing_class, enclosing_feature) and Result
+
+					elseif attached {TYPE_RANGE} an_element.item_for_iteration as type_range then
+
+						Result := check_type_range (type_range, enclosing_class)
+
+					else
+						Result := False
+					end
+
+					an_element.forth
+				end
+
+			else
+				Result := False
+			end
+		end
+
+	check_set_expression (an_element: SET_EXPRESSION; enclosing_class: TBON_TC_CLASS_TYPE; enclosing_feature: TBON_TC_FEATURE): BOOLEAN
+			-- Does `an_element' type check as a type SET_EXPRESSION?
+		note
+			rule: "[
+				In an environment where `an_element' is either an enumerated set,
+				a call that has an enumerable type or
+				 an operator expression that has an enumrable type,
+				`an_element' is OK.
+				]"
+		local
+			is_enumerable: BOOLEAN
+		do
+			if attached {ENUMERATED_SET} an_element as enum_set then
+				Result := check_enumerated_set (enum_set, enclosing_class, enclosing_feature)
+
+			else
+				if attached {CALL} an_element as call then
+					Result := check_call (call, enclosing_class, enclosing_feature)
+					last_set_type := last_call_type
+
+					if last_set_type = Void then
+						add_error (err_code_void_type_in_set, err_void_type_in_set (enclosing_class.name))
+						Result := False
+					end
+
+				elseif attached {OPERATOR_EXPRESSION} an_element as operator_expression then
+					last_set_type := type_of_expression (operator_expression, enclosing_class, enclosing_feature)
+
+					if last_set_type = Void then
+						add_error (err_code_void_type_in_set, err_void_type_in_set (enclosing_class.name))
+						Result := False
+					else
+						Result := True
+					end
+				end
+
+				if Result then
+					-- Check that set type is enumerable
+					is_enumerable := enumerable_types.exists (
+						agent (enum_type, set_type: TBON_TC_CLASS_TYPE): BOOLEAN
+							do
+								Result := set_type.conforms_to (enum_type)
+							end (?, last_set_type)
+					)
+
+					if not is_enumerable then
+						-- Warning - set type is not enumerable
+						add_warning (warn_code_set_type_not_enumerable, warn_set_type_not_enumerable (last_set_type.name, enclosing_class.name))
+					end
+				end
+
+			end
+		end
+
+	check_type_range (an_element: TYPE_RANGE; enclosing_class: TBON_TC_CLASS_TYPE): BOOLEAN
+			-- Does `an_element' type check as a type TYPE_RANGE?
+		note
+			rule: "[
+				In an environment where the identifier list is OK and the type exists in the environment,
+				`an_element' is OK.
+				]"
+		local
+			l_class_type: TBON_TC_CLASS_TYPE
+			type_instance: TBON_TC_CLASS_TYPE
+		do
+			if first_phase then
+
+				Result := True
+					-- Nothing to be done for first phase.
+
+			elseif second_phase then
+
+				Result := check_identifier_list (an_element.identifiers, enclosing_class)
+
+				if Result then
+					if an_element.type.is_class_type then
+
+						if attached {TBON_TC_CLASS_TYPE} type_with_name (an_element.type.class_type.class_name, formal_type_context) as enclosing_type then
+							Result := Result and check_class_type (an_element.type.class_type, enclosing_class, enclosing_type, 0, 1)
+
+							if Result then
+								from
+									an_element.identifiers.start
+								until
+									an_element.identifiers.after
+								loop
+									type_instance := instantiated_type (enclosing_type, an_element.type.class_type, enclosing_class)
+									variable_context.extend (create {TBON_TC_TUPLE[STRING, TBON_TC_CLASS_TYPE]}.make (an_element.identifiers.item_for_iteration, type_instance))
+
+									an_element.identifiers.forth
+								end
+							end
+						else
+							add_error (err_code_class_does_not_exist, err_class_does_not_exist (an_element.type.class_type.class_name))
+							Result := False
+						end
+
+					elseif an_element.type.is_formal_generic_name then
+
+						Result := Result and enclosing_class.has_generic_name (an_element.type.formal_generic_name)
+
+						if Result then
+							create l_class_type.make (an_element.type.formal_generic_name)
+
+							from
+								an_element.identifiers.start
+							until
+								an_element.identifiers.after
+							loop
+								variable_context.extend (create {TBON_TC_TUPLE[STRING, TBON_TC_CLASS_TYPE]}.make (an_element.identifiers.item_for_iteration, l_class_type))
+
+								an_element.identifiers.forth
+							end
+						end
+
+					end
+				end
+
+			else
+				Result := False
+			end
+		ensure
+			enclosing_class_has_generic_name:
+			(second_phase and Result and an_element.type.is_formal_generic_name) implies
+				enclosing_class.has_generic_name (an_element.type.formal_generic_name)
+		end
+
+	check_unary_expression (an_element: UNARY_EXPRESSION; enclosing_class: TBON_TC_CLASS_TYPE; enclosing_feature: TBON_TC_FEATURE): BOOLEAN
+			-- Does `an_element' type check as a type UNARY_EXPRESSION?
+		note
+			rule: "[
+				In an environment where the type of the expression of `an_element' has
+				a prefix operator defined, and that prefix operator is equal to the operator in `an_element',
+				`an_element' is OK.
+				]"
+		local
+			expression_type: TBON_TC_CLASS_TYPE
+		do
+			Result := True
+			expression_type := type_of_expression (an_element.expression, enclosing_class, enclosing_feature)
+			-- Check that expression has prefix feature that matches the string representation
+			if expression_type.interface_feature_with_name (an_element.operator.string_representation, True, False) = Void then
+				-- Error unary operator 'operator' is not defined for type in assertion
+				Result := False
+			end
+		ensure
+			type_has_prefix_feature:
+			Result implies type_of_expression (an_element.expression, enclosing_class, enclosing_feature).interface_feature_with_name (an_element.operator.string_representation, True, False) /= Void
+		end
+
+
+	check_unqualified_call (an_element: UNQUALIFIED_CALL; enclosing_class: TBON_TC_CLASS_TYPE; enclosing_feature: TBON_TC_FEATURE; is_first_call: BOOLEAN): BOOLEAN
+			-- Does `an_element' type check as a type UNQUALIFIED_CALL?
+		note
+			rule: "[
+				In an environment where the identifier of `an_element' is a feature in the enclosing class,
+				and the number of types of arguments match,
+				`an_element' is OK.
+				]"
+		local
+			called_feature: TBON_TC_FEATURE
+			called_argument: TBON_TC_FEATURE_ARGUMENT
+			filtered_features: MML_SET[TBON_TC_FEATURE]
+			arg_no: INTEGER
+		do
+			if first_phase then
+
+				Result := True
+						-- Nothing to do for first phase.
+
+			elseif second_phase then
+
+				Result := True
+
+				-- If enclosing feature is present, the call is in a pre- or postcondition.
+				-- Thus, the arguments of the enclosing feature, but not the feature itself, must be available.
+				if enclosing_feature /= Void and is_first_call then
+					if not (an_element.identifier ~ enclosing_feature.name) then
+						if enclosing_feature.is_infix or enclosing_feature.is_prefix then
+							-- Error - use of infix or prefix feature in assertion.
+							Result := False
+						end
+
+						 -- Check if call is in interface of enclosing class
+						 filtered_features := enclosing_class.interface.filtered (
+						 	agent (l_feature: TBON_TC_FEATURE; call_id: STRING): BOOLEAN
+						 		do
+						 			Result := l_feature.name ~ call_id
+						 		end (?, an_element.identifier)
+						 )
+
+						 if filtered_features.count = 1 then
+							called_feature := filtered_features.any_item
+						 end
+
+						 -- If call is not a feature, it must be an argument to enclosing feature.
+						 if called_feature = Void then
+						 	from
+						 		enclosing_feature.arguments.start
+						 	until
+						 		enclosing_feature.arguments.after
+						 	loop
+						 		if enclosing_feature.arguments.item.formal_name ~ an_element.identifier then
+						 			called_argument := enclosing_feature.arguments.item
+						 		end
+
+						 		enclosing_feature.arguments.forth
+						 	end
+						 end
+
+					else
+						-- Error - Feature calls itself in pre- or postcondition.
+						Result := False
+					end
+
+				else -- The call is in an invariant
+					-- Check if call is in interface of enclosing class
+					filtered_features := enclosing_class.interface.filtered (
+						agent (l_feature: TBON_TC_FEATURE; call_id: STRING): BOOLEAN
+							do
+								Result := l_feature.name ~ call_id
+							end (?, an_element.identifier)
+					)
+
+					if filtered_features.count = 1 then
+						called_feature := filtered_features.any_item
+					else
+						-- Error - call identifier does not exist or is not in scope.
+						Result := False
+					end
+				end
+
+				-- If call is a feature call
+				if called_feature /= Void then
+					if called_feature.arguments.count = an_element.actual_arguments.count then
+
+						-- Check if expression types match argument types
+						from
+							arg_no := 1
+							called_feature.arguments.start
+							an_element.actual_arguments.start
+						until
+							called_feature.arguments.exhausted or
+							an_element.actual_arguments.after
+						loop
+							if not type_of_expression (an_element.actual_arguments.at (arg_no), enclosing_class, enclosing_feature).conforms_to (called_feature.arguments.i_th (arg_no).type) then
+								-- Error - Type of actual argument does not conform to type of argument										
+								Result := False
+							end
+
+							called_feature.arguments.forth
+							an_element.actual_arguments.forth
+						end
+
+						last_call_type := called_feature.type
+					else
+						-- Error - number of arguments in called feature an call in assertion do not match
+						Result := False
+					end
+				elseif called_argument /= Void then -- Call is an argument to enclosing feature
+					last_call_type := called_argument.type
+				else
+				 	-- Error - called identifier does not exist or is not in scope.
+				 	Result := False
+				end
+
+				if last_call_type = Void then
+					-- Error - assertion involves call without type
+					add_error (err_code_assertion_involves_call_with_no_type, err_assertion_involves_call_with_no_type (an_element.identifier, enclosing_feature.name, enclosing_class.name))
+					Result := False
+				end
+			else
+				Result := False
+			end
+		ensure
+			last_call_type_set:
+			(second_phase and Result) implies last_call_type /= Void
+
+			no_enclosing_feature_means_call_must_be_in_interface:
+			(second_phase and Result and (enclosing_feature = Void or not is_first_call)) implies
+				enclosing_class.interface.exists (
+						agent (l_feature: TBON_TC_FEATURE; call_id: STRING): BOOLEAN
+							do
+								Result := l_feature.name ~ call_id
+							end (?, an_element.identifier)
+					)
+		end
+
+	is_boolean_expression (an_expression: BOOLEAN_EXPRESSION; enclosing_class: TBON_TC_CLASS_TYPE; enclosing_feature: TBON_TC_FEATURE): BOOLEAN
+			-- Is `an_element' an expression that returns a boolean value?
+		do
+			Result := attached {TBON_TC_BOOLEAN_TYPE} type_of_expression (an_expression, enclosing_class, enclosing_feature)
+		end
+
+	last_call_type: TBON_TC_CLASS_TYPE
+			-- What is the type last seen in a call?
+
+	last_set_type: TBON_TC_CLASS_TYPE
+			-- What is the type last seen in a set?
+
+	type_of_expression (an_expression: EXPRESSION; enclosing_class: TBON_TC_CLASS_TYPE; enclosing_feature: TBON_TC_FEATURE): TBON_TC_CLASS_TYPE
+			-- What is the type of `an_expression'?
+			-- [pure] - Does not change state, but might emit errors or warnings if given bad AST.
+		local
+			l_last_call_type, l_last_set_type: TBON_TC_CLASS_TYPE
+			left_type, right_type: TBON_TC_CLASS_TYPE
+			operator_feature: TBON_TC_FEATURE
+		do
+			-- Manifest constants
+			if attached {BOOLEAN_CONSTANT} an_expression and then attached {TBON_TC_BOOLEAN_TYPE} type_with_name (boolean_type_name, formal_type_context) as boolean_type then
+				Result := boolean_type
+			elseif attached {INTEGER_CONSTANT} an_expression and then attached {TBON_TC_INTEGER_TYPE} type_with_name (integer_type_name, formal_type_context) as integer_type then
+				Result := integer_type
+			elseif attached {REAL_CONSTANT} an_expression and then attached {TBON_TC_REAL_TYPE} type_with_name (real_type_name, formal_type_context) as real_type then
+				Result := real_type
+			elseif attached {CHARACTER_CONSTANT} an_expression and then attached {TBON_TC_CHARACTER_TYPE} type_with_name (character_type_name, formal_type_context) as character_type then
+				Result := character_type
+			elseif (attached {MANIFEST_STRING} an_expression or else
+				   attached {STRING} an_expression) and then
+				   attached {TBON_TC_STRING_TYPE} type_with_name (string_type_name, formal_type_context) as string_type then
+				Result := string_type
+
+			-- Constant tokens
+			elseif attached {RESULT_CONSTANT} an_expression then
+				if enclosing_feature /= Void then
+					Result := enclosing_feature.type
+					if Result = Void then
+						-- Error - use of Result in feature with no/Void type
+						add_error (err_code_result_constant_in_void_feature, err_result_constant_in_void_feature (enclosing_feature.name, enclosing_class.name))
+					end
+				else
+					-- Error - use of Result in class invariant
+					add_error (err_code_result_constant_in_class_invariant, err_result_constant_in_class_invariant (enclosing_class.name))
+				end
+			elseif attached {CURRENT_CONSTANT} an_expression then
+				Result := enclosing_class
+			elseif attached {VOID_CONSTANT} an_expression then
+				Result := Void
+
+			-- Quantification
+			elseif attached {QUANTIFICATION} an_expression and then attached {TBON_TC_BOOLEAN_TYPE} type_with_name (boolean_type_name, formal_type_context) as boolean_type then
+				Result := boolean_type
+
+			-- Call
+			elseif attached {CALL} an_expression as call then
+				l_last_call_type := last_call_type
+				if check_call (call, enclosing_class, enclosing_feature) then
+					Result := last_call_type
+				end
+				last_call_type := l_last_call_type
+
+			-- Operator expressions
+			elseif attached {UNARY_EXPRESSION} an_expression as unary_expression then
+				left_type := type_of_expression (unary_expression, enclosing_class, enclosing_feature)
+				if left_type /= Void then
+					operator_feature := left_type.interface_feature_with_name (unary_expression.operator.string_representation, True, False)
+					if operator_feature /= Void then
+						Result := operator_feature.type
+					end
+				end
+
+			elseif attached {BINARY_EXPRESSION} an_expression as binary_expression then
+				left_type := type_of_expression (binary_expression, enclosing_class, enclosing_feature)
+				right_type := type_of_expression (binary_expression, enclosing_class, enclosing_feature)
+
+				if left_type /= Void then
+					operator_feature := left_type.interface_feature_with_name (binary_expression.operator.string_representation, False, True)
+					--  If operator exists and right hand type conforms to argument type, return feature type.
+					if operator_feature /= Void and then operator_feature.arguments.count > 0 and then
+						right_type /= Void and then right_type.conforms_to (operator_feature.arguments.first.type) then
+						Result := operator_feature.type
+					end
+				end
+
+			-- Enumerated set
+			elseif attached {ENUMERATED_SET} an_expression as enum_set then
+				l_last_set_type := last_set_type
+				if check_enumerated_set (enum_set, enclosing_class, enclosing_feature) then
+					Result := last_set_type
+				end
+				last_set_type := l_last_set_type
+
+			else
+				Result := Void
+			end
+		ensure
+			last_set_type = old last_set_type
+			last_call_type = old last_call_type
+		end
+
+feature -- dummy
+
+
+	check_dummy (an_element: BOOLEAN_EXPRESSION; enclosing_class: TBON_TC_CLASS_TYPE): BOOLEAN
+			-- Does `an_element' type check as a type BOOLEAN_EXPRESSION?
 		note
 			rule: "[
 				In an environment where...
 				]"
 		do
-			check false end
+			check false end -- ~
 		end
 
 

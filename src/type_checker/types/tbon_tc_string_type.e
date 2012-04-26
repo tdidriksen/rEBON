@@ -8,16 +8,20 @@ class
 	TBON_TC_STRING_TYPE
 
 inherit
-	TBON_TC_DEFAULT_VALUE_TYPE
+	TBON_TC_CLASS_TYPE
+		redefine
+			conforms_to,
+			is_model_equal
+		end
 
 create
-	make
+	make_default_type
 
 feature -- Initialization
-	make
+	make_default_type
 			-- Create an string type for type checking.
 		do
-			name := string_type_name
+			make (string_type_name)
 		end
 
 feature -- Status report
@@ -30,7 +34,7 @@ feature -- Status report
 	is_model_equal alias "|=|" (other: TBON_TC_TYPE): BOOLEAN
 			-- Is this model mathematically equal to `other'?
 		do
-			Result := attached {TBON_TC_STRING_TYPE} other
+			Result := attached {TBON_TC_STRING_TYPE} other or Precursor {TBON_TC_CLASS_TYPE} (other)
 		end
 
 end

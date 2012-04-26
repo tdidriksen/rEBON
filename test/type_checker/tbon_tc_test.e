@@ -31,6 +31,8 @@ feature -- Setup
 			filename := a_filename.string
 			if prepend_exec_path then
 				filename.prepend_string (exec_path)
+			else
+				filename.prepend_string (project_path)
 			end
 			create a_file.make (filename)
 			a_file.open_read
@@ -57,10 +59,13 @@ feature -- Setup
 feature -- Constants
 
 	prepend_exec_path: BOOLEAN = True
-			-- Should th exec_path be prepended to the path?
+			-- Should the exec_path be prepended to the path?
 
 	exec_path: STRING = "../../../bon/"
 			-- Path to BON files from executable library.
+
+	project_path: STRING = "bon/"
+			-- Path to BON files from .ecf file.
 
 feature -- Status report
 

@@ -78,7 +78,7 @@ feature -- Parsing
 	read_token
 		do
 			Precursor
-			print_last_token
+			--print_last_token
 		end
 
 	execute

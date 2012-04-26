@@ -52,16 +52,38 @@ feature -- Access
 
 	features: MML_SET[TBON_TC_FEATURE]
 
-	feature_with_name (a_feature_name: STRING): TBON_TC_FEATURE
+	feature_with_name (a_feature_name: STRING; l_is_prefix, l_is_infix: BOOLEAN): TBON_TC_FEATURE
 			-- Which of the features of `Current' has the name `a_feature_name'?
 		local
 			feature_set: like features
 		do
 			feature_set := features.filtered (
-				agent (l_feature: TBON_TC_FEATURE; l_feature_name: STRING): BOOLEAN
+				agent (l_feature: TBON_TC_FEATURE; l_feature_name: STRING; l_l_is_prefix, l_l_is_infix: BOOLEAN): BOOLEAN
 					do
-						Result := l_feature.name ~ l_feature_name
-					end (?, a_feature_name)
+						Result := l_feature.name ~ l_feature_name and
+								  (l_l_is_prefix implies l_feature.is_prefix) and
+								  (l_l_is_infix implies l_feature.is_infix)
+					end (?, a_feature_name, l_is_prefix, l_is_infix)
+			)
+			Result := Void
+			if not feature_set.is_empty then
+				check feature_set.count = 1 end
+				Result := feature_set.any_item
+			end
+		end
+
+	interface_feature_with_name (a_feature_name: STRING; l_is_prefix, l_is_infix: BOOLEAN): TBON_TC_FEATURE
+			-- Which of the features of `Current' has the name `a_feature_name'?
+		local
+			feature_set: like features
+		do
+			feature_set := interface.filtered (
+				agent (l_feature: TBON_TC_FEATURE; l_feature_name: STRING; l_l_is_prefix, l_l_is_infix: BOOLEAN): BOOLEAN
+					do
+						Result := l_feature.name ~ l_feature_name and
+								  (l_l_is_prefix implies l_feature.is_prefix) and
+								  (l_l_is_infix implies l_feature.is_infix)
+					end (?, a_feature_name, l_is_prefix, l_is_infix)
 			)
 			Result := Void
 			if not feature_set.is_empty then

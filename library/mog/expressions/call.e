@@ -52,6 +52,13 @@ feature -- Access
 			Result := my_call_chain.twin
 		end
 
+feature -- Status report
+	has_parenthesized_qualifier: BOOLEAN
+			-- Does `Current' have a parenthesized qualifier?
+		do
+			Result := my_parenthesized_qualifier  /= Void and then my_call_chain.is_empty
+		end
+
 feature {NONE} -- Implementation
 	my_parenthesized_qualifier: BOOLEAN_EXPRESSION
 	my_call_chain: UNQUALIFIED_CALLS

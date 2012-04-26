@@ -48,6 +48,17 @@ feature -- Error messages
 			Result.append_string (" does not exist.")
 		end
 
+	err_argument_has_same_name_as_feature (an_argument_name, a_feature_name, a_class_name: STRING): STRING
+		do
+			Result := "Argument "
+			Result.append_string (an_argument_name.string)
+			Result.append_string (" of feature ")
+			Result.append_string (a_feature_name.string)
+			Result.append_string (" in class ")
+			Result.append_string (a_class_name.string)
+			Result.append_string (" has same name as feature.")
+		end
+
 	err_argument_type_does_not_exist(an_argument_name, a_feature_name, a_class_name: STRING): STRING
 		do
 			Result := "Type of argument "
@@ -59,15 +70,29 @@ feature -- Error messages
 			Result.append_string (" could not be found.")
 		end
 
-	err_argument_types_does_not_match_precursers(a_feature_name, a_precursor_feature_name, a_class_name: STRING): STRING
+	err_argument_types_do_not_match_precursor (a_feature_name, a_precursor_feature_name, a_class_name: STRING): STRING
 		do
 			Result := "Types of arguments in redefined feature "
 			Result.append_string (a_feature_name.string)
 			Result.append_string (" in class ")
 			Result.append_string (a_class_name.string)
 			Result.append_string (" does not match those of its precursor ")
-			Result.append_string (a_precursor_feature_name)
+			Result.append_string (a_precursor_feature_name.string)
 			Result.append_string (".")
+		end
+
+	err_assertion_involves_call_with_no_type (a_call_name, an_enclosing_feature_name, an_enclosing_class_name: STRING): STRING
+		do
+			Result := "Assertion "
+			if an_enclosing_feature_name /= Void then
+				Result.append_string (" in feature ")
+				Result.append_string (an_enclosing_feature_name.string)
+			end
+			Result.append_string (" in class ")
+			Result.append_string (an_enclosing_class_name.string)
+			Result.append_string (" involves a call to feature ")
+			Result.append_string (a_call_name.string)
+			Result.append_string (", but feature does not have a type.")
 		end
 
 	err_class_already_in_cluster (a_cluster_name, a_class_name, a_class_parent_name: STRING): STRING
@@ -205,6 +230,15 @@ feature -- Error messages
 			Result.append_string (".")
 		end
 
+	err_duplicate_identifiers (an_identifier_name, a_class_name: STRING): STRING
+		do
+			Result := "Identifier "
+			Result.append_string (an_identifier_name.string)
+			Result.append_string (" is defined more than once in assertion in class ")
+			Result.append_string (a_class_name.string)
+			Result.append_string (".")
+		end
+
 	err_duplicate_inherited_feature_name (a_feature_name: STRING; a_class_name: STRING): STRING
 		do
 			Result := "Feature "
@@ -263,6 +297,15 @@ feature -- Error messages
 			Result.append_string (".")
 		end
 
+	err_formal_generic_name_has_same_name_as_class (a_generic_name, a_class_name: STRING): STRING
+		do
+			Result := "Formal generic name "
+			Result.append_string (a_generic_name.string)
+			Result.append_string (" in class ")
+			Result.append_string (a_class_name.string)
+			Result.append_string (" has the same name as a class in the environment.")
+		end
+
 	err_formal_generic_name_does_not_exist (a_feature_name, a_generic_name, a_class_name: STRING): STRING
 		do
 			Result := "Feature "
@@ -283,13 +326,58 @@ feature -- Error messages
 			Result.append_string (".")
 		end
 
-	err_infix_feature_must_have_two_arguments (a_feature_name, a_class_name: STRING): STRING
+	err_identifier_already_in_scope (an_identifier, a_class_name: STRING): STRING
+		do
+			Result := "Error defining identifier "
+			Result.append_string (an_identifier.string)
+			Result.append_string (" in assertion in class ")
+			Result.append_string (a_class_name.string)
+			Result.append_string (" - name is already defined in scope.")
+		end
+
+	err_identifier_in_member_range_expression_does_not_match_type_of_set (an_identifier_name, an_identifier_type, a_set_type, a_class_name: STRING): STRING
+		do
+			Result := "Identifier "
+			Result.append_string (an_identifier_name.string)
+			Result.append_string (" of type ")
+			Result.append_string (an_identifier_type.string)
+			Result.append_string (" does not conform to common type ")
+			Result.append_string (a_set_type.string)
+			Result.append_string (" of elements in enumerated set in assertion in class ")
+			Result.append_string (a_class_name.string)
+			Result.append_string (".")
+		end
+
+	err_infix_feature_must_have_one_argument (a_feature_name, a_class_name: STRING): STRING
 		do
 			Result := "Infix feature "
 			Result.append_string (a_feature_name.string)
 			Result.append_string (" of class ")
 			Result.append_string (a_class_name.string)
-			Result.append_string (" must have exactly two arguments.")
+			Result.append_string (" must have exactly one argument.")
+		end
+
+	err_infix_feature_not_defined_in_class (an_operator_name, a_class_name, an_input_type: STRING): STRING
+		do
+			Result := "No infix feature for operator "
+			Result.append_string (an_operator_name.string)
+			Result.append_string (" and type ")
+			Result.append_string (an_input_type.string)
+			Result.append_string (" is defined in class ")
+			Result.append_string (a_class_name.string)
+		end
+
+	err_input_type_does_not_conform_to_argument_type (a_class_name, a_feature_name, an_argument_name, an_input_type: STRING): STRING
+		do
+			Result := "Input "
+			Result.append_string (an_input_type.string)
+			Result.append_string (" for argument ")
+			Result.append_string (an_argument_name.string)
+			Result.append_string (" of feature ")
+			Result.append_string (a_feature_name.string)
+			Result.append_string (" in class ")
+			Result.append_string (a_class_name.string)
+			Result.append_string (" does not conform to type of argument.")
 		end
 
 	err_involved_class_does_not_exist (a_chart_name, an_entry_name, a_class_name: STRING): STRING
@@ -339,6 +427,22 @@ feature -- Error messages
 			Result.append_string (" must have exactly one argument.")
 		end
 
+	err_result_constant_in_class_invariant (a_class_name: STRING): STRING
+		do
+			Result := "Invalid use of Result keyword in class invariant in class "
+			Result.append_string (a_class_name.string)
+			Result.append_string (".")
+		end
+
+	err_result_constant_in_void_feature (a_feature_name, a_class_name: STRING): STRING
+		do
+			Result := "Invalid use of Result keyword in assertion in feature "
+			Result.append_string (a_feature_name.string)
+			Result.append_string (" in class ")
+			Result.append_string (a_class_name.string)
+			Result.append_string (" - feature has no type.")
+		end
+
 	err_selective_export_class_does_not_exist (a_class_name, an_enclosing_class_name: STRING): STRING
 		do
 			Result := "Specified selective export class "
@@ -357,10 +461,24 @@ feature -- Error messages
 			Result.append_string (" does not exist.")
 		end
 
+	err_types_in_enumerated_set_do_not_match (a_class_name: STRING): STRING
+		do
+			Result := "The elements in an enumerated set in class "
+			Result.append_string (a_class_name.string)
+			Result.append_string (" do not conform to a common type.")
+		end
+
 	err_undefined (a_description: STRING): STRING
 		do
 			Result := "Undefined error: "
 			Result.append_string (a_description.string)
+		end
+
+	err_void_type_in_set (a_class_name: STRING): STRING
+		do
+			Result := "Void or undefined type appeared in set expression in assertion in class "
+			Result.append_string (a_class_name.string)
+			Result.append_string (".")
 		end
 
 feature -- Warnings
@@ -397,6 +515,15 @@ feature -- Warnings
 			Result := "A diagram with extended ID "
 			Result.append_string (an_extended_id.string)
 			Result := " is defined more than once."
+		end
+
+	warn_set_type_not_enumerable (a_type_name, a_class_name: STRING): STRING
+		do
+			Result := "Type "
+			Result.append_string (a_type_name.string)
+			Result.append_string (" is in involved in a set expression in an assertion in class ")
+			Result.append_string (a_class_name.string)
+			Result.append_string (", but type is not enumerable. Please check that the type is correct, and if so, consider making it inherit from ENUMERABLE.")
 		end
 
 end

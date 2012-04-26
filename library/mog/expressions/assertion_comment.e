@@ -1,5 +1,5 @@
 note
-	description: "Summary description for {ASSERTION_COMMENT}."
+	description: "A comment in an assertion."
 	author: ""
 	date: "$Date$"
 	revision: "$Revision$"

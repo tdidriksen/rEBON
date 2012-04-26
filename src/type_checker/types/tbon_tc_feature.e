@@ -104,9 +104,9 @@ feature {NONE} -- Implementation
 				ancestor := ancestors.any_item
 
 				if Current.is_renamed then
-					l_precursor := ancestor.feature_with_name (Current.inherited_name)
+					l_precursor := ancestor.feature_with_name (Current.inherited_name, Current.is_prefix, Current.is_infix)
 				else
-					l_precursor := ancestor.feature_with_name (Current.name)
+					l_precursor := ancestor.feature_with_name (Current.name, Current.is_prefix, Current.is_infix)
 				end
 
 				ancestors := ancestors / ancestor
@@ -158,7 +158,11 @@ feature -- Status report
 	is_model_equal alias "|=|" (other: TBON_TC_FEATURE): BOOLEAN
 			-- Is this model mathematically equal to `other'?
 		do
-			Result := name ~ other.name and enclosing_class |=| other.enclosing_class
+			Result := name ~ other.name and
+					  enclosing_class |=| other.enclosing_class and
+					  (is_prefix implies other.is_prefix) and
+					  (is_infix implies other.is_infix)
+
 		end
 
 feature -- Element change

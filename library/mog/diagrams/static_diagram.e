@@ -211,6 +211,5 @@ feature {STATIC_DIAGRAM} -- Implementation
 invariant
 	my_name /= Void implies not my_name.is_empty
 	my_comment /= Void implies not my_comment.is_empty
-	my_components /= Void implies not my_components.is_empty
 
 end -- class STATIC_DIAGRAM

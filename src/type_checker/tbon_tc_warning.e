@@ -38,7 +38,8 @@ feature -- Warning codes
 	warn_code_duplicate_creation_entry,
 	warn_code_duplicate_event_entry,
 	warn_code_duplicate_scenario_entry,
-	warn_code_extended_id_exists: INTEGER = unique
+	warn_code_extended_id_exists,
+	warn_code_set_type_not_enumerable: INTEGER = unique
 
 feature -- Status report
 

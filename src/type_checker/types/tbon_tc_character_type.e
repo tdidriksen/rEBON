@@ -8,16 +8,20 @@ class
 	TBON_TC_CHARACTER_TYPE
 
 inherit
-	TBON_TC_DEFAULT_VALUE_TYPE
+	TBON_TC_CLASS_TYPE
+		redefine
+			conforms_to,
+			is_model_equal
+		end
 
 create
-	make
+	make_default_type
 
 feature -- Initialization
-	make
-			-- Create an character type for type checking.
+	make_default_type
+			-- Create a character type for type checking.
 		do
-			name := character_type_name
+			make (character_type_name)
 		end
 
 feature -- Status report
@@ -30,7 +34,7 @@ feature -- Status report
 	is_model_equal alias "|=|" (other: TBON_TC_TYPE): BOOLEAN
 			-- Is this model mathematically equal to `other'?
 		do
-			Result := attached {TBON_TC_CHARACTER_TYPE} other
+			Result := attached {TBON_TC_CHARACTER_TYPE} other or Precursor {TBON_TC_CLASS_TYPE} (other)
 		end
 
 end

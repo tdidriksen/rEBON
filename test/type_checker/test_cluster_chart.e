@@ -38,7 +38,7 @@ feature -- Test
 		do
 			set_up_test
 			bon_spec := bon_specification_from_file ("class_chart.bon")
-			assert ("Bon spec succeeded", type_checker.check_bon_specification (bon_spec))
+			assert ("Cluster chart succeeded", type_checker.check_bon_specification (bon_spec))
 		end
 
 end
