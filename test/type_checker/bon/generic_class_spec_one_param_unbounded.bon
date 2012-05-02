@@ -1,0 +1,4 @@
+static_diagram GENERIC_CLASSES -- Used for testing of generic classes
+component
+	class TEST_SEQUENCE [E]
+end

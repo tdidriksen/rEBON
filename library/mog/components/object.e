@@ -47,13 +47,16 @@ feature -- Access
 feature -- Output
 
 	bon_out: STRING
-			-- The default BON string representation of a list is a comma-separated
-			-- sequence of its values.
+			-- The default BON string representation of an object.
 		do
 			check false end
 		end
 
 feature -- Status report
+	has_comment: BOOLEAN
+		do
+			Result := my_comment /= Void and then not my_comment.is_empty
+		end
 
 	is_part_of (other: like Current): BOOLEAN
 		do

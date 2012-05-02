@@ -163,6 +163,17 @@ feature -- Output
 		end
 
 feature -- Status Report
+	has_group_name: BOOLEAN
+			-- Does this reference have a group name?
+		do
+			Result := my_group_name /= Void and then not my_group_name.is_empty
+		end
+
+	has_object_name: BOOLEAN
+			-- Does this reference have an object name?
+		do
+			Result := my_object_name /= Void
+		end
 
 	contains_only_valid_characters (a_string: STRING): BOOLEAN
 			-- The components in a dynamic reference can contain only the characters [a-zA-Z0-9_.]

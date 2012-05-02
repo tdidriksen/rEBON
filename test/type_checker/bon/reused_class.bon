@@ -1,0 +1,7 @@
+static_diagram CLASS_SPECS
+component
+	root class MACHINE
+	deferred class VEHICLE
+	effective class CAR
+    deferred class MAKE reused
+end

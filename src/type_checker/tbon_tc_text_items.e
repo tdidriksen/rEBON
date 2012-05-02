@@ -146,6 +146,15 @@ feature -- Error messages
 			Result.append_string (" is not in a cluster.")
 		end
 
+	err_class_not_in_specified_cluster (a_class_name, a_cluster_name: STRING): STRING
+		do
+			Result := "Class dictionary specifies "
+			Result.append_string (a_class_name.string)
+			Result.append_string (" to belong to cluster ")
+			Result.append_string (a_cluster_name)
+			Result.append_string (", but this relationship is never defined.")
+		end
+
 	err_cluster_already_in_cluster (a_cluster_name, a_subcluster_name, a_subcluster_parent_name: STRING): STRING
 		do
 			Result := "Error defining cluster "
@@ -391,6 +400,22 @@ feature -- Error messages
 			Result.append_string (".")
 		end
 
+	err_labeled_action_already_exists_in_context (an_action_label: STRING): STRING
+		do
+			Result := "A labeled action with label "
+			Result.append_string (an_action_label.string)
+			Result.append_string (" already exists in the enclosing dynamic diagram.")
+		end
+
+	err_message_label_in_dynamic_reference_does_not_exist (a_msg_label: STRING): STRING
+		do
+			Result := "The referenced message label "
+			Result.append_string ("'")
+			Result.append_string (a_msg_label.string)
+			Result.append_string ("'")
+			Result.append_string (" is not defined in a scenario description.")
+		end
+
 	err_no_precursor_exists_for_feature (a_feature_name, a_class_name: STRING): STRING
 		do
 			Result := "Feature "
@@ -418,6 +443,66 @@ feature -- Error messages
 			Result.append_string (" do not match.")
 		end
 
+	err_object_already_exists (an_obj_name: OBJECT_NAME): STRING
+		do
+			Result := "Dynamic object "
+			Result.append_string (an_obj_name.string_representation.string)
+			Result.append_string (" already exists in the context.")
+		end
+
+	err_object_does_not_exist (an_obj_name: STRING): STRING
+		do
+			Result := "Dynamic object "
+			Result.append_string (an_obj_name.string)
+			Result.append_string (" is not defined in the context.")
+		end
+
+	err_object_group_already_exists (a_group_name: STRING): STRING
+		do
+			Result := "Dynamic object group "
+			Result.append_string (a_group_name.string)
+			Result.append_string (" already exists in the context.")
+		end
+
+	err_object_group_does_not_exist (an_obj_name: STRING): STRING
+		do
+			Result := "Dynamic object group "
+			Result.append_string (an_obj_name.string)
+			Result.append_string (" is not defined in the context.")
+		end
+
+	err_object_stack_already_exists (a_stack_name: STRING): STRING
+		do
+			Result := "Dynamic object stack "
+			Result.append_string (a_stack_name.string)
+			Result.append_string (" already exists in the context.")
+		end
+
+	err_object_stack_does_not_exist (an_obj_name: STRING): STRING
+		do
+			Result := "Dynamic object stack "
+			Result.append_string (an_obj_name.string)
+			Result.append_string (" is not defined in the context.")
+		end
+
+	err_prefix_group_does_not_exist (a_prefix_group, an_object: STRING): STRING
+		do
+			Result := "Group in prefix "
+			Result.append_string (a_prefix_group.string)
+			Result.append_string (" for object ")
+			Result.append_string (an_object.string)
+			Result.append_string (" in dynamic reference does not exist.")
+		end
+
+	err_prefix_group_does_not_match_object_group (a_prefix_group, an_object: STRING): STRING
+		do
+			Result := "Group prefix "
+			Result.append_string (a_prefix_group.string)
+			Result.append_string (" for object ")
+			Result.append_string (an_object.string)
+			Result.append_string (" in dynamic reference does not match the group to which the object belongs.")
+		end
+
 	err_prefix_feature_must_have_one_argument (a_feature_name, a_class_name: STRING): STRING
 		do
 			Result := "Prefix feature "
@@ -441,6 +526,13 @@ feature -- Error messages
 			Result.append_string (" in class ")
 			Result.append_string (a_class_name.string)
 			Result.append_string (" - feature has no type.")
+		end
+
+	err_scenario_already_exists (a_scenario_name: STRING): STRING
+		do
+			Result := "A scenario with name "
+			Result.append_string (a_scenario_name.string)
+			Result.append_string (" is defined more than once.")
 		end
 
 	err_selective_export_class_does_not_exist (a_class_name, an_enclosing_class_name: STRING): STRING

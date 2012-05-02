@@ -1,0 +1,5 @@
+static_diagram CLASS_SPECS
+component
+	root class MACHINE
+	class VEHICLE
+end

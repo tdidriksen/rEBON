@@ -54,6 +54,11 @@ feature -- Output
 		end
 
 feature -- Status report
+	has_comment: BOOLEAN
+			-- Does this object stack have a comment?
+		do
+			Result := my_comment /= Void and then not my_comment.is_empty
+		end
 
 	is_part_of (other: like Current): BOOLEAN
 		do

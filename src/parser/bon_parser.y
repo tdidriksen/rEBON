@@ -549,8 +549,8 @@ Specification_element : Comment { $$ := $1 }
 								{ $$ := $1 }
 							 | Static_diagram_rule
 								{ $$ := $1 }
---							 | Dynamic_diagram_rule
---								{ $$ := $1 }
+							 | Dynamic_diagram_rule
+								{ $$ := $1 }
 							 | Notational_tuning ;
 
 -- A.4 INFORMAL CHARTS 

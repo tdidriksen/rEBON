@@ -16,10 +16,10 @@ feature -- Initialization
 
 	make (a_name: STRING; a_comment: COMMENT; some_components: DYNAMIC_COMPONENTS)
 			-- Initialize `Current'.
-		require
-			a_name /= Void
 		do
-			create my_name.make_from_string (a_name)
+			if a_name /= Void then
+				create my_name.make_from_string (a_name)
+			end
 
 			if my_comment /= Void then
 				create my_comment.make_from_list (a_comment)
@@ -29,7 +29,7 @@ feature -- Initialization
 				my_components := some_components.twin
 			end
 		ensure
-			a_name /= Void and then name.is_equal (a_name)
+			a_name /= Void implies name.is_equal (a_name)
 			my_comment /= Void implies comment.is_equal (a_comment)
 			some_components /= Void implies components.is_equal (some_components)
 		end
@@ -60,6 +60,23 @@ feature -- Access
 		end
 
 feature -- Status report
+	has_name: BOOLEAN
+			-- Does this diagram have a name?
+		do
+			Result := my_name /= Void and then not my_name.is_empty
+		end
+
+	has_comment: BOOLEAN
+			-- Does this diagram have a comment?
+		do
+			Result := my_comment /= Void and then not my_comment.is_empty
+		end
+
+	has_components: BOOLEAN
+			-- Does this diagram have any components?
+		do
+			Result := my_components /= Void and then not my_components.is_empty
+		end
 
 	is_valid: BOOLEAN
 		do

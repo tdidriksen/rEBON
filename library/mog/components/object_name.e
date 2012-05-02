@@ -45,6 +45,16 @@ feature -- Access
 			Result := my_extended_id.twin
 		end
 
+	string_representation: STRING
+			-- What is the string representation of `Current'?
+		do
+			Result.append_string (class_name)
+			if has_extended_id then
+				Result.append_character ('.')
+				Result.append_string (extended_id)
+			end
+		end
+
 feature -- Status report
 	has_extended_id: BOOLEAN
 			-- Does `Current' have an extended ID?

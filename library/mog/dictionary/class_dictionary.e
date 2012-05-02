@@ -14,7 +14,7 @@ inherit
 			is_valid
 		end
 
-creation
+create
 	make
 
 feature -- Initialization
@@ -22,7 +22,11 @@ feature -- Initialization
 	make (a_name: STRING; some_entries: DICTIONARY_ENTRIES)
 			-- Initialize `Current'.
 		do
-			check false end
+			my_name := a_name.twin
+			my_entries := some_entries.twin
+		ensure
+			name.is_equal (a_name)
+			equal (entries, some_entries)
 		end
 
 feature -- Access
