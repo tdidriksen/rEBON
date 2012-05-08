@@ -1,0 +1,10 @@
+static_diagram PREFIX_HAS_ARGUMENTS
+component
+    class Z
+      feature
+        w: INTEGER
+        prefix "+": INTEGER
+            -> y: INTEGER
+    end
+end
+

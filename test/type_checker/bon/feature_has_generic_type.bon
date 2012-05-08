@@ -1,0 +1,9 @@
+static_diagram DUPLICATE_FEATURE
+component
+    class Z
+      feature
+        w: W
+        w: INTEGER
+    end
+end
+

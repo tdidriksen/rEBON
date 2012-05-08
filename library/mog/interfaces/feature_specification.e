@@ -13,6 +13,7 @@ create
 feature -- Initialization
 	make (a_feature_status: STRING
 			some_feature_names: FEATURE_NAME_LIST
+			a_type_mark: TYPE_MARK
 			a_type: BON_TYPE
 			a_rename_clause: RENAMING
 			a_comment: COMMENT
@@ -30,8 +31,12 @@ feature -- Initialization
 			if a_feature_status /= Void then
 				my_feature_status := a_feature_status.twin
 			end
-			
+
 			my_feature_name_list := some_feature_names.twin
+
+			if a_type_mark /= Void then
+				my_type_mark := a_type_mark.twin
+			end
 
 			if a_type /= Void then
 				my_type_information := a_type.twin
@@ -53,8 +58,9 @@ feature -- Initialization
 				my_contracts := a_contract_clause.twin
 			end
 		ensure
-			feature_status.is_equal (a_feature_status)
+			a_feature_status /= Void implies feature_status.is_equal (a_feature_status)
 			equal (feature_names, some_feature_names)
+			a_type_mark /= Void implies equal (type_mark, a_type_mark)
 			a_type /= Void implies equal (type, a_type)
 			a_rename_clause /= Void implies equal (rename_clause, a_rename_clause)
 			a_comment /= Void implies equal (comment, a_comment)
@@ -94,6 +100,12 @@ feature -- Access
 			-- What is the type of `Current'?
 		do
 			Result := my_type_information.twin
+		end
+
+	type_mark: TYPE_MARK
+			-- What is the type mark of `Current'?
+		do
+			Result := my_type_mark.twin
 		end
 
 	rename_clause: RENAMING
@@ -173,6 +185,7 @@ feature {NONE} -- Implementation
 
 	my_feature_status: STRING -- enumeration of deferred, effective, redefined
 	my_feature_name_list: FEATURE_NAME_LIST
+	my_type_mark: TYPE_MARK
 	my_type_information: BON_TYPE
 	my_rename_clause: RENAMING
 	my_comment: COMMENT
@@ -184,5 +197,6 @@ invariant
 	my_feature_name_list /= Void and then not my_feature_name_list.is_empty
 	my_arguments /= Void implies not my_arguments.is_empty
 	my_contracts /= Void implies (my_contracts.has_precondition or my_contracts.has_postcondition)
+	my_type_information /= Void implies my_type_mark /= Void
 
 end -- class FEATURE_SPECIFICATION

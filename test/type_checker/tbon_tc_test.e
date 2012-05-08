@@ -60,6 +60,7 @@ feature -- Constants
 
 	prepend_exec_path: BOOLEAN = True
 			-- Should the exec_path be prepended to the path?
+			-- True implies that tests should be run from command line. False implies they should be run in EiffelStudio
 
 	exec_path: STRING = "../../../bon/"
 			-- Path to BON files from executable library.

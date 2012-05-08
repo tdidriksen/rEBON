@@ -1,0 +1,8 @@
+static_diagram DUPLICATE_FEATURE
+component
+    class Z
+      feature
+        deferred w: INTEGER
+    end
+end
+

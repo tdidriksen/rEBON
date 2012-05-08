@@ -1,0 +1,27 @@
+static_diagram -- Borrowed from BONc tests - Thanks!
+component
+    class W
+      inherit X
+      feature
+        w: INTEGER
+    end
+
+    class X
+      inherit Y
+      feature
+        u: INTEGER
+    end
+
+    class Y
+      inherit Z
+      feature
+        t: INTEGER
+    end
+
+    class Z
+      inherit W
+      feature
+        v: INTEGER
+    end
+end
+

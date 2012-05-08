@@ -1373,8 +1373,8 @@ Feature_specification : Optional_Deferred_or_Effective_or_Redefined
 								Optional_Rename_clause
 								Optional_Comment
 								Optional_Feature_arguments_clause
-								Optional_Contract_clause 
-								{ create $$.make ($1, $2, $3, $4, $5, $6, $7) } ;
+								Optional_Contract_clause
+								{ create $$.make ($1, $2, last_type_mark, $3, $4, $5, $6, $7) } ;
 
 -- @type STRING
 Optional_Deferred_or_Effective_or_Redefined : -- Empty
@@ -1388,7 +1388,8 @@ Optional_Deferred_or_Effective_or_Redefined : -- Empty
 
 -- @type like Type
 Optional_Type_mark_Type : -- Empty
-								| Type_mark Type { $$ := $2 } ;
+                                 { last_type_mark := Void }
+								| Type_mark Type { last_type_mark := $1; $$ := $2 } ;
 
 -- @type like Renaming
 Optional_Rename_clause : -- Empty

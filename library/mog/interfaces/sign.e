@@ -33,6 +33,7 @@ feature -- Initialization
 		do
 			is_plus := True
 			my_string_representation := "+"
+			set_unary
 		end
 
 	make_minus
@@ -40,6 +41,7 @@ feature -- Initialization
 		do
 			is_minus := True
 			my_string_representation := "-"
+			set_unary
 		end
 
 feature -- Access

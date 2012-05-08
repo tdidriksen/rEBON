@@ -34,6 +34,8 @@ feature -- Initialization
 			selective_export.compare_objects
 			create {LINKED_LIST[TBON_TC_FEATURE_ARGUMENT]} arguments.make
 			arguments.compare_objects
+			create {ARRAYED_LIST[STRING]} seen_ancestors.make (10)
+			seen_ancestors.compare_objects
 		end
 
 	make_with_formal_generic_name (a_name: STRING; a_formal_generic_name: STRING; an_enclosing_class: TBON_TC_CLASS_TYPE)
@@ -54,6 +56,8 @@ feature -- Initialization
 			selective_export.compare_objects
 			create {LINKED_LIST[TBON_TC_FEATURE_ARGUMENT]} arguments.make
 			arguments.compare_objects
+			create {ARRAYED_LIST[STRING]} seen_ancestors.make (10)
+			seen_ancestors.compare_objects
 		end
 
 feature -- Access
@@ -83,6 +87,7 @@ feature -- Access
 	nearest_precursor: TBON_TC_FEATURE
 			-- What is the nearest precursor to `a_feature'?
 		do
+			seen_ancestors.wipe_out
 			Result := precursor_feature (enclosing_class)
 		end
 
@@ -121,7 +126,10 @@ feature {NONE} -- Implementation
 				loop
 					ancestor := ancestors.any_item
 
-					l_precursor := precursor_feature (ancestor)
+					if not seen_ancestors.has (ancestor.name) then
+						l_precursor := precursor_feature (ancestor)
+					end
+					seen_ancestors.extend (ancestor.name)
 
 					ancestors := ancestors / ancestor
 				end
@@ -129,6 +137,8 @@ feature {NONE} -- Implementation
 
 			Result := l_precursor
 		end
+
+	seen_ancestors: LIST[STRING]
 
 feature -- Status report
 	equal_status (other: like Current): BOOLEAN

@@ -1,0 +1,17 @@
+static_diagram DUPLICATE_FEATURE
+component
+    class W
+      inherit X
+      feature
+        w: INTEGER
+    end
+
+    class X
+
+    class Z
+      inherit W; X
+      feature
+        w: INTEGER
+    end
+end
+

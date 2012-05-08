@@ -30,12 +30,14 @@ feature -- Type names
 			-- Type name for a STRING type.
 
 feature -- Error messages
-	err_actual_type_does_not_match_bounding_type (a_generic_name, an_actual_type: STRING): STRING
+	err_actual_type_does_not_match_bounding_type (a_generic_name, an_actual_type, a_class_name: STRING): STRING
 		do
 			Result := "Type "
 			Result.append_string (an_actual_type.string)
 			Result.append_string (" does not conform to bounding type of type parameter ")
 			Result.append_string (a_generic_name.string)
+			Result.append_string (" in class ")
+			Result.append_string (a_class_name.string)
 			Result.append_string (".")
 		end
 
@@ -239,6 +241,15 @@ feature -- Error messages
 			Result.append_string (".")
 		end
 
+	err_duplicate_feature_name_inherited (a_feature_name, a_class_name: STRING): STRING
+		do
+			Result := "Feature name "
+			Result.append_string (a_feature_name.string)
+			Result.append_string (" is specified more than once in class ")
+			Result.append_string (a_class_name.string)
+			Result.append_string (" due to inheritance.")
+		end
+
 	err_duplicate_identifiers (an_identifier_name, a_class_name: STRING): STRING
 		do
 			Result := "Identifier "
@@ -257,6 +268,15 @@ feature -- Error messages
 			Result.append_string (" more than once due to inheritance of feature with the same name.")
 		end
 
+	err_effective_feature_has_non_deferred_precursor (a_feature_name, a_class_name: STRING): STRING
+		do
+			Result := "Feature "
+			Result.append_string (a_feature_name.string)
+			Result.append_string (" in class ")
+			Result.append_string (a_class_name.string)
+			Result.append_string (" is marked as effective, but has non-deferred precursor. Feature should be marked as redefined.")
+		end
+
 	err_enclosing_class_not_generic (a_feature_name, a_generic_name, a_class_name: STRING): STRING
 		do
 			Result := "Feature "
@@ -266,6 +286,13 @@ feature -- Error messages
 			Result.append_string (" specifies a generic name ")
 			Result.append_string (a_generic_name.string)
 			Result.append_string (", but class is not generic.")
+		end
+
+	err_feature_introduces_aggregation_with_enclosing_class (a_feature_name, a_class_name: STRING): STRING
+		do
+			Result := "Feature "
+			Result.append_string (a_feature_name)
+			Result.append_string (" introduces aggregation with enclosing class.")
 		end
 
 	err_feature_not_defined_in_class (a_feature_name, a_class_name: STRING): STRING
@@ -422,7 +449,16 @@ feature -- Error messages
 			Result.append_string (a_feature_name.string)
 			Result.append_string (" in class ")
 			Result.append_string (a_class_name.string)
-			Result.append_string (" is declared as redefined or deferred, but has no precursor.")
+			Result.append_string (" is declared as redefined, but has no precursor.")
+		end
+
+	err_non_deferred_class_has_deferred_feature (a_class_name, a_feature_name: STRING): STRING
+		do
+			Result := "Class "
+			Result.append_string (a_class_name.string)
+			Result.append_string (" has deferred feature ")
+			Result.append_string (a_feature_name.string)
+			Result.append_string (" but is not declared as deferred.")
 		end
 
 	err_number_of_parameters_in_named_indirection_does_not_match_number_of_type_parameters_in_class (a_class_name, a_type_name: STRING): STRING
@@ -485,6 +521,15 @@ feature -- Error messages
 			Result.append_string (" is not defined in the context.")
 		end
 
+	err_prefix_feature_has_argument (a_feature_name, a_class_name: STRING): STRING
+		do
+			Result := "Prefix feature "
+			Result.append_string (a_feature_name.string)
+			Result.append_string (" in class ")
+			Result.append_string (a_class_name.string)
+			Result.append_string (" has more than zero arguments.")
+		end
+
 	err_prefix_group_does_not_exist (a_prefix_group, an_object: STRING): STRING
 		do
 			Result := "Group in prefix "
@@ -510,6 +555,15 @@ feature -- Error messages
 			Result.append_string (" of class ")
 			Result.append_string (a_class_name.string)
 			Result.append_string (" must have exactly one argument.")
+		end
+
+	err_redefined_feature_has_deferred_precursor (a_feature_name, a_class_name: STRING): STRING
+		do
+			Result := "Feature "
+			Result.append_string (a_feature_name.string)
+			Result.append_string (" in class ")
+			Result.append_string (a_class_name.string)
+			Result.append_string (" is declared as redefined, but has deferred precursor. Feature should be marked as effective.")
 		end
 
 	err_result_constant_in_class_invariant (a_class_name: STRING): STRING
@@ -558,6 +612,15 @@ feature -- Error messages
 			Result := "The elements in an enumerated set in class "
 			Result.append_string (a_class_name.string)
 			Result.append_string (" do not conform to a common type.")
+		end
+
+	err_unclassified_feature_has_precursor (a_feature_name, a_class_name: STRING): STRING
+		do
+			Result := "Unclassified feature "
+			Result.append_string (a_feature_name.string)
+			Result.append_string (" in class ")
+			Result.append_string (a_class_name.string)
+			Result.append_string (" has a precursor.")
 		end
 
 	err_undefined (a_description: STRING): STRING

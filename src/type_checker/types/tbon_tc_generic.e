@@ -58,8 +58,8 @@ feature -- Status report
 	is_model_equal alias "|=|" (other: TBON_TC_GENERIC): BOOLEAN
 			-- Is this model mathematically equal to `other'?
 		do
-			Result := formal_generic_name ~ other.formal_generic_name and bounding_type ~ other.bounding_type
-
+			Result := formal_generic_name ~ other.formal_generic_name and
+					  (has_bounding_type implies bounding_type ~ other.bounding_type)
 		end
 
 	is_valid_actual_type (an_actual_type: TBON_TC_CLASS_TYPE): BOOLEAN

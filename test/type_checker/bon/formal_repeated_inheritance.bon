@@ -1,0 +1,17 @@
+static_diagram REPEATED_INHERITANCE
+component
+    class W
+      inherit X
+      feature
+        w: INTEGER
+    end
+
+    class X
+
+    class Z
+      inherit W; X
+      feature
+        v: INTEGER
+    end
+end
+

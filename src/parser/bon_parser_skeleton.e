@@ -211,6 +211,8 @@ feature -- Parsed specification elements
 
 	type_checker: TEXTUAL_BON_TYPE_CHECKER;
 
+	last_type_mark: TYPE_MARK
+
 end -- class BON_PARSER_SKELETON
 
 -- Local Variables:

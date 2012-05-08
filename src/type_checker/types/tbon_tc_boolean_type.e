@@ -10,7 +10,6 @@ class
 inherit
 	TBON_TC_CLASS_TYPE
 		redefine
-			conforms_to,
 			is_model_equal
 		end
 
@@ -26,11 +25,6 @@ feature -- Initialization
 		end
 
 feature -- Status report
-	conforms_to (other: TBON_TC_TYPE): BOOLEAN
-			-- Does `Current' conform to `other'?
-		do
-			Result := False
-		end
 
 	is_model_equal alias "|=|" (other: TBON_TC_TYPE): BOOLEAN
 			-- Is this model mathematically equal to `other'?

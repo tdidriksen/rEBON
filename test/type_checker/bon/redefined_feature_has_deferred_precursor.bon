@@ -1,0 +1,14 @@
+static_diagram DUPLICATE_FEATURE
+component
+    deferred class A
+        feature
+            deferred w: INTEGER
+    end
+    
+    class B
+        inherit A
+        feature
+            redefined w: INTEGER
+    end
+end
+

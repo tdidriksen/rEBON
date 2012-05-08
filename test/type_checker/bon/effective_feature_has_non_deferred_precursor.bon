@@ -1,0 +1,14 @@
+static_diagram DUPLICATE_FEATURE
+component
+    class A
+        feature
+            effective w: INTEGER
+    end
+    
+    class B
+        inherit A
+        feature
+            effective w: INTEGER
+    end
+end
+
