@@ -1676,6 +1676,11 @@ feature -- Type checking, static diagrams
 
 	check_class_type (an_element: CLASS_TYPE; enclosing_class: TBON_TC_CLASS_TYPE; class_arg_no: INTEGER): BOOLEAN
 			-- Does `an_element' type check as a type CLASS_TYPE?
+			-- Argument class_arg_no refers to how many generic names of the enclosing class `an_element' can access:
+			--	1 means only the first
+			--  2 means the first two
+			--  etc.
+			--  0 means all generic names of the enclosing class can be accessed.
 		note
 			rule: "[
 				In an environment where the name of `an_element' exists,
@@ -1684,7 +1689,6 @@ feature -- Type checking, static diagrams
 				`an_element' is OK.
 				]"
 		local
-			class_type: TBON_TC_CLASS_TYPE
 			error_count: INTEGER
 		do
 			if first_phase then
@@ -1694,11 +1698,11 @@ feature -- Type checking, static diagrams
 			elseif second_phase then
 
 				error_count := errors.count
-				class_type := context_instance (an_element, enclosing_class, class_arg_no)
+				last_class_type := context_instance (an_element, enclosing_class, class_arg_no)
 				Result := errors.count = error_count
 
 				if Result then
-					Result := Result and class_type.generics.range.for_all (
+					Result := Result and last_class_type.generics.range.for_all (
 						agent (l_generic: TBON_TC_GENERIC): BOOLEAN
 							do
 								Result := l_generic.is_valid_actual_type (l_generic.actual_type)
@@ -1713,6 +1717,8 @@ feature -- Type checking, static diagrams
 				Result := False
 			end
 		end
+
+	last_class_type: TBON_TC_CLASS_TYPE
 
 --	check_class_type (an_element: CLASS_TYPE; enclosing_class: TBON_TC_CLASS_TYPE; enclosing_type: TBON_TC_CLASS_TYPE; class_arg_no, type_arg_no: INTEGER): BOOLEAN
 --			-- Does `an_element' type check as a type CLASS_TYPE?
@@ -2476,9 +2482,8 @@ feature -- Type checking, static diagrams
 
 					-- Check type of feature
 					if l_feature.has_type then
-						error_count := errors.count
-						type_instance := context_instance (an_element.type.class_type, enclosing_class, 0)
-						Result := errors.count = error_count
+						Result := Result and check_class_type (an_element.type.class_type, enclosing_class, 0)
+						type_instance := last_class_type
 
 						if Result and l_precursor /= Void then
 							if not type_instance.conforms_to (l_precursor.type) then
