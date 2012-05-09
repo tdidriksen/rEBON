@@ -106,7 +106,7 @@ feature -- Initialization
 
 			create unresolved_features.default_create
 			create {ARRAYED_LIST[TBON_TC_TUPLE[TBON_TC_CLASS_TYPE, INTEGER]]} unresolved_conformance.make (10)
-			create {ARRAYED_LIST[TBON_TC_TUPLE[TBON_TC_GENERIC, TBON_TC_CLASS_TYPE]]} unresolved_generics.make (10)
+			create {ARRAYED_LIST[TBON_TC_TUPLE[TBON_TC_GENERIC, CLASS_TYPE]]} unresolved_generics.make (10)
 			create {ARRAYED_LIST[INHERITANCE_RELATION]} unresolved_inheritance_relations.make (10)
 			create {ARRAYED_LIST[STATIC_REF]} unresolved_static_references.make (10)
 		end
@@ -138,7 +138,7 @@ feature {TEXTUAL_BON_TYPE_CHECKER, TBON_TC_TEST} -- Contexts
 
 	unresolved_features: MML_SET[TBON_TC_FEATURE]
 
-	unresolved_generics: LIST[TBON_TC_TUPLE[TBON_TC_GENERIC, TBON_TC_CLASS_TYPE]]
+	unresolved_generics: LIST[TBON_TC_TUPLE[TBON_TC_GENERIC, CLASS_TYPE]]
 
 	unresolved_inheritance_relations: LIST[INHERITANCE_RELATION]
 
@@ -346,51 +346,120 @@ feature -- Auxiliary features, type checking
 			end
 		end
 
-	instantiated_type (a_type: TBON_TC_CLASS_TYPE; a_class_type: CLASS_TYPE; enclosing_class: TBON_TC_CLASS_TYPE): TBON_TC_CLASS_TYPE
-			-- Instantiate `a_type' with actual parameters from `a_class_type'.
-		require
-			a_type /= Void
-			a_class_type /= Void
-			enclosing_class /= Void
-		local
-			type_instance: TBON_TC_CLASS_TYPE
-			type_arg_no: INTEGER
-			success: BOOLEAN
-		do
-			if a_type.generics.count > 0 and a_class_type.actual_generic_count > 0 then
-				-- If type has arguments, assign copy of type to feature in order to not overwrite type in context.
-				type_instance := a_type.deep_twin
-				from
-					a_class_type.actual_generics.start
-					type_arg_no := 1
-					success := True
-				until
-					a_class_type.actual_generics.after
-				loop
-					-- Check class type
-					if a_class_type.actual_generics.item_for_iteration.is_class_type then
+--	instantiated_type (a_type: TBON_TC_CLASS_TYPE; a_class_type: CLASS_TYPE; enclosing_class: TBON_TC_CLASS_TYPE): TBON_TC_CLASS_TYPE
+--			-- Instantiate `a_type' with actual parameters from `a_class_type'.
+--		require
+--			a_type /= Void
+--			a_class_type /= Void
+--			enclosing_class /= Void
+--		local
+--			type_instance: TBON_TC_CLASS_TYPE
+--			type_arg_no: INTEGER
+--			success: BOOLEAN
+--		do
+--			if a_type.generics.count > 0 and a_class_type.actual_generic_count > 0 then
+--				-- If type has arguments, assign copy of type to feature in order to not overwrite type in context.
+--				type_instance := a_type.deep_twin
+--				from
+--					a_class_type.actual_generics.start
+--					type_arg_no := 1
+--					success := True
+--				until
+--					a_class_type.actual_generics.after
+--				loop
+--					-- Check class type
+--					if a_class_type.actual_generics.item_for_iteration.is_class_type then
 
-						success := success and check_class_type (a_class_type.actual_generics.item_for_iteration.class_type, enclosing_class, type_instance, 0, type_arg_no)
+--						success := success and check_class_type (a_class_type.actual_generics.item_for_iteration.class_type, enclosing_class, type_instance, 0, type_arg_no)
 
-					elseif a_class_type.actual_generics.item_for_iteration.is_formal_generic_name then
+--					elseif a_class_type.actual_generics.item_for_iteration.is_formal_generic_name then
 
-						success := success and check_formal_generic_name (a_class_type.actual_generics.item_for_iteration.formal_generic_name, enclosing_class, type_instance, 0, type_arg_no)
+--						success := success and check_formal_generic_name (a_class_type.actual_generics.item_for_iteration.formal_generic_name, enclosing_class, type_instance, 0, type_arg_no)
 
-					end
+--					end
 
-					type_arg_no := type_arg_no + 1
-					a_class_type.actual_generics.forth
+--					type_arg_no := type_arg_no + 1
+--					a_class_type.actual_generics.forth
+--				end
+
+--				if success then
+--					Result := type_instance
+--				else
+--					Result := a_type
+--				end
+
+--			else
+--				Result := a_type
+--			end
+--		end
+
+	context_instance (class_type: CLASS_TYPE; enclosing_class: TBON_TC_CLASS_TYPE; class_arg_no: INTEGER): TBON_TC_CLASS_TYPE
+	        -- Can I have a context class of this CLASS_TYPE with instances from the type context?
+	    local
+	        arg_no: INTEGER
+	        actual_generics: ACTUAL_GENERICS
+	    do
+	        if attached {TBON_TC_CLASS_TYPE} type_with_name (class_type.class_name, formal_type_context) as context_class then
+	            if class_type.actual_generic_count > 0 and not context_class.generics.is_empty then
+	                Result := context_class.new_instance
+	            else
+	                Result := context_class
+	            end
+
+				-- Check that number of arguments match for current element and class extracted from context.
+				if Result /= Void and then not (Result.generics.count = class_type.actual_generic_count) then
+					-- Error - number of parameters do not match
+					add_error (err_code_number_of_type_parameters_do_not_match, err_number_of_type_parameters_do_not_match (Result.name, class_type.class_name))
+					Result := Void
 				end
 
-				if success then
-					Result := type_instance
-				else
-					Result := a_type
+				-- A generic cannot be bounded by its enclosing class.
+				if class_type.class_name ~ enclosing_class.name then
+					-- Error - generic is bounded by its enclosing class
+					add_error (err_code_formal_generic_name_is_bounded_by_enclosing_class, err_formal_generic_name_is_bounded_by_enclosing_class (class_type.class_name, enclosing_class.name))
+					Result := Void
 				end
 
-			else
-				Result := a_type
-			end
+	            if Result /= Void and then class_type.actual_generic_count > 0 then
+	            	from
+	            		arg_no := 1
+	            		actual_generics := class_type.actual_generics
+	            		actual_generics.start
+	            	until
+	            		actual_generics.after
+	            	loop
+	                    Result.generics[arg_no].set_actual_type (context_instance (actual_generics.item_for_iteration.class_type, enclosing_class, class_arg_no))
+
+	                  	arg_no := arg_no + 1
+	                  	actual_generics.forth
+	                end
+	            end
+			elseif (class_arg_no > 0 and then enclosing_class.generics.front (class_arg_no-1).range.exists (
+						agent (l_generic: TBON_TC_GENERIC; l_generic_name: STRING): BOOLEAN
+							do
+								Result := l_generic.formal_generic_name ~ l_generic_name
+							end (?, class_type.class_name)
+					)) then -- As formal generic names are not recognized by the parser, check it here.
+
+				Result := enclosing_class.generics[enclosing_class.index_of_generic_name (class_type.class_name)].bounding_type
+				if Result = Void then
+					Result ?= type_with_name (any_type_name, formal_type_context)
+				end
+			elseif class_arg_no = 0 and then enclosing_class.generics.range.exists ( -- If class_arg_no is zero, all generics names are available
+						agent (l_generic: TBON_TC_GENERIC; l_generic_name: STRING): BOOLEAN
+							do
+								Result := l_generic.formal_generic_name ~ l_generic_name
+							end (?, class_type.class_name)
+					) then
+
+				Result := enclosing_class.generics[enclosing_class.index_of_generic_name (class_type.class_name)].bounding_type
+				if Result = Void then
+					Result ?= type_with_name (any_type_name, formal_type_context)
+				end
+	        else
+	            Result := Void
+	            add_error (err_code_class_does_not_exist, err_class_does_not_exist (class_type.class_name))
+	        end
 		end
 
 feature -- Error handling
@@ -741,8 +810,12 @@ feature -- Type checking, general
 			-- Resolve generics with respect to class names in context.
 		local
 			is_unique_name: BOOLEAN
-			current_generic: TBON_TC_GENERIC
 			enclosing_class: TBON_TC_CLASS_TYPE
+			current_generic: TBON_TC_GENERIC
+			class_type: CLASS_TYPE
+			bounding_type: TBON_TC_CLASS_TYPE
+			error_count: INTEGER
+			i, occurrences: INTEGER
 		do
 			Result := True
 					-- If no generics are present in system, it should not fail.
@@ -751,8 +824,11 @@ feature -- Type checking, general
 			until
 				unresolved_generics.exhausted
 			loop
+				enclosing_class := unresolved_generics.item.first.enclosing_class
 				current_generic := unresolved_generics.item.first
-				enclosing_class := unresolved_generics.item.second
+				class_type := unresolved_generics.item.second
+
+				-- Check that formal generic name is not the same as a name in the context
 				Result := not formal_type_context.exists (
 					agent (type: TBON_TC_TYPE; generic: TBON_TC_GENERIC): BOOLEAN
 						do
@@ -761,26 +837,27 @@ feature -- Type checking, general
 				)
 
 				if Result then
-					is_unique_name := not enclosing_class.generics.range.exists (
-						agent (l_generic: TBON_TC_GENERIC; l_generic_name: STRING): BOOLEAN
-							do
-								Result := l_generic.formal_generic_name ~ l_generic_name
-							end (?, current_generic.formal_generic_name)
-					)
-
-					if is_unique_name then
-						-- If the formal generic name is OK, check that the bounding type exists
-						if current_generic.bounding_type /= Void then
-							if attached {TBON_TC_CLASS_TYPE} type_with_name (current_generic.bounding_type.name, formal_type_context) as bounding_type then
-								current_generic.set_bounding_type (bounding_type)
-							else
-								-- Error - bounding type does not exist
-								add_error (err_code_class_does_not_exist, err_class_does_not_exist (current_generic.bounding_type.name))
-								Result := False
-							end
+					-- Check that formal generic name does not appear multiple times in class					
+					from
+						i := 1
+						occurrences := 0
+					until
+						i > enclosing_class.generics.count
+					loop
+						if enclosing_class.generics[i].formal_generic_name ~ current_generic.formal_generic_name  then
+							occurrences := occurrences + 1
 						end
+						i := i + 1
+					end
 
-						enclosing_class.add_type_parameter (current_generic)
+					if occurrences = 1 then
+						-- If the formal generic name is OK, check that the bounding type exists
+						error_count := errors.count
+						bounding_type := context_instance (class_type, enclosing_class, enclosing_class.index_of_generic_name (current_generic.formal_generic_name))
+						-- Check if call to context_instance emitted any errors
+						Result := errors.count = error_count
+
+						current_generic.set_bounding_type (bounding_type)
 					else
 						add_error (err_code_formal_generic_name_appears_more_than_once, err_formal_generic_name_appears_more_than_once (current_generic.formal_generic_name, enclosing_class.name))
 						Result := False
@@ -1597,7 +1674,7 @@ feature -- Type checking, static diagrams
 				 not a_class.features.is_empty)
 		end
 
-	check_class_type (an_element: CLASS_TYPE; enclosing_class: TBON_TC_CLASS_TYPE; enclosing_type: TBON_TC_CLASS_TYPE; class_arg_no, type_arg_no: INTEGER): BOOLEAN
+	check_class_type (an_element: CLASS_TYPE; enclosing_class: TBON_TC_CLASS_TYPE; class_arg_no: INTEGER): BOOLEAN
 			-- Does `an_element' type check as a type CLASS_TYPE?
 		note
 			rule: "[
@@ -1606,133 +1683,173 @@ feature -- Type checking, static diagrams
 				and all the actual generics are OK,
 				`an_element' is OK.
 				]"
-		require
-			enclosing_class /= Void
-			enclosing_type = Void implies class_arg_no > 0
-			enclosing_type /= Void implies type_arg_no > 0
 		local
-			type: BON_TYPE
-			current_type, bounding_type: TBON_TC_CLASS_TYPE
-			actual_generics: ACTUAL_GENERICS
-			type_arg: like type_arg_no
+			class_type: TBON_TC_CLASS_TYPE
+			error_count: INTEGER
 		do
 			if first_phase then
 
 				Result := True
 
---				-- A generic cannot be bounded by its enclosing class.
---				if an_element.class_name ~ enclosing_class.name then
---					-- Error - generic is bounded by its enclosing class
---					add_error (err_code_formal_generic_name_is_bounded_by_enclosing_class, err_formal_generic_name_is_bounded_by_enclosing_class (enclosing_class.generics[class_arg_no].formal_generic_name, enclosing_class.name))
---					Result := False
---				end
-
---				-- Iterate through actual generics
---				if an_element.actual_generic_count > 0 then
-
---					from an_element.actual_generics.start until an_element.actual_generics.after
---					loop
---						type := an_element.actual_generics.item_for_iteration
---						if type.is_class_type then
---							Result := check_class_type (type.class_type, enclosing_class, Void, class_arg_no, type_arg_no + 1)
---						elseif type.is_class_type then
---							Result := check_formal_generic_name (type.formal_generic_name, enclosing_class, Void, class_arg_no, type_arg_no + 1)
---						end
-
---						an_element.actual_generics.forth
---					end
---				end
-
 			elseif second_phase then
 
-				Result := True
+				error_count := errors.count
+				class_type := context_instance (an_element, enclosing_class, class_arg_no)
+				Result := errors.count = error_count
 
-				-- Check that class name exists in context
-				if attached {TBON_TC_CLASS_TYPE} type_with_name (an_element.class_name, formal_type_context) as class_type then
-					if an_element.actual_generic_count > 0 then
-						current_type := class_type.new_instance
-					else
-						current_type := class_type
-					end
-
-					-- A generic cannot be bounded by its enclosing class.
-					if Result and then an_element.class_name ~ enclosing_class.name then
-						-- Error - generic is bounded by its enclosing class
-						add_error (err_code_formal_generic_name_is_bounded_by_enclosing_class, err_formal_generic_name_is_bounded_by_enclosing_class (enclosing_class.generics[class_arg_no].formal_generic_name, enclosing_class.name))
-						Result := False
-					end
-
-					-- Check that number of arguments match for current element and class extracted from context.
-					if Result and then not (current_type.generics.count = an_element.actual_generic_count) then
-						-- Error - number of paramters do not match
-						add_error (err_code_number_of_type_parameters_do_not_match, err_number_of_type_parameters_do_not_match (current_type.name, an_element.class_name))
-						Result := False
-					end
-				elseif enclosing_class.generics.front (class_arg_no-1).range.exists (
-							agent (l_generic: TBON_TC_GENERIC; l_generic_name: STRING): BOOLEAN
-								do Result := l_generic.formal_generic_name ~ l_generic_name end (?, an_element.class_name)
-						) then -- As formal generic names are not recognized by the parser, check it here.
-					bounding_type := enclosing_class.generics[enclosing_class.index_of_generic_name (an_element.class_name)].bounding_type
-					if bounding_type /= Void then
-						current_type := bounding_type.new_instance
-					else
-						current_type ?= type_with_name (any_type_name, formal_type_context)
-					end
-				else
-					-- Error - class does not exist
-					add_error (err_code_class_does_not_exist, err_class_does_not_exist (an_element.class_name))
-					Result := False
-				end
-
-				-- If current_type is not enclosed by another type, add it as bounding type.
-				-- Otherwise, set it as actual type.
 				if Result then
-					if enclosing_type = Void then
-						enclosing_class.generics[class_arg_no].set_bounding_type (current_type)
-					else
-						enclosing_type.generics[type_arg_no].set_actual_type (current_type)
-					end
+					Result := Result and class_type.generics.range.for_all (
+						agent (l_generic: TBON_TC_GENERIC): BOOLEAN
+							do
+								Result := l_generic.is_valid_actual_type (l_generic.actual_type)
+								if not Result then
+									add_error (err_code_actual_type_does_not_match_bounding_type, err_actual_type_does_not_match_bounding_type (l_generic.formal_generic_name, l_generic.actual_type.name, l_generic.enclosing_class.name))
+								end
+							end
+					)
 				end
 
-				if Result and then an_element.actual_generic_count > 0 then
-					actual_generics := an_element.actual_generics
-					from
-						actual_generics.start
-						type_arg := 1
-					until
-						actual_generics.after
-					loop
-						type := actual_generics.item_for_iteration
-						if type.is_class_type then
-							Result := check_class_type (type.class_type, enclosing_class, current_type, class_arg_no, type_arg)
-
-						elseif type.is_formal_generic_name then
-							Result := check_formal_generic_name (type.formal_generic_name, enclosing_class, current_type, class_arg_no, type_arg)
-						end
-
-						type_arg := type_arg + 1
-						actual_generics.forth
-					end
-
-					-- Check that actual type conforms to bound
-					unresolved_conformance.extend (create {TBON_TC_TUPLE[TBON_TC_CLASS_TYPE, INTEGER]}.make (current_type, type_arg_no))
---					if not current_type.generics[type_arg_no].is_valid_actual_type (current_type.generics[type_arg_no].actual_type) then
---						-- Error - actual type does not conform to bounding type.
---						add_error (err_code_actual_type_does_not_match_bounding_type, err_actual_type_does_not_match_bounding_type (current_type.generics[type_arg_no].formal_generic_name, current_type.generics[type_arg_no].actual_type.name, current_type.name))
---						Result := False
---					end
-				end
 			else
 				Result := False
 			end
-		ensure
-			not_bounded_by_enclosing_class:
-			(second_phase and Result) implies not (an_element.class_name ~ enclosing_class.name)
-
-			class_name_exists:
-			(second_phase and Result) implies (class_type_exists (an_element.class_name, formal_type_context) or else
-												enclosing_class.has_generic_name (an_element.class_name))
 		end
+
+--	check_class_type (an_element: CLASS_TYPE; enclosing_class: TBON_TC_CLASS_TYPE; enclosing_type: TBON_TC_CLASS_TYPE; class_arg_no, type_arg_no: INTEGER): BOOLEAN
+--			-- Does `an_element' type check as a type CLASS_TYPE?
+--		note
+--			rule: "[
+--				In an environment where the name of `an_element' exists,
+--				and is not equal to its enclosing class
+--				and all the actual generics are OK,
+--				`an_element' is OK.
+--				]"
+--		require
+--			enclosing_class /= Void
+--			enclosing_type = Void implies class_arg_no > 0
+--			enclosing_type /= Void implies type_arg_no > 0
+--		local
+--			type: BON_TYPE
+--			current_type, bounding_type: TBON_TC_CLASS_TYPE
+--			actual_generics: ACTUAL_GENERICS
+--			type_arg: like type_arg_no
+--		do
+--			if first_phase then
+
+--				Result := True
+
+----				-- A generic cannot be bounded by its enclosing class.
+----				if an_element.class_name ~ enclosing_class.name then
+----					-- Error - generic is bounded by its enclosing class
+----					add_error (err_code_formal_generic_name_is_bounded_by_enclosing_class, err_formal_generic_name_is_bounded_by_enclosing_class (enclosing_class.generics[class_arg_no].formal_generic_name, enclosing_class.name))
+----					Result := False
+----				end
+
+----				-- Iterate through actual generics
+----				if an_element.actual_generic_count > 0 then
+
+----					from an_element.actual_generics.start until an_element.actual_generics.after
+----					loop
+----						type := an_element.actual_generics.item_for_iteration
+----						if type.is_class_type then
+----							Result := check_class_type (type.class_type, enclosing_class, Void, class_arg_no, type_arg_no + 1)
+----						elseif type.is_class_type then
+----							Result := check_formal_generic_name (type.formal_generic_name, enclosing_class, Void, class_arg_no, type_arg_no + 1)
+----						end
+
+----						an_element.actual_generics.forth
+----					end
+----				end
+
+--			elseif second_phase then
+
+--				Result := True
+
+--				-- Check that class name exists in context
+--				if attached {TBON_TC_CLASS_TYPE} type_with_name (an_element.class_name, formal_type_context) as class_type then
+--					if an_element.actual_generic_count > 0 then
+--						current_type := class_type.new_instance
+--					else
+--						current_type := class_type
+--					end
+
+--					-- A generic cannot be bounded by its enclosing class.
+--					if Result and then an_element.class_name ~ enclosing_class.name then
+--						-- Error - generic is bounded by its enclosing class
+--						add_error (err_code_formal_generic_name_is_bounded_by_enclosing_class, err_formal_generic_name_is_bounded_by_enclosing_class (enclosing_class.generics[class_arg_no].formal_generic_name, enclosing_class.name))
+--						Result := False
+--					end
+
+--					-- Check that number of arguments match for current element and class extracted from context.
+--					if Result and then not (current_type.generics.count = an_element.actual_generic_count) then
+--						-- Error - number of paramters do not match
+--						add_error (err_code_number_of_type_parameters_do_not_match, err_number_of_type_parameters_do_not_match (current_type.name, an_element.class_name))
+--						Result := False
+--					end
+--				elseif enclosing_class.generics.front (class_arg_no-1).range.exists (
+--							agent (l_generic: TBON_TC_GENERIC; l_generic_name: STRING): BOOLEAN
+--								do Result := l_generic.formal_generic_name ~ l_generic_name end (?, an_element.class_name)
+--						) then -- As formal generic names are not recognized by the parser, check it here.
+--					bounding_type := enclosing_class.generics[enclosing_class.index_of_generic_name (an_element.class_name)].bounding_type
+--					if bounding_type /= Void then
+--						current_type := bounding_type.new_instance
+--					else
+--						current_type ?= type_with_name (any_type_name, formal_type_context)
+--					end
+--				else
+--					-- Error - class does not exist
+--					add_error (err_code_class_does_not_exist, err_class_does_not_exist (an_element.class_name))
+--					Result := False
+--				end
+
+--				-- If current_type is not enclosed by another type, add it as bounding type.
+--				-- Otherwise, set it as actual type.
+--				if Result then
+--					if enclosing_type = Void then
+--						enclosing_class.generics[class_arg_no].set_bounding_type (current_type)
+--					else
+--						enclosing_type.generics[type_arg_no].set_actual_type (current_type)
+--					end
+--				end
+
+--				if Result and then an_element.actual_generic_count > 0 then
+--					actual_generics := an_element.actual_generics
+--					from
+--						actual_generics.start
+--						type_arg := 1
+--					until
+--						actual_generics.after
+--					loop
+--						type := actual_generics.item_for_iteration
+--						if type.is_class_type then
+--							Result := check_class_type (type.class_type, enclosing_class, current_type, class_arg_no, type_arg)
+
+--						elseif type.is_formal_generic_name then
+--							Result := check_formal_generic_name (type.formal_generic_name, enclosing_class, current_type, class_arg_no, type_arg)
+--						end
+
+--						type_arg := type_arg + 1
+--						actual_generics.forth
+--					end
+
+--					-- Check that actual type conforms to bound
+--					unresolved_conformance.extend (create {TBON_TC_TUPLE[TBON_TC_CLASS_TYPE, INTEGER]}.make (current_type, type_arg_no))
+----					if not current_type.generics[type_arg_no].is_valid_actual_type (current_type.generics[type_arg_no].actual_type) then
+----						-- Error - actual type does not conform to bounding type.
+----						add_error (err_code_actual_type_does_not_match_bounding_type, err_actual_type_does_not_match_bounding_type (current_type.generics[type_arg_no].formal_generic_name, current_type.generics[type_arg_no].actual_type.name, current_type.name))
+----						Result := False
+----					end
+--				end
+--			else
+--				Result := False
+--			end
+--		ensure
+--			not_bounded_by_enclosing_class:
+--			(second_phase and Result) implies not (an_element.class_name ~ enclosing_class.name)
+
+--			class_name_exists:
+--			(second_phase and Result) implies (class_type_exists (an_element.class_name, formal_type_context) or else
+--												enclosing_class.has_generic_name (an_element.class_name))
+--		end
 
 	check_client_entities (an_element: CLIENT_ENTITIES; client_class: TBON_TC_CLASS_TYPE; relation: CLIENT_RELATION): BOOLEAN
 			-- Does `an_element' type check as a type CLIENT_ENTITIES?
@@ -2071,7 +2188,7 @@ feature -- Type checking, static diagrams
 						-- Check type of argument
 						if l_argument.has_type and then not l_argument.type.generics.is_empty then
 							if an_element.item_for_iteration.type.is_class_type then
-								type_instance := instantiated_type (l_argument.type, an_element.item_for_iteration.type.class_type, enclosing_class)
+								type_instance := Void -- instantiated_type (l_argument.type, an_element.item_for_iteration.type.class_type, enclosing_class)
 							end
 						end
 
@@ -2229,6 +2346,7 @@ feature -- Type checking, static diagrams
 			interface: MML_SET[TBON_TC_FEATURE]
 
 			type_instance: TBON_TC_CLASS_TYPE
+			error_count: INTEGER
 		do
 			if first_phase then
 
@@ -2353,28 +2471,23 @@ feature -- Type checking, static diagrams
 					current_feature_name := feature_names.item_for_iteration
 					l_feature := enclosing_class.feature_with_name (current_feature_name.feature_name, current_feature_name.is_prefix, current_feature_name.is_infix)
 
-					-- Check type of feature
-					if l_feature.has_type and then not l_feature.type.generics.is_empty then
-						if an_element.type.is_class_type and then an_element.type.class_type.actual_generic_count > 0 then
-							type_instance := instantiated_type (l_feature.type, an_element.type.class_type, enclosing_class) --l_feature.type.new_instance
-							l_feature.set_type (type_instance)
-							--Result := check_class_type (an_element.type.class_type, enclosing_class, l_feature.type, 0, 1)
-						end
-					end
-
 					-- Get precursor
 					l_precursor := l_feature.nearest_precursor
 
-					-- If current feature is redefined, a precursor must exist
-					if an_element.is_redefined and l_precursor = Void then
-						add_error (err_code_no_precursor_exists_for_feature, err_no_precursor_exists_for_feature (current_feature_name.feature_name, enclosing_class.name))
-						Result := False
-					end
+					-- Check type of feature
+					if l_feature.has_type then
+						error_count := errors.count
+						type_instance := context_instance (an_element.type.class_type, enclosing_class, 0)
+						Result := errors.count = error_count
 
-					-- If precursor exists, the type of current feature must conform to type of precursor
-					if l_precursor /= Void and then l_feature.has_type and then not l_feature.type.conforms_to (l_precursor.type) then
-						-- Error type does not conform to precursor.
-						Result := False
+						if Result and l_precursor /= Void then
+							if not type_instance.conforms_to (l_precursor.type) then
+								add_error (err_code_feature_type_does_not_conform_to_precursor_type, err_feature_type_does_not_conform_to_precursor_type (current_feature_name.feature_name, enclosing_class.name))
+								Result := False
+							end
+						end
+
+						l_feature.set_type (type_instance)
 					end
 
 					-- If precursor is deferred, current feature must be effective or deferred
@@ -2412,6 +2525,9 @@ feature -- Type checking, static diagrams
 								add_error (err_code_redefined_feature_has_deferred_precursor, err_redefined_feature_has_deferred_precursor (current_feature_name.feature_name, enclosing_class.name))
 								Result := False
 							end
+						else
+							add_error (err_code_no_precursor_exists_for_feature, err_no_precursor_exists_for_feature (current_feature_name.feature_name, enclosing_class.name))
+							Result := False
 						end
 
 					elseif not an_element.has_status then
@@ -2560,21 +2676,23 @@ feature -- Type checking, static diagrams
 			class_type: TBON_TC_CLASS_TYPE
 			actual_generics: ACTUAL_GENERICS
 			current_class_type: CLASS_TYPE
-			--is_unique_name: BOOLEAN
 		do
 			if first_phase then
 
 				Result := True
 
-				if an_element.has_class_type then
-					Result := check_class_type (an_element.class_type, enclosing_class, Void, arg_no, 1) and Result
-					-- Create placeholder bounding type
-					create class_type.make (an_element.class_type.class_name)
+				if enclosing_class.has_generic_name (an_element.name) then
+					add_error (err_code_formal_generic_name_appears_more_than_once, err_formal_generic_name_appears_more_than_once (an_element.name, enclosing_class.name))
+					Result := False
 				end
 
-				create generic.make (an_element.name, class_type)
+				create generic.make (an_element.name, Void, enclosing_class)
+				enclosing_class.add_type_parameter (generic)
+
 				-- Add as unresolved
-				unresolved_generics.extend (create {TBON_TC_TUPLE[TBON_TC_GENERIC, TBON_TC_CLASS_TYPE]}.make (generic, enclosing_class))
+				if an_element.has_class_type then
+					unresolved_generics.extend (create {TBON_TC_TUPLE[TBON_TC_GENERIC, CLASS_TYPE]}.make (generic, an_element.class_type))
+				end
 
 			elseif second_phase then
 
@@ -2608,8 +2726,13 @@ feature -- Type checking, static diagrams
 
 				Result := True
 
+				if name_exists_in_context (an_element.name, formal_type_context) then
+					add_error (err_code_formal_generic_name_has_same_name_as_class, err_formal_generic_name_has_same_name_as_class (an_element.name, enclosing_class.name))
+					Result := False
+				end
+
 				if an_element.has_class_type then
-					Result := check_class_type (an_element.class_type, enclosing_class, Void, arg_no, 1) and Result
+					Result := check_class_type (an_element.class_type, enclosing_class, arg_no) and Result
 				end
 
 			else
@@ -2617,13 +2740,13 @@ feature -- Type checking, static diagrams
 			end
 
 		ensure
-			formal_generic_name_not_in_old_environment:
-				(first_phase and Result) implies not (old enclosing_class.generics.range).exists (
-					agent (l_generic: TBON_TC_GENERIC; l_generic_name: STRING): BOOLEAN
-						do
-							Result := l_generic.formal_generic_name ~ l_generic_name
-						end (?, an_element.name)
-				)
+--			formal_generic_name_not_in_old_environment:
+--				(first_phase and Result) implies not (old enclosing_class.generics.range).exists (
+--					agent (l_generic: TBON_TC_GENERIC; l_generic_name: STRING): BOOLEAN
+--						do
+--							Result := l_generic.formal_generic_name ~ l_generic_name
+--						end (?, an_element.name)
+--				)
 
 --			formal_generic_name_in_new_environment:
 --				(second_phase and Result) implies enclosing_class.generics.range.exists (
@@ -3649,7 +3772,7 @@ feature -- Type checking, formal assertions
 					if an_element.type.is_class_type then
 
 						if attached {TBON_TC_CLASS_TYPE} type_with_name (an_element.type.class_type.class_name, formal_type_context) as enclosing_type then
-							Result := Result and check_class_type (an_element.type.class_type, enclosing_class, enclosing_type, 0, 1)
+							Result := Result and check_class_type (an_element.type.class_type, enclosing_class, 0)
 
 							if Result then
 								from
@@ -3657,7 +3780,7 @@ feature -- Type checking, formal assertions
 								until
 									an_element.identifiers.after
 								loop
-									type_instance := instantiated_type (enclosing_type, an_element.type.class_type, enclosing_class)
+									type_instance := Void --context_instance (enclosing_type, an_element.type.class_type, enclosing_class)
 									variable_context.extend (create {TBON_TC_TUPLE[STRING, TBON_TC_CLASS_TYPE]}.make (an_element.identifiers.item_for_iteration, type_instance))
 
 									an_element.identifiers.forth

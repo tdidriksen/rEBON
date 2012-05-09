@@ -18,13 +18,14 @@ create
 	make
 
 feature -- Initialization
-	make (a_formal_generic_name: like formal_generic_name; a_bounding_type: like bounding_type)
+	make (a_formal_generic_name: like formal_generic_name; a_bounding_type: like bounding_type; an_enclosing_class: like enclosing_class)
 			-- Initialize `Current'.
 		require
 			a_formal_generic_name /= Void
 		do
 			formal_generic_name := a_formal_generic_name.string
 			bounding_type := a_bounding_type
+			enclosing_class := an_enclosing_class
 		end
 
 feature -- Access
@@ -36,6 +37,9 @@ feature -- Access
 
 	bounding_type: TBON_TC_CLASS_TYPE
 			-- What is the bounding type of `Current'?
+
+	enclosing_class: TBON_TC_CLASS_TYPE
+			-- What is the enclosing class of `Current'?
 
 feature -- Status report
 	has_actual_type: BOOLEAN
@@ -76,12 +80,24 @@ feature -- Element change
 			-- Set `actual_type' to `an_actual_type'?
 		do
 			actual_type := an_actual_type
+			enclosing_class.instances.do_all (
+				agent (l_class, l_actual_type: TBON_TC_CLASS_TYPE; l_generic_name: STRING)
+					do
+						l_class.generics[l_class.index_of_generic_name (l_generic_name)].set_actual_type (l_actual_type)
+					end (?, an_actual_type, formal_generic_name)
+			)
 		end
 
 	set_bounding_type (a_class_type: TBON_TC_CLASS_TYPE)
 			-- Set `bounding_type' to `a_class_type'?
 		do
 			bounding_type := a_class_type
+			enclosing_class.instances.do_all (
+				agent (l_class, l_bounding_type: TBON_TC_CLASS_TYPE; l_generic_name: STRING)
+					do
+						l_class.generics[l_class.index_of_generic_name (l_generic_name)].set_bounding_type (l_bounding_type)
+					end (?, a_class_type, formal_generic_name)
+			)
 		end
 
 invariant

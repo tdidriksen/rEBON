@@ -67,6 +67,7 @@ feature -- Error codes
 	err_code_feature_introduces_aggregation_with_enclosing_class,
 	err_code_feature_not_defined_in_class,
 	err_code_feature_type_does_not_exist,
+	err_code_feature_type_does_not_conform_to_precursor_type,
 	err_code_formal_generic_name_is_bounded_by_enclosing_class,
 	err_code_formal_generic_name_appears_more_than_once,
 	err_code_formal_generic_name_has_same_name_as_class,

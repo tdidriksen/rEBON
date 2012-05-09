@@ -1,0 +1,16 @@
+static_diagram DUPLICATE_FEATURE
+component
+    class TEST_SEQUENCE[G, H]
+    
+    deferred class A
+        feature
+            deferred w: TEST_SEQUENCE[INTEGER, STRING]
+    end
+    
+    class B
+        inherit A
+        feature
+            effective w: TEST_SEQUENCE[INTEGER, INTEGER]
+    end
+end
+

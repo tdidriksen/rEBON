@@ -123,4 +123,27 @@ feature -- Test, feature status
 			assert_false ("Type checking fails because unclassified feature has precursor", type_checker.check_bon_specification (bon_spec))
 			assert ("Error: unclassified feature has precursor", error_occurred (err_code_unclassified_feature_has_precursor))
 		end
+
+feature -- Test, feature type
+
+	test_simple_feature_type_do_not_conform
+		local
+			bon_spec: BON_SPECIFICATION
+		do
+			set_up_test
+			bon_spec := bon_specification_from_file ("feature_type_simple_does_not_conform.bon")
+			assert_false ("Type checking fails because simple feature type does not conform to precursor type", type_checker.check_bon_specification (bon_spec))
+			assert ("Error: simple feature type does not conform to precursor type", error_occurred (err_code_feature_type_does_not_conform_to_precursor_type))
+		end
+
+	test_generic_feature_type_do_not_conform
+		local
+			bon_spec: BON_SPECIFICATION
+		do
+			set_up_test
+			bon_spec := bon_specification_from_file ("feature_type_generic_does_not_conform.bon")
+			assert_false ("Type checking fails because generic feature type does not conform to precursor type", type_checker.check_bon_specification (bon_spec))
+			assert ("Error: generic feature type does not conform to precursor type", error_occurred (err_code_feature_type_does_not_conform_to_precursor_type))
+		end
+
 end

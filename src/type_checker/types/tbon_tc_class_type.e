@@ -149,6 +149,10 @@ feature -- Access
 			instances.count = old instances.count + 1
 		end
 
+feature {TBON_TC_GENERIC, TBON_TC_FEATURE} -- Access, restricted
+
+	instances: LIST[like Current]
+
 feature {TBON_TC_CLASS_TYPE} -- Implementation
 	rec_interface (an_accumulator: like rec_interface; level: INTEGER): MML_SET[TBON_TC_TUPLE[TBON_TC_FEATURE, INTEGER]]
 			-- What is the set of features that can be called on `Current' (recursive implementation)?
@@ -239,8 +243,6 @@ feature {TBON_TC_CLASS_TYPE} -- Implementation
 		end
 
 	seen_ancestors: LIST[STRING]
-
-	instances: LIST[like Current]
 
 	has_actual_type: BOOLEAN
 			-- Does any of the generics of `a_class' have an actual type?

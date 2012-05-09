@@ -424,7 +424,32 @@ feature -- Test, generics - bounds conformance
 			bon_spec := bon_specification_from_file ("generic_class_nested_bounds_do_not_conform.bon")
 			assert_false ("Type checking fails because nested bounds of generic classes do not conform", type_checker.check_bon_specification (bon_spec))
 			assert ("Error: Generic class has generic name with non-conforming bound", error_occurred (err_code_actual_type_does_not_match_bounding_type))
-			assert ("TODO", False)
+		end
+
+	test_generic_class_nested_bounds_conform
+		local
+			bon_spec: BON_SPECIFICATION
+		do
+			set_up_test
+			bon_spec := bon_specification_from_file ("generic_class_nested_bounds_conform.bon")
+			assert ("Type checking succeeds", type_checker.check_bon_specification (bon_spec))
+			if attached {TBON_TC_CLASS_TYPE} type_checker.type_with_name ("CONFORMING_CONTAINER", type_checker.formal_type_context) as class_type then
+				assert ("class CONFORMING_CONTAINER bound INTEGER first parameter J of type TEST_SEQUENCE[INTEGER] conforms to parameter bound TEST_SEQUENCE[INTEGER] of first parameter of CONTAINER",
+						class_type.name.is_equal ("CONFORMING_CONTAINER") and
+						class_type.generics.count = 2 and
+						class_type.generics[1].formal_generic_name.is_equal ("J") and
+						class_type.generics[1].bounding_type.name.is_equal ("TEST_SEQUENCE") and
+						class_type.generics[1].bounding_type.generics[1].actual_type.name.is_equal ("INTEGER") and
+
+						(class_type.generics[2].bounding_type.name.is_equal ("CONTAINER") and
+						class_type.generics[2].bounding_type.generics.count = 1) and then
+						(class_type.generics[2].bounding_type.generics[1].bounding_type.name.is_equal ("TEST_SEQUENCE") and
+						class_type.generics[2].bounding_type.generics[1].bounding_type.generics[1].actual_type.name.is_equal ("INTEGER") and
+						class_type.generics[2].bounding_type.generics[1].is_valid_actual_type (class_type.generics[1].bounding_type)
+						))
+			else
+				assert ("Class did not exist", False)
+			end
 		end
 
 end
