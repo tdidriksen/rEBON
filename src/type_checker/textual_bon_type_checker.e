@@ -592,11 +592,11 @@ feature -- Type checking, general
 				first_phase := False
 				second_phase := True
 
-				-- Resolve features
-				Result := Result and resolve_features
-
 				-- Resolve generics
 				Result := Result and resolve_generics
+
+				-- Resolve features
+				Result := Result and resolve_features
 
 				Result := Result and check_bon_specification (a_bon_spec)
 			elseif second_phase then
