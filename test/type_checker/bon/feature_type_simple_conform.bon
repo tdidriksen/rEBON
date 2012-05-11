@@ -1,0 +1,20 @@
+static_diagram DUPLICATE_FEATURE
+component    
+    class A
+        feature
+            id: A
+    end
+    
+    class B
+        inherit A
+        feature
+            redefined id: B
+    end
+    
+    class C
+        inherit B
+        feature
+            redefined id: C
+    end
+end
+

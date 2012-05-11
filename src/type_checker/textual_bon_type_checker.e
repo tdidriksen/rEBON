@@ -104,8 +104,7 @@ feature -- Initialization
 			disallowed_names.extend (none_type_name)
 			disallowed_names.compare_objects
 
-			create unresolved_features.default_create
-			create {ARRAYED_LIST[TBON_TC_TUPLE[TBON_TC_CLASS_TYPE, INTEGER]]} unresolved_conformance.make (10)
+			create {ARRAYED_LIST[TUPLE[TBON_TC_FEATURE, CLASS_TYPE]]} unresolved_features.make (10)
 			create {ARRAYED_LIST[TBON_TC_TUPLE[TBON_TC_GENERIC, CLASS_TYPE]]} unresolved_generics.make (10)
 			create {ARRAYED_LIST[INHERITANCE_RELATION]} unresolved_inheritance_relations.make (10)
 			create {ARRAYED_LIST[STATIC_REF]} unresolved_static_references.make (10)
@@ -134,9 +133,7 @@ feature {TEXTUAL_BON_TYPE_CHECKER, TBON_TC_TEST} -- Contexts
 
 	variable_context: LIST[TBON_TC_TUPLE[STRING, TBON_TC_CLASS_TYPE]]
 
-	unresolved_conformance: LIST[TBON_TC_TUPLE[TBON_TC_CLASS_TYPE, INTEGER]]
-
-	unresolved_features: MML_SET[TBON_TC_FEATURE]
+	unresolved_features: LIST[TUPLE[tc_feature: TBON_TC_FEATURE; class_type: CLASS_TYPE]]
 
 	unresolved_generics: LIST[TBON_TC_TUPLE[TBON_TC_GENERIC, CLASS_TYPE]]
 
@@ -523,16 +520,15 @@ feature -- Error handling
 	report_unresolved_features
 			-- Add error messages for all unresolved features.
 		local
-			iteration_set: like unresolved_features
 			current_feature: TBON_TC_FEATURE
 			current_argument: TBON_TC_FEATURE_ARGUMENT
 		do
 			from
-				iteration_set := unresolved_features.twin
+				unresolved_features.start
 			until
-				iteration_set.is_empty
+				unresolved_features.exhausted
 			loop
-				current_feature := iteration_set.any_item
+				current_feature := unresolved_features.item.tc_feature
 
 				if not class_type_exists (current_feature.type.name, formal_type_context) then
 				 	add_error (err_code_feature_type_does_not_exist, err_feature_type_does_not_exist (current_feature.name, current_feature.type.name))
@@ -551,7 +547,7 @@ feature -- Error handling
 					current_feature.arguments.forth
 				end
 
-				iteration_set := iteration_set / current_feature
+				unresolved_features.forth
 			end
 		end
 
@@ -596,10 +592,8 @@ feature -- Type checking, general
 				first_phase := False
 				second_phase := True
 
-				if not unresolved_features.is_empty then
-					report_unresolved_features
-					Result := False
-				end
+				-- Resolve features
+				Result := Result and resolve_features
 
 				-- Resolve generics
 				Result := Result and resolve_generics
@@ -610,7 +604,6 @@ feature -- Type checking, general
 				Result := check_formal_structure and Result
 				Result := Result and resolve_static_references
 				Result := Result and class_dictionaries.for_all (agent check_class_dictionary)
-				Result := Result and resolve_conformance
 				if not errors.is_empty then
 					print_error_messages_to_stderr
 					Result := False
@@ -727,82 +720,54 @@ feature -- Type checking, general
 			end
 		end
 
-	resolve_conformance: BOOLEAN
-			-- Resolve conformance checking on generics
+	resolve_features: BOOLEAN
+			-- Resolve unresolved features.
 		local
-			current_type: TBON_TC_CLASS_TYPE
-			type_arg_no: INTEGER
+			error_count: INTEGER
+			current_feature: TBON_TC_FEATURE
+			current_argument: TBON_TC_FEATURE_ARGUMENT
+			current_class_type: CLASS_TYPE
+			type_instance: TBON_TC_CLASS_TYPE
+			arguments: LIST[TBON_TC_FEATURE_ARGUMENT]
 		do
 			Result := True
 			from
-				unresolved_conformance.start
+				unresolved_features.start
 			until
-				unresolved_conformance.exhausted
+				unresolved_features.exhausted
 			loop
-				current_type := unresolved_conformance.item.first
-				type_arg_no := unresolved_conformance.item.second
-				if not current_type.generics[type_arg_no].is_valid_actual_type (current_type.generics[type_arg_no].actual_type) then
-					-- Error - actual type does not conform to bounding type.
-					add_error (err_code_actual_type_does_not_match_bounding_type, err_actual_type_does_not_match_bounding_type (current_type.generics[type_arg_no].formal_generic_name, current_type.generics[type_arg_no].actual_type.name, current_type.name))
-					Result := False
+				current_feature := unresolved_features.item.tc_feature
+				current_class_type := unresolved_features.item.class_type
+
+				error_count := errors.count
+				type_instance := context_instance (current_class_type, current_feature.enclosing_class, 0)
+				Result := (errors.count = error_count) and Result
+
+				if Result then
+					current_feature.set_type (type_instance)
 				end
 
-				unresolved_conformance.forth
-			end
-		end
-
-	resolve_features (a_class_type: TBON_TC_CLASS_TYPE)
-			-- Resolve unresolved features that specifies `a_class_type' as type or argument type.
-		local
-			resolving_set: like unresolved_features
-			iteration_set: like unresolved_features
-			l_feature: TBON_TC_FEATURE
-		do
-			resolving_set := unresolved_features.filtered (
-				agent (l_l_feature: TBON_TC_FEATURE; l_class: TBON_TC_CLASS_TYPE): BOOLEAN
-					do
-						Result := l_l_feature.type.name ~ l_class.name or (l_l_feature.arguments.there_exists (
-																			agent (argument: TBON_TC_FEATURE_ARGUMENT; l_l_class: TBON_TC_CLASS_TYPE): BOOLEAN
-																				do
-																					Result := (argument.type.name ~ l_l_class.name)
-																				end (?, l_class)
-																		))
-					end (?, a_class_type)
-				)
-
-			from
-				iteration_set := resolving_set.twin
-			until
-				iteration_set.is_empty
-			loop
-				l_feature := iteration_set.any_item
-
-				-- If type of features matches type we are resolving for, resolve it.
-				if l_feature.type.name ~ a_class_type.name then
-					l_feature.set_type (a_class_type)
-				end
-
-				-- If any arguments matches type we are resolving for, resolve it.
+				-- Add type to arguments
 				from
-					l_feature.arguments.start
+					arguments := current_feature.arguments
+					arguments.start
 				until
-					l_feature.arguments.after
+					arguments.exhausted
 				loop
-					if l_feature.arguments.item_for_iteration.type.name ~ a_class_type.name then
-						l_feature.arguments.item_for_iteration.set_type (a_class_type)
+					current_argument := arguments.item
+
+					error_count := errors.count
+					type_instance := context_instance (current_class_type, current_argument.enclosing_feature.enclosing_class, 0)
+					Result := (errors.count = error_count) and Result
+
+					if not Result then
+						current_argument.set_type (type_instance)
 					end
 
-					l_feature.arguments.forth
+					arguments.forth
 				end
 
-				-- If type of feature and types of all arguments are resolved, remove from unresolved features
-				if class_type_exists (l_feature.type.name, formal_type_context) and
-					l_feature.arguments.for_all (agent (argument: TBON_TC_FEATURE_ARGUMENT): BOOLEAN do Result := class_type_exists (argument.type.name, formal_type_context) end)
-				then
-					unresolved_features := unresolved_features / l_feature
-				end
-
-				iteration_set := iteration_set / l_feature
+				unresolved_features.forth
 			end
 		end
 
@@ -1565,8 +1530,6 @@ feature -- Type checking, static diagrams
 				if not name_exists_in_context (an_element.name, formal_type_context) then
 					create class_type.make (an_element.name)
 					add_to_formal_type_context (class_type)
-					-- Resolve features for new type.
-					resolve_features (class_type)
 
 					-- Set status
 					if an_element.is_root then
@@ -2137,50 +2100,15 @@ feature -- Type checking, static diagrams
 							Result := False
 						end
 
+						create l_argument.make (argument.identifiers.item_for_iteration.string, Void, enclosing_feature)
+						l_argument.set_associated_class_type (argument.type.class_type)
+
+						enclosing_feature.arguments.extend (l_argument)
+
 						argument.identifiers.forth
 					end
 
-					--  Argument is a class type
-					if argument.type.is_class_type then
-						-- Argument exists in context
-						if attached {TBON_TC_CLASS_TYPE} type_with_name (argument.type.class_type.class_name, formal_type_context) as type then
-							from argument.identifiers.start until argument.identifiers.after
-							loop
-								create l_argument.make (argument.identifiers.item_for_iteration.string, type)
-								enclosing_feature.arguments.extend (l_argument)
-
-								argument.identifiers.forth
-							end
-						-- Argument doesn't exist in context. Feature is unresolved.
-						else
-							from argument.identifiers.start until argument.identifiers.after
-							loop
-								create t_type.make (argument.type.class_type.class_name)
-								create l_argument.make (argument.identifiers.item_for_iteration.string, t_type)
-								enclosing_feature.arguments.extend (l_argument)
-
-								argument.identifiers.forth
-							end
-							unresolved_features := unresolved_features.extended (enclosing_feature)
-						end
-					-- Argument is a formal generic
-					elseif argument.type.is_formal_generic_name then
-						Result := enclosing_class.has_generic_name (argument.type.formal_generic_name)
-						-- Enclosing class doesn't a generic of this type.
-						if not Result then
-							add_error (err_code_argument_type_does_not_exist, err_argument_type_does_not_exist (argument.identifiers.first, enclosing_feature.name, enclosing_class.name))
-							Result := False
-						-- Enclosing class has a generic of this type.
-						else
-							from argument.identifiers.start until argument.identifiers.after
-							loop
-								create l_argument.make_with_formal_generic_name (argument.identifiers.item_for_iteration, argument.type.formal_generic_name)
-								enclosing_feature.arguments.extend (l_argument)
-
-								argument.identifiers.forth
-							end
-						end
-					end
+					an_element.forth
 				end
 
 			elseif second_phase then
@@ -2192,9 +2120,10 @@ feature -- Type checking, static diagrams
 						l_argument := enclosing_feature.argument_with_name (an_element.item_for_iteration.identifiers.item_for_iteration)
 
 						-- Check type of argument
-						if l_argument.has_type and then not l_argument.type.generics.is_empty then
-							if an_element.item_for_iteration.type.is_class_type then
-								type_instance := Void -- instantiated_type (l_argument.type, an_element.item_for_iteration.type.class_type, enclosing_class)
+						if enclosing_feature.nearest_precursor /= Void then
+							Result := Result and l_argument.type.conforms_to (l_argument.enclosing_feature.nearest_precursor.argument_with_name (l_argument.formal_name).type)
+							if not Result then
+								add_error (err_code_argument_types_do_not_match_precursor, err_argument_types_do_not_match_precursor (enclosing_feature.name, l_precursor.name, enclosing_class.name))
 							end
 						end
 
@@ -2202,26 +2131,6 @@ feature -- Type checking, static diagrams
 					end
 
 					an_element.forth
-				end
-
-				-- Check that types match precursor argument types
-				l_precursor := enclosing_feature.nearest_precursor
-				if l_precursor /= Void then
-					Result := feature_arguments_conform (enclosing_feature, l_precursor)
-					if not Result then
-						add_error (err_code_argument_types_do_not_match_precursor, err_argument_types_do_not_match_precursor (enclosing_feature.name, l_precursor.name, enclosing_class.name))
-					end
-				else
-					Result := False
-				end
-
-				-- Check that infix feature has exactly one argument
-				if enclosing_feature.is_infix then
-					if not (enclosing_feature.arguments.count = 1) then
-						-- Error - infix feature must have two arguments
-						add_error (err_code_infix_feature_must_have_one_argument, err_infix_feature_must_have_one_argument (enclosing_feature.name, enclosing_class.name))
-						Result := False
-					end
 				end
 
 			end
@@ -2406,42 +2315,16 @@ feature -- Type checking, static diagrams
 						Result := False
 					end
 
-					-- Check if the type of the feature exists - else, mark it as unresolved
-					if an_element.has_type and then an_element.type.is_class_type then
-
-						if attached {TBON_TC_CLASS_TYPE} type_with_name (an_element.type.class_type.class_name, formal_type_context) as class_type then
-							-- Set type as type exists
-							l_feature.set_type (class_type)
-
-						else -- The type of the feature is not known yet
-							-- Create placeholder type
-							create l_class_type.make (an_element.type.class_type.class_name)
-
-							-- Set placeholder type as type
-							l_feature.set_type (l_class_type)
-
-							-- Add feature to unresolved features
-							unresolved_features := unresolved_features & l_feature
-						end
-
-					elseif an_element.has_type and then an_element.type.is_formal_generic_name then
-						-- If enclosing class has generics
-						if not enclosing_class.generics.is_empty then
-							-- and the formal generics name exists in enclosing class.
-							if enclosing_class.has_generic_name (an_element.type.formal_generic_name) then
-								l_feature.set_formal_generic_name (an_element.type.formal_generic_name)
-							else
-								add_error (err_code_formal_generic_name_does_not_exist, err_formal_generic_name_does_not_exist (current_feature_name.feature_name, an_element.type.formal_generic_name, enclosing_class.name))
-								Result := False
-							end
-						else
-							add_error (err_code_enclosing_class_not_generic, err_enclosing_class_not_generic (current_feature_name.feature_name, an_element.type.formal_generic_name, enclosing_class.name))
-							Result := False
-						end
+					-- Check that infix feature has exactly one argument
+					if l_feature.is_infix and then an_element.arguments.count /= 1 then
+						-- Error - infix feature must have two arguments
+						add_error (err_code_infix_feature_must_have_one_argument, err_infix_feature_must_have_one_argument (l_feature.name, enclosing_class.name))
+						Result := False
 					end
 
 					-- Add feature to enclosing class
 					if enclosing_class.feature_with_name (current_feature_name.feature_name, current_feature_name.is_prefix, current_feature_name.is_infix) = Void then
+						unresolved_features.extend ([l_feature, an_element.type.class_type])
 						enclosing_class.add_feature (l_feature)
 					else
 						add_error (err_code_duplicate_feature_name, err_duplicate_feature_name (current_feature_name.feature_name, enclosing_class.name))
@@ -2482,17 +2365,12 @@ feature -- Type checking, static diagrams
 
 					-- Check type of feature
 					if l_feature.has_type then
-						Result := Result and check_class_type (an_element.type.class_type, enclosing_class, 0)
-						type_instance := last_class_type
-
 						if Result and l_precursor /= Void then
-							if not type_instance.conforms_to (l_precursor.type) then
+							if not l_feature.type.conforms_to (l_precursor.type) then
 								add_error (err_code_feature_type_does_not_conform_to_precursor_type, err_feature_type_does_not_conform_to_precursor_type (current_feature_name.feature_name, enclosing_class.name))
 								Result := False
 							end
 						end
-
-						l_feature.set_type (type_instance)
 					end
 
 					-- If precursor is deferred, current feature must be effective or deferred
@@ -4781,5 +4659,7 @@ feature -- dummy
 			check false end -- ~
 		end
 
+invariant
+	not_both_phases: first_phase xor second_phase
 
 end

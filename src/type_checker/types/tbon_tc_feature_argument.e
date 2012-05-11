@@ -14,55 +14,36 @@ inherit
 		end
 
 create
-	make, make_with_formal_generic_name
+	make
 
 feature -- Initialization
-	make (a_formal_name: STRING; a_type: TBON_TC_CLASS_TYPE)
+	make (a_formal_name: STRING; a_type: TBON_TC_CLASS_TYPE; an_enclosing_feature: TBON_TC_FEATURE)
 		require
 			a_formal_name /= Void and then not a_formal_name.is_empty
-			a_type /= Void
+			an_enclosing_feature /= Void
 		do
 			formal_name := a_formal_name.string
 			type := a_type
-			has_type := True
-			has_formal_generic_name := False
+			enclosing_feature := an_enclosing_feature
 		ensure
 			formal_name.is_equal (a_formal_name)
 			equal (type, a_type)
-		end
-
-	make_with_formal_generic_name (a_formal_name, a_formal_generic_name: STRING)
-		require
-			a_formal_name /= Void and then not a_formal_name.is_empty
-			a_formal_generic_name /= Void and then not a_formal_generic_name.is_empty
-		do
-			formal_name := a_formal_name.string
-			formal_generic_name := a_formal_generic_name
-			has_type := False
-			has_formal_generic_name := True
-		ensure
-			formal_name.is_equal (a_formal_name)
-			formal_generic_name.is_equal (a_formal_generic_name)
+			equal (enclosing_feature, an_enclosing_feature)
 		end
 
 feature -- Access
-	formal_name: STRING
+	enclosing_feature: TBON_TC_FEATURE
 
-	formal_generic_name: STRING
+	formal_name: STRING
 
 	type: TBON_TC_CLASS_TYPE
 
 feature -- Status report
-	has_formal_generic_name: BOOLEAN
-
-	has_type: BOOLEAN
 
 	is_equal (other: like Current): BOOLEAN
 		do
 			Result := (formal_name ~ other.formal_name) and
-					  (has_type implies type ~ other.type) and
-					  (has_formal_generic_name implies formal_generic_name ~ other.formal_generic_name)
-
+					  (type ~ other.type)
 		end
 
 feature -- Element change
@@ -71,10 +52,20 @@ feature -- Element change
 			type := a_type
 		end
 
+feature {TEXTUAL_BON_TYPE_CHECKER} -- Implementation
+	associated_class_type: CLASS_TYPE
+			-- What is the associated abstract syntax type of this feature argument?
+
+	set_associated_class_type (a_class_type: like associated_class_type)
+			-- Set the associated class type.
+		require
+			not_void: a_class_type /= Void
+		do
+			associated_class_type := a_class_type
+		end
+
 invariant
 	formal_name /= Void
-	has_type implies type /= Void
-	has_formal_generic_name implies formal_generic_name /= Void
-	has_formal_generic_name xor has_type
+	enclosing_feature /= Void
 
 end

@@ -51,12 +51,12 @@ feature {NONE} -- Implementation
 		do
 			create l_feature.make ("+", Current, Current)
 			l_feature.set_is_prefix
-			create l_argument.make ("an_real", Current)
+			create l_argument.make ("an_real", Current, l_feature)
 			l_feature.arguments.extend (l_argument)
 
 			create l_feature.make ("-", Current, Current)
 			l_feature.set_is_prefix
-			create l_argument.make ("an_real", Current)
+			create l_argument.make ("an_real", Current, l_feature)
 			l_feature.arguments.extend (l_argument)
 		end
 
@@ -74,106 +74,106 @@ feature {NONE} -- Implementation
 			-- Create plus
 			create l_feature.make ("+", Current, Current)
 			l_feature.set_is_infix
-			create l_argument.make ("an_real", Current)
+			create l_argument.make ("an_real", Current, l_feature)
 			l_feature.arguments.extend (l_argument)
-			create l_argument.make ("another_real", Current)
+			create l_argument.make ("another_real", Current, l_feature)
 			l_feature.arguments.extend (l_argument)
 
 			-- Create minus
 			create l_feature.make ("-", Current, Current)
 			l_feature.set_is_infix
-			create l_argument.make ("an_real", Current)
+			create l_argument.make ("an_real", Current, l_feature)
 			l_feature.arguments.extend (l_argument)
-			create l_argument.make ("another_real", Current)
+			create l_argument.make ("another_real", Current, l_feature)
 			l_feature.arguments.extend (l_argument)
 
 			-- Create times
 			create l_feature.make ("*", Current, Current)
 			l_feature.set_is_infix
-			create l_argument.make ("an_real", Current)
+			create l_argument.make ("an_real", Current, l_feature)
 			l_feature.arguments.extend (l_argument)
-			create l_argument.make ("another_real", Current)
+			create l_argument.make ("another_real", Current, l_feature)
 			l_feature.arguments.extend (l_argument)
 
 			-- Create division
 			create l_feature.make ("/", Current, Current)
 			l_feature.set_is_infix
-			create l_argument.make ("an_real", Current)
+			create l_argument.make ("an_real", Current, l_feature)
 			l_feature.arguments.extend (l_argument)
-			create l_argument.make ("another_real", Current)
+			create l_argument.make ("another_real", Current, l_feature)
 			l_feature.arguments.extend (l_argument)
 
 			-- Create less-than
 			create l_feature.make ("<", boolean_type, Current)
 			l_feature.set_is_infix
-			create l_argument.make ("an_real", Current)
+			create l_argument.make ("an_real", Current, l_feature)
 			l_feature.arguments.extend (l_argument)
-			create l_argument.make ("another_real", Current)
+			create l_argument.make ("another_real", Current, l_feature)
 			l_feature.arguments.extend (l_argument)
 
 			-- Create greater-than
 			create l_feature.make (">", boolean_type, Current)
 			l_feature.set_is_infix
-			create l_argument.make ("an_real", Current)
+			create l_argument.make ("an_real", Current, l_feature)
 			l_feature.arguments.extend (l_argument)
-			create l_argument.make ("another_real", Current)
+			create l_argument.make ("another_real", Current, l_feature)
 			l_feature.arguments.extend (l_argument)
 
 			-- Create less-than-equals
 			create l_feature.make ("<=", boolean_type, Current)
 			l_feature.set_is_infix
-			create l_argument.make ("an_real", Current)
+			create l_argument.make ("an_real", Current, l_feature)
 			l_feature.arguments.extend (l_argument)
-			create l_argument.make ("another_real", Current)
+			create l_argument.make ("another_real", Current, l_feature)
 			l_feature.arguments.extend (l_argument)
 
 			-- Create greater-than-equals
 			create l_feature.make (">=", boolean_type, Current)
 			l_feature.set_is_infix
-			create l_argument.make ("an_real", Current)
+			create l_argument.make ("an_real", Current, l_feature)
 			l_feature.arguments.extend (l_argument)
-			create l_argument.make ("another_real", Current)
+			create l_argument.make ("another_real", Current, l_feature)
 			l_feature.arguments.extend (l_argument)
 
 			-- Create equals
 			create l_feature.make ("=", boolean_type, Current)
 			l_feature.set_is_infix
-			create l_argument.make ("an_real", Current)
+			create l_argument.make ("an_real", Current, l_feature)
 			l_feature.arguments.extend (l_argument)
-			create l_argument.make ("another_real", Current)
+			create l_argument.make ("another_real", Current, l_feature)
 			l_feature.arguments.extend (l_argument)
 
 			-- Create not equals
 			create l_feature.make ("/=", boolean_type, Current)
 			l_feature.set_is_infix
-			create l_argument.make ("an_real", Current)
+			create l_argument.make ("an_real", Current, l_feature)
 			l_feature.arguments.extend (l_argument)
-			create l_argument.make ("another_real", Current)
+			create l_argument.make ("another_real", Current, l_feature)
 			l_feature.arguments.extend (l_argument)
 
 
 			-- Create real division
 			create l_feature.make ("//", Current, Current)
 			l_feature.set_is_infix
-			create l_argument.make ("an_real", Current)
+			create l_argument.make ("an_real", Current, l_feature)
 			l_feature.arguments.extend (l_argument)
-			create l_argument.make ("another_real", Current)
+			create l_argument.make ("another_real", Current, l_feature)
 			l_feature.arguments.extend (l_argument)
 
 			-- Create modulo
 			create l_feature.make ("\\", Current, Current)
 			l_feature.set_is_infix
-			create l_argument.make ("an_real", Current)
+			create l_argument.make ("an_real", Current, l_feature)
 			l_feature.arguments.extend (l_argument)
-			create l_argument.make ("another_real", Current)
+			create l_argument.make ("another_real", Current, l_feature)
 			l_feature.arguments.extend (l_argument)
 
 			-- Create power
 			create l_feature.make ("^", Current, Current)
 			l_feature.set_is_infix
-			create l_argument.make ("an_real", Current)
+			create l_argument.make ("an_real", Current, l_feature)
 			l_feature.arguments.extend (l_argument)
-			create l_argument.make ("another_real", Current)
+			create l_argument.make ("another_real", Current, l_feature)
 			l_feature.arguments.extend (l_argument)
 		end
 

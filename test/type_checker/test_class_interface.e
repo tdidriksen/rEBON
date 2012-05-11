@@ -136,6 +136,28 @@ feature -- Test, feature type
 			assert ("Error: simple feature type does not conform to precursor type", error_occurred (err_code_feature_type_does_not_conform_to_precursor_type))
 		end
 
+	test_simple_feature_types_conform
+		local
+			bon_spec: BON_SPECIFICATION
+		do
+			set_up_test
+			bon_spec := bon_specification_from_file ("feature_type_simple_conform.bon")
+			assert ("Type checking succeeds", type_checker.check_bon_specification (bon_spec))
+			if attached {TBON_TC_CLASS_TYPE} type_checker.type_with_name ("C", type_checker.formal_type_context) as class_type then
+				assert ("Type C of feature id in class C conforms to type B of precursor",
+						class_type.feature_with_name ("id", False, False) /= Void and then
+						class_type.feature_with_name ("id", False, False).type.name.is_equal ("C") and
+						class_type.feature_with_name ("id", False, False).nearest_precursor /= Void and then
+						(class_type.feature_with_name ("id", False, False).nearest_precursor.name.is_equal ("id") and
+						class_type.feature_with_name ("id", False, False).nearest_precursor.type.name.is_equal ("B") and
+						class_type.feature_with_name ("id", False, False).type.conforms_to (class_type.feature_with_name ("id", False, False).nearest_precursor.type)
+						))
+
+			else
+				assert ("Class did not exist", False)
+			end
+		end
+
 	test_generic_feature_type_do_not_conform
 		local
 			bon_spec: BON_SPECIFICATION
@@ -146,4 +168,6 @@ feature -- Test, feature type
 			assert ("Error: generic feature type does not conform to precursor type", error_occurred (err_code_feature_type_does_not_conform_to_precursor_type))
 		end
 
+-- Test generic feature types conform
+-- Test not aggregation with enclosing class
 end

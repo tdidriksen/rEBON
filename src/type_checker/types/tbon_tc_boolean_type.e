@@ -52,7 +52,7 @@ feature {NONE} -- Implementation
 			-- Create not
 			create l_feature.make ("not", Current, Current)
 			l_feature.set_is_prefix
-			create l_argument.make ("a_boolean", Current)
+			create l_argument.make ("a_boolean", Current, l_feature)
 			l_feature.arguments.extend (l_argument)
 		end
 
@@ -67,57 +67,57 @@ feature {NONE} -- Implementation
 			-- Create and
 			create l_feature.make ("and", Current, Current)
 			l_feature.set_is_infix
-			create l_argument.make ("a_boolean", Current)
+			create l_argument.make ("a_boolean", Current, l_feature)
 			l_feature.arguments.extend (l_argument)
-			create l_argument.make ("another_boolean", Current)
+			create l_argument.make ("another_boolean", Current, l_feature)
 			l_feature.arguments.extend (l_argument)
 
 			-- Create or
 			create l_feature.make ("or", Current, Current)
 			l_feature.set_is_infix
-			create l_argument.make ("a_boolean", Current)
+			create l_argument.make ("a_boolean", Current, l_feature)
 			l_feature.arguments.extend (l_argument)
-			create l_argument.make ("another_boolean", Current)
+			create l_argument.make ("another_boolean", Current, l_feature)
 			l_feature.arguments.extend (l_argument)
 
 			-- Create xor
 			create l_feature.make ("xor", Current, Current)
 			l_feature.set_is_infix
-			create l_argument.make ("a_boolean", Current)
+			create l_argument.make ("a_boolean", Current, l_feature)
 			l_feature.arguments.extend (l_argument)
-			create l_argument.make ("another_boolean", Current)
+			create l_argument.make ("another_boolean", Current, l_feature)
 			l_feature.arguments.extend (l_argument)
 
 			-- Create implication
 			create l_feature.make ("->", Current, Current)
 			l_feature.set_is_infix
-			create l_argument.make ("a_boolean", Current)
+			create l_argument.make ("a_boolean", Current, l_feature)
 			l_feature.arguments.extend (l_argument)
-			create l_argument.make ("another_boolean", Current)
+			create l_argument.make ("another_boolean", Current, l_feature)
 			l_feature.arguments.extend (l_argument)
 
 			-- Create logical equivalence
 			create l_feature.make ("<->", Current, Current)
 			l_feature.set_is_infix
-			create l_argument.make ("a_boolean", Current)
+			create l_argument.make ("a_boolean", Current, l_feature)
 			l_feature.arguments.extend (l_argument)
-			create l_argument.make ("another_boolean", Current)
+			create l_argument.make ("another_boolean", Current, l_feature)
 			l_feature.arguments.extend (l_argument)
 
 			-- Create equals
 			create l_feature.make ("=", Current, Current)
 			l_feature.set_is_infix
-			create l_argument.make ("a_boolean", Current)
+			create l_argument.make ("a_boolean", Current, l_feature)
 			l_feature.arguments.extend (l_argument)
-			create l_argument.make ("another_boolean", Current)
+			create l_argument.make ("another_boolean", Current, l_feature)
 			l_feature.arguments.extend (l_argument)
 
 			-- Create not equals
 			create l_feature.make ("/=", Current, Current)
 			l_feature.set_is_infix
-			create l_argument.make ("a_boolean", Current)
+			create l_argument.make ("a_boolean", Current, l_feature)
 			l_feature.arguments.extend (l_argument)
-			create l_argument.make ("another_boolean", Current)
+			create l_argument.make ("another_boolean", Current, l_feature)
 			l_feature.arguments.extend (l_argument)
 		end
 
