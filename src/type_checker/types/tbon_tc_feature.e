@@ -14,7 +14,7 @@ inherit
 		end
 
 create
-	make, make_with_formal_generic_name
+	make
 
 feature -- Initialization
 	make (a_name: STRING; a_type: TBON_TC_CLASS_TYPE; an_enclosing_class: TBON_TC_CLASS_TYPE)
@@ -27,30 +27,6 @@ feature -- Initialization
 			type := a_type
 			enclosing_class := an_enclosing_class
 			is_unclassified := True
-			has_formal_generic_name := False
-			has_type := True
-
-			create {LINKED_LIST[STRING]} selective_export.make
-			selective_export.compare_objects
-			create {LINKED_LIST[TBON_TC_FEATURE_ARGUMENT]} arguments.make
-			arguments.compare_objects
-			create {ARRAYED_LIST[STRING]} seen_ancestors.make (10)
-			seen_ancestors.compare_objects
-		end
-
-	make_with_formal_generic_name (a_name: STRING; a_formal_generic_name: STRING; an_enclosing_class: TBON_TC_CLASS_TYPE)
-			-- Initialize `Current'.
-		require
-			a_name /= Void and then not a_name.is_empty
-			a_formal_generic_name /= Void and then not a_formal_generic_name.is_empty
-			an_enclosing_class /= Void
-		do
-			name := a_name.string
-			formal_generic_name := a_formal_generic_name
-			enclosing_class := an_enclosing_class
-			is_unclassified := True
-			has_formal_generic_name := True
-			has_type := False
 
 			create {LINKED_LIST[STRING]} selective_export.make
 			selective_export.compare_objects
@@ -67,8 +43,6 @@ feature -- Access
 
 	selective_export: LIST[STRING]
 
-	formal_generic_name: STRING
-
 	type: TBON_TC_CLASS_TYPE
 
 	arguments: LIST[TBON_TC_FEATURE_ARGUMENT]
@@ -81,6 +55,7 @@ feature -- Access
 				if arguments.item.formal_name ~ a_name then
 					Result := arguments.item
 				end
+				arguments.forth
 			end
 		end
 
@@ -149,9 +124,11 @@ feature -- Status report
 					  (is_unclassified and other.is_unclassified)
 		end
 
-	has_formal_generic_name: BOOLEAN
-
 	has_type: BOOLEAN
+			-- Does `current' have a type?
+		do
+			Result := type /= Void
+		end
 
 	is_unclassified: BOOLEAN
 
@@ -233,22 +210,11 @@ feature -- Element change
 			selective_export := an_export_list
 		end
 
-	set_formal_generic_name (a_formal_generic_name: like formal_generic_name)
-		require
-			a_formal_generic_name /= Void
-		do
-			formal_generic_name := a_formal_generic_name
-			has_formal_generic_name := True
-			has_type := False
-		end
-
 	set_type (a_type: like type)
 		require
 			a_type /= Void
 		do
 			type := a_type
-			has_type := True
-			has_formal_generic_name := False
 		end
 
 feature -- Renaming
@@ -263,7 +229,6 @@ invariant
 	is_renamed implies (inherited_name /= Void and not inherited_name.is_empty and renamed_from_class /= Void)
 	is_infix implies not is_prefix
 	is_prefix implies not is_infix
-	has_formal_generic_name xor has_type
 
 
 end

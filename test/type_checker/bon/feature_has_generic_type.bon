@@ -1,4 +1,4 @@
-static_diagram DUPLICATE_FEATURE
+static_diagram DUPLICATE_ARGUMENTS
 component
     class Z
       feature

@@ -288,6 +288,17 @@ feature -- Error messages
 			Result.append_string (", but class is not generic.")
 		end
 
+	err_feature_arguments_name_is_keyword (a_feature_name, a_class_name, a_keyword: STRING): STRING
+		do
+			Result := "Argument in "
+			Result.append_string (a_feature_name)
+			Result.append_string (" in class ")
+			Result.append_string (a_class_name)
+			Result.append_string (" has the same name as a reserved keyword (")
+			Result.append_string (a_keyword)
+			Result.append_string (").")
+		end
+
 	err_feature_introduces_aggregation_with_enclosing_class (a_feature_name, a_class_name: STRING): STRING
 		do
 			Result := "Feature "
@@ -689,5 +700,12 @@ feature -- Warnings
 			Result.append_string (a_class_name.string)
 			Result.append_string (", but type is not enumerable. Please check that the type is correct, and if so, consider making it inherit from ENUMERABLE.")
 		end
+
+feature -- Keywords
+	current_keyword: STRING = "Current"
+
+	result_keyword: STRING = "Result"
+
+	void_keyword: STRING = "Void"
 
 end

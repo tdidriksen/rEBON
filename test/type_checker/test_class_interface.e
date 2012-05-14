@@ -83,6 +83,97 @@ feature -- Test, feature
 			assert ("Error: feature has non-existing type", error_occurred (err_code_feature_type_does_not_exist))
 		end
 
+feature -- Test, feature arguements
+
+	test_positive_feature_arguments
+		local
+			bon_spec: BON_SPECIFICATION
+		do
+			set_up_test
+			bon_spec := bon_specification_from_file ("feature_arguments.bon")
+			assert ("Type checking is successful.", type_checker.check_bon_specification (bon_spec))
+		end
+
+	test_effective_feature_argument_does_not_conform_to_parent
+		local
+			bon_spec: BON_SPECIFICATION
+		do
+			set_up_test
+			bon_spec := bon_specification_from_file ("effective_feature_argument_does_not_conform_to_parent.bon")
+			assert_false ("Type checking fails because inherited feature argument type does not conform to parent", type_checker.check_bon_specification (bon_spec))
+			assert ("Error: feature argument type does not conform", error_occurred(err_code_argument_types_do_not_match_precursor))
+		end
+
+	test_effective_feature_has_wrong_number_of_arguments
+		local
+			bon_spec: BON_SPECIFICATION
+		do
+			set_up_test
+			bon_spec := bon_specification_from_file ("effective_feature_has_wrong_number_of_arguments.bon")
+			assert_false ("Type checking fails because redefined feature has wrong number of arguments", type_checker.check_bon_specification (bon_spec))
+			assert ("Error: redefined feature has wrong number of arguments", error_occurred(err_code_argument_types_do_not_match_precursor))
+		end
+
+	test_feature_argument_has_unknown_type
+		local
+			bon_spec: BON_SPECIFICATION
+		do
+			set_up_test
+			bon_spec := bon_specification_from_file ("feature_argument_has_unknown_type.bon")
+			assert_false ("Type checking fails because feature argument has an unkown type", type_checker.check_bon_specification (bon_spec))
+			assert ("Error: feature argument name is keyword", error_occurred(err_code_class_does_not_exist))
+		end
+
+	test_feature_argument_name_is_keyword_current
+		local
+			bon_spec: BON_SPECIFICATION
+		do
+			set_up_test
+			bon_spec := bon_specification_from_file ("feature_argument_is_keyword_current.bon")
+			assert_false ("Type checking fails because feature argument is current", type_checker.check_bon_specification (bon_spec))
+			assert ("Error: feature argument name is keyword", error_occurred(err_code_feature_argument_name_is_keyword_current))
+		end
+
+	test_feature_argument_name_is_keyword_result
+		local
+			bon_spec: BON_SPECIFICATION
+		do
+			set_up_test
+			bon_spec := bon_specification_from_file ("feature_argument_is_keyword_result.bon")
+			assert_false ("Type checking fails because feature argument is result", type_checker.check_bon_specification (bon_spec))
+			assert ("Error: feature argument name is keyword", error_occurred(err_code_feature_argument_name_is_keyword_result))
+		end
+
+	test_feature_argument_name_is_keyword_void
+		local
+			bon_spec: BON_SPECIFICATION
+		do
+			set_up_test
+			bon_spec := bon_specification_from_file ("feature_argument_is_keyword_void.bon")
+			assert_false ("Type checking fails because feature argument is void", type_checker.check_bon_specification (bon_spec))
+			assert ("Error: feature argument name is keyword", error_occurred(err_code_feature_argument_name_is_keyword_void))
+		end
+
+	test_feature_has_duplicate_arguments
+		local
+			bon_spec: BON_SPECIFICATION
+		do
+			set_up_test
+			bon_spec := bon_specification_from_file ("feature_has_duplicate_arguments.bon")
+			assert_false ("Type checking fails because feature has duplicated argument names", type_checker.check_bon_specification (bon_spec))
+			assert ("Error: feature has duplicate arguments", error_occurred(err_code_duplicate_argument_name))
+		end
+
+	test_redefined_feature_argument_does_not_conform_to_parent
+		local
+			bon_spec: BON_SPECIFICATION
+		do
+			set_up_test
+			bon_spec := bon_specification_from_file ("redefined_feature_argument_does_not_conform_to_parent.bon")
+			assert_false ("Type checking fails because inherited feature argument type does not conform to parent", type_checker.check_bon_specification (bon_spec))
+			assert ("Error: feature argument type does not conform", error_occurred(err_code_argument_types_do_not_match_precursor))
+		end
+
 feature -- Test, feature status
 	test_non_deferred_class_has_deferred_features
 		local
