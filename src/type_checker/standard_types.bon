@@ -1,0 +1,148 @@
+system_chart STANDARD_TYPES
+explanation "The standard types of the BON type checker"
+cluster STANDARD_VALUE_TYPES
+    description "Standard value types that are defined by default."
+cluster DATA_STRUCTURES
+    description "Standard data structures defined by default."
+end
+
+cluster_chart STANDARD_VALUE_TYPES
+class BOOLEAN
+    description "A boolean type."
+class CHARACTER
+    description "A character type."
+class INTEGER
+    description "An integer type."
+class REAL
+    description "A real type."
+class STRING
+    description "A string type."
+end
+
+class_chart BOOLEAN
+end
+
+class_chart CHARACTER
+end
+
+class_chart INTEGER
+inherit REAL
+end
+
+class_chart REAL
+end
+
+class_chart STRING
+end
+
+cluster_chart DATA_STRUCTURES
+class ENUMERABLE
+    description "An enumerable type."
+class CONTAINER
+    description "A type containing other elements."
+class LIST
+    description "A list of elements."
+class SET
+    description "A set of elements."
+class TABLE
+    description "A table mapping from one type to another."
+class ARRAY
+    description "An array of elements."
+class TUPLE
+    description "A tuple of elements."
+end
+
+class_chart ENUMERABLE
+end
+
+class_chart CONTAINER
+query
+    "How many elements do this container contain?"
+end
+
+class_chart LIST
+inherit ENUMERABLE, CONTAINER
+query
+    "Which element do this list have at position i?"
+end
+
+class_chart SET
+inherit ENUMERABLE, CONTAINER
+query
+    "What is one of the elements of this set?"
+end
+
+class_chart TABLE
+query
+    "What are the keys of this table?",
+    "What are the values of this table?"
+end
+
+class_chart ARRAY
+inherit ENUMERABLE, CONTAINER
+query
+    "Which element do you have at position i?"
+end
+
+class_chart TUPLE
+end
+
+static_diagram STANDARD_LIBRARIES
+component
+    cluster STANDARD_VALUE_TYPES
+        component
+            class BOOLEAN
+            class CHARACTER
+            class INTEGER
+                inherit REAL
+                feature
+                    as_real: REAL
+                end
+            class REAL
+            class STRING 
+        end
+    
+    cluster DATA_STRUCTURES
+        component
+            deferred class ENUMERABLE
+    
+            deferred class CONTAINER[E]
+                feature
+                    count: INTEGER        
+                end
+    
+            class LIST[E]
+                inherit
+                    CONTAINER[E];
+                    ENUMERABLE
+                feature
+                    i_th: E
+                        -> index: INTEGER
+                end
+    
+            class SET[E]
+                inherit
+                    CONTAINER[E];
+                    ENUMERABLE
+                feature
+                    any_item: E
+                end
+    
+            class TABLE[K,V]
+                feature
+                    keys: SET[K]
+                    values: SET[V]
+                end
+    
+            class ARRAY[E]
+                inherit
+                    CONTAINER[E];
+                    ENUMERABLE
+                feature
+                    i_th: E
+                        -> index: INTEGER
+                end
+    
+            class TUPLE
+        end
+end

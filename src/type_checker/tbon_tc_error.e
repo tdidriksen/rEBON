@@ -72,6 +72,7 @@ feature -- Error codes
 	err_code_formal_generic_name_appears_more_than_once,
 	err_code_formal_generic_name_has_same_name_as_class,
 	err_code_formal_generic_name_does_not_exist,
+	err_code_formal_generic_name_in_client_relation_does_not_exist,
 	err_code_identifier_already_in_scope,
 	err_code_identifier_in_member_range_expression_does_not_match_type_of_set,
 	err_code_infix_feature_must_have_one_argument,

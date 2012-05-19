@@ -11,14 +11,25 @@ feature -- Type names
 	any_type_name: STRING = "ANY"
 			-- Type name for an ANY type.
 
+	array_type_name: STRING = "ARRAY"
+
 	boolean_type_name: STRING = "BOOLEAN"
 			-- Type name for a BOOLEAN type.
 
 	character_type_name: STRING = "CHARACTER"
 			-- Type name for a CHARACTER type.
 
+	container_type_name: STRING = "CONTAINER"
+			-- Type name for a CONTAINER type.
+
+	enumerable_type_name: STRING = "ENUMERABLE"
+			-- Type name for an ENUMERABLE type.
+
 	integer_type_name: STRING = "INTEGER"
 			-- Type name for an INTEGER type.
+
+	list_type_name: STRING = "LIST"
+			-- Type name for a LIST type.
 
 	none_type_name: STRING = "NONE"
 			-- Type name for a NONE type.
@@ -26,8 +37,17 @@ feature -- Type names
 	real_type_name: STRING = "REAL"
 			-- Type name for a REAL type.
 
+	set_type_name: STRING = "SET"
+			-- Type name for a SET.
+
 	string_type_name: STRING = "STRING"
 			-- Type name for a STRING type.
+
+	table_type_name: STRING = "TABLE"
+			-- Type name for a TABLE type.
+
+	tuple_type_name: STRING = "TUPLE"
+			-- Type name for a TUPLE type.
 
 feature -- Error messages
 	err_actual_type_does_not_match_bounding_type (a_generic_name, an_actual_type, a_class_name: STRING): STRING
@@ -360,6 +380,15 @@ feature -- Error messages
 			Result.append_string (" specifies a generic name ")
 			Result.append_string (a_generic_name.string)
 			Result.append_string (", but the generic name does not exist.")
+		end
+
+	err_formal_generic_name_in_client_relation_does_not_exist (a_generic_name, a_class_name: STRING): STRING
+		do
+			Result := "Client relation specifies formal generic name "
+			Result.append_string (a_generic_name.string)
+			Result.append_string (", but the client class ")
+			Result.append_string (a_class_name.string)
+			Result.append_string (" has no such formal generic name.")
 		end
 
 	err_formal_generic_name_is_bounded_by_enclosing_class (a_generic_name, a_class_name: STRING): STRING

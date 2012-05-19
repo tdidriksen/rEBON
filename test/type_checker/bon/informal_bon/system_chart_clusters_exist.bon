@@ -1,0 +1,10 @@
+system_chart TEST_SYSTEM
+    cluster TEST_CLUSTER
+    cluster OTHER_CLUSTER
+end
+
+cluster_chart TEST_CLUSTER
+end
+
+cluster_chart OTHER_CLUSTER
+end

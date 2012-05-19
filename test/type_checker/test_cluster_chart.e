@@ -1,6 +1,6 @@
 note
 	description: "Tests for cluster charts."
-	author: ""
+	author: "Sune Alkaersig <sual@itu.dk and Thomas Didriksen <thdi@itu.dk>"
 	date: "$Date$"
 	revision: "$Revision$"
 

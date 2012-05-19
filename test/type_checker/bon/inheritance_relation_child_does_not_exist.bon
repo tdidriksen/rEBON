@@ -1,0 +1,10 @@
+static_diagram CLASS_SPECS
+component
+    class B
+end
+
+static_diagram STATIC_RELATIONS
+component  
+    A inherit B  
+end
+

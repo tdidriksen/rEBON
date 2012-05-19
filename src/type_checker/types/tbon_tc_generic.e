@@ -80,12 +80,6 @@ feature -- Element change
 			-- Set `actual_type' to `an_actual_type'?
 		do
 			actual_type := an_actual_type
-			enclosing_class.instances.do_all (
-				agent (l_class, l_actual_type: TBON_TC_CLASS_TYPE; l_generic_name: STRING)
-					do
-						l_class.generics[l_class.index_of_generic_name (l_generic_name)].set_actual_type (l_actual_type)
-					end (?, an_actual_type, formal_generic_name)
-			)
 		end
 
 	set_bounding_type (a_class_type: TBON_TC_CLASS_TYPE)

@@ -105,7 +105,7 @@ feature -- Initialization
 			disallowed_names.compare_objects
 
 			create {ARRAYED_LIST[TUPLE[TBON_TC_FEATURE, CLASS_TYPE]]} unresolved_features.make (10)
-			create {ARRAYED_LIST[TBON_TC_TUPLE[TBON_TC_GENERIC, CLASS_TYPE]]} unresolved_generics.make (10)
+			create {ARRAYED_LIST[TUPLE[TBON_TC_GENERIC, CLASS_TYPE]]} unresolved_generics.make (10)
 			create {ARRAYED_LIST[INHERITANCE_RELATION]} unresolved_inheritance_relations.make (10)
 			create {ARRAYED_LIST[STATIC_REF]} unresolved_static_references.make (10)
 		end
@@ -131,11 +131,11 @@ feature {TEXTUAL_BON_TYPE_CHECKER, TBON_TC_TEST} -- Contexts
 
 	extended_ids: LIST[STRING]
 
-	variable_context: LIST[TBON_TC_TUPLE[STRING, TBON_TC_CLASS_TYPE]]
+	variable_context: HASH_TABLE[TBON_TC_CLASS_TYPE, STRING]
 
 	unresolved_features: LIST[TUPLE[tc_feature: TBON_TC_FEATURE; class_type: CLASS_TYPE]]
 
-	unresolved_generics: LIST[TBON_TC_TUPLE[TBON_TC_GENERIC, CLASS_TYPE]]
+	unresolved_generics: LIST[TUPLE[generic: TBON_TC_GENERIC; class_type: CLASS_TYPE]]
 
 	unresolved_inheritance_relations: LIST[INHERITANCE_RELATION]
 
@@ -248,31 +248,21 @@ feature {TEXTUAL_BON_TYPE_CHECKER, TBON_TC_TEST} -- Auxiliary features, contexts
 			-- Void if no variable with the given name is present in the context.
 		require
 			a_var_name /= Void and then not a_var_name.is_empty
-		local
-			relation: TBON_TC_TUPLE[STRING, TBON_TC_CLASS_TYPE]
 		do
 			Result := Void
-			relation := variable_type_relation_from_name (a_var_name)
-			if relation /= Void then
-				Result := relation.second
+			if variable_context.has (a_var_name) then
+				Result := variable_context[a_var_name]
 			end
 		end
 
-	variable_type_relation_from_name (a_var_name: STRING): TBON_TC_TUPLE[STRING, TBON_TC_CLASS_TYPE]
+	variable_type_relation_from_name (a_var_name: STRING): TUPLE[STRING, TBON_TC_CLASS_TYPE]
 			-- What is the variable-type relation for the variable identified by `a_var_name'?
 		require
 			a_var_name /= Void and then not a_var_name.is_empty
 		do
 			Result := Void
-			from
-				variable_context.start
-			until
-				variable_context.exhausted or Result /= Void
-			loop
-				if variable_context.item.first ~ a_var_name then
-					Result := variable_context.item
-				end
-				variable_context.forth
+			if variable_context.has (a_var_name) then
+				Result := [a_var_name, variable_context[a_var_name]]
 			end
 		end
 
@@ -410,13 +400,6 @@ feature -- Auxiliary features, type checking
 					Result := Void
 				end
 
-				-- A generic cannot be bounded by its enclosing class.
-				if class_type.class_name ~ enclosing_class.name then
-					-- Error - generic is bounded by its enclosing class
-					add_error (err_code_formal_generic_name_is_bounded_by_enclosing_class, err_formal_generic_name_is_bounded_by_enclosing_class (class_type.class_name, enclosing_class.name))
-					Result := Void
-				end
-
 	            if Result /= Void and then class_type.actual_generic_count > 0 then
 	            	from
 	            		arg_no := 1
@@ -439,6 +422,14 @@ feature -- Auxiliary features, type checking
 					)) then -- As formal generic names are not recognized by the parser, check it here.
 
 				Result := enclosing_class.generics[enclosing_class.index_of_generic_name (class_type.class_name)].bounding_type
+
+				-- A generic cannot be bounded by its enclosing class.
+				if class_type.class_name ~ enclosing_class.name then
+					-- Error - generic is bounded by its enclosing class
+					add_error (err_code_formal_generic_name_is_bounded_by_enclosing_class, err_formal_generic_name_is_bounded_by_enclosing_class (class_type.class_name, enclosing_class.name))
+					Result := Void
+				end
+
 				if Result = Void then
 					Result ?= type_with_name (any_type_name, formal_type_context)
 				end
@@ -450,6 +441,14 @@ feature -- Auxiliary features, type checking
 					) then
 
 				Result := enclosing_class.generics[enclosing_class.index_of_generic_name (class_type.class_name)].bounding_type
+
+				-- A generic cannot be bounded by its enclosing class.
+				if class_type.class_name ~ enclosing_class.name then
+					-- Error - generic is bounded by its enclosing class
+					add_error (err_code_formal_generic_name_is_bounded_by_enclosing_class, err_formal_generic_name_is_bounded_by_enclosing_class (class_type.class_name, enclosing_class.name))
+					Result := Void
+				end
+
 				if Result = Void then
 					Result ?= type_with_name (any_type_name, formal_type_context)
 				end
@@ -486,7 +485,7 @@ feature -- Error handling
 			-- Print error messages to stderr.
 		do
 			io.set_error_default
-			io.put_string ("%NErrors:%N")
+			io.put_string ("Errors:%N")
 			errors.do_all (agent (error: TBON_TC_ERROR) do io.put_string (error.message); io.put_string ("%N") end)
 		end
 
@@ -494,7 +493,7 @@ feature -- Error handling
 			-- Print error messages to stderr.
 		do
 			io.set_output_default
-			io.put_string ("%NErrors:%N")
+			io.put_string ("Errors:%N")
 			errors.do_all (agent (error: TBON_TC_ERROR) do io.put_string (error.message); io.put_string ("%N") end)
 		end
 
@@ -569,18 +568,16 @@ feature -- Type checking, general
 			from elements.start	until elements.after loop
 				element := elements.item_for_iteration
 
-				io.put_string ("Checking!")
-
 				if attached {COMMENT} element as comment then
-					Result := Result and check_comment (comment)
+					Result := check_comment (comment) and Result
 				elseif attached {INFORMAL_CHART} element as chart then
-					Result := Result and check_informal_chart (chart)
+					Result := check_informal_chart (chart) and Result
 				elseif attached {CLASS_DICTIONARY} element as class_dict then
 					class_dictionaries.extend (class_dict)
 				elseif attached {STATIC_DIAGRAM} element as diagram then
-					Result := Result and check_static_diagram (diagram)
+					Result := check_static_diagram (diagram) and Result
 				elseif attached {DYNAMIC_DIAGRAM} element as diagram then
-					Result := Result and check_dynamic_diagram (diagram)
+					Result := check_dynamic_diagram (diagram) and Result
 				else
 					Result := False
 				end
@@ -589,28 +586,31 @@ feature -- Type checking, general
 			end
 
 			if first_phase then
-				first_phase := False
-				second_phase := True
-
 				-- Resolve generics
 				Result := Result and resolve_generics
 
 				-- Resolve features
 				Result := Result and resolve_features
 
+				first_phase := False
+				second_phase := True
+
 				Result := Result and check_bon_specification (a_bon_spec)
 			elseif second_phase then
 				Result := check_informal_structure and Result
 				Result := check_formal_structure and Result
-				Result := Result and resolve_static_references
-				Result := Result and class_dictionaries.for_all (agent check_class_dictionary)
-				if not errors.is_empty then
-					print_error_messages_to_stderr
-					Result := False
-				end
-				if not warnings.is_empty then
-					print_warnings_to_stdout
-				end
+				Result := resolve_static_references and Result
+				Result := resolve_inheritance_relations and Result
+				Result := class_dictionaries.for_all (agent check_class_dictionary) and Result
+			end
+			if not errors.is_empty then
+				print_error_messages_to_stderr
+				errors.wipe_out
+				Result := False
+			end
+			if not warnings.is_empty then
+				print_warnings_to_stdout
+				warnings.wipe_out
 			end
 		end
 
@@ -789,9 +789,9 @@ feature -- Type checking, general
 			until
 				unresolved_generics.exhausted
 			loop
-				enclosing_class := unresolved_generics.item.first.enclosing_class
-				current_generic := unresolved_generics.item.first
-				class_type := unresolved_generics.item.second
+				enclosing_class := unresolved_generics.item.generic.enclosing_class
+				current_generic := unresolved_generics.item.generic
+				class_type := unresolved_generics.item.class_type
 
 				-- Check that formal generic name is not the same as a name in the context
 				Result := not formal_type_context.exists (
@@ -1016,6 +1016,17 @@ feature -- Type checking, informal
 								class_type.set_cluster (current_cluster)
 							else
 								add_error (err_code_class_already_in_cluster, err_class_already_in_cluster (current_cluster.name, class_type.name, class_type.cluster.name))
+								Result := False
+							end
+						elseif attached {TBON_TC_CLUSTER_TYPE} type_with_name (class_entries.item_for_iteration.name, informal_type_context) as cluster then
+							-- Add class to cluster types
+							current_cluster.add_type (cluster)
+							-- Check that no class is in more than one cluster
+							-- If cluster is not Void, then the class is already in a cluster, and hence is in more than one cluster.
+							if cluster.parent = Void then
+								cluster.set_parent (current_cluster)
+							else
+								add_error (err_code_cluster_already_in_cluster, err_cluster_already_in_cluster (current_cluster.name, cluster.name, cluster.parent.name))
 								Result := False
 							end
 
@@ -1852,10 +1863,10 @@ feature -- Type checking, static diagrams
 				Result := check_feature_name (feature_name, client_class)
 
 			elseif attached {SUPPLIER_INDIRECTION} an_element as supplier_indirection then
-				Result := check_supplier_indirection (supplier_indirection, client_class)
+				Result := check_supplier_indirection (supplier_indirection, client_class, relation.supplier)
 
 			elseif attached {PARENT_INDIRECTION} an_element as parent_indirection then
-				Result := check_generic_indirection (parent_indirection, client_class)
+				Result := check_generic_indirection (parent_indirection, client_class, relation.supplier)
 			else
 				Result := False
 			end
@@ -1918,11 +1929,12 @@ feature -- Type checking, static diagrams
 			current_cluster: TBON_TC_CLUSTER_TYPE
 			cluster_type: TBON_TC_CLUSTER_TYPE
 			current_component: STATIC_COMPONENT
+			components: STATIC_COMPONENTS
 		do
 			if first_phase then
-
+				Result := True
 				-- Add cluster to environment
-				if not name_exists_in_context (an_element.name, formal_type_context) then
+				if name_exists_in_context (an_element.name, formal_type_context) then
 
 					-- Error name already exists
 					add_error (err_code_cluster_exists, err_cluster_exists (an_element.name))
@@ -1951,11 +1963,12 @@ feature -- Type checking, static diagrams
 
 					-- Set parents
 					from
-						an_element.components.start
+						components := an_element.components
+						components.start
 					until
-						an_element.components.after
+						components.after
 					loop
-						current_component := an_element.components.item_for_iteration
+						current_component := components.item_for_iteration
 
 						if attached {CLASS_SPECIFICATION} current_component as class_spec then
 							if attached {TBON_TC_CLASS_TYPE} type_with_name (class_spec.name, formal_type_context) as class_type then
@@ -1982,6 +1995,8 @@ feature -- Type checking, static diagrams
 								Result := False
 							end
 						end
+
+						components.forth
 					end
 
 					Result := check_static_block (an_element.components) and Result
@@ -2317,7 +2332,7 @@ feature -- Type checking, static diagrams
 
 					-- Check that infix feature has exactly one argument
 					if l_feature.is_infix and then an_element.arguments.count /= 1 then
-						-- Error - infix feature must have two arguments
+						-- Error - infix feature must have one arguments
 						add_error (err_code_infix_feature_must_have_one_argument, err_infix_feature_must_have_one_argument (l_feature.name, enclosing_class.name))
 						Result := False
 					end
@@ -2361,7 +2376,9 @@ feature -- Type checking, static diagrams
 					l_feature := enclosing_class.feature_with_name (current_feature_name.feature_name, current_feature_name.is_prefix, current_feature_name.is_infix)
 
 					-- Get precursor
-					l_precursor := l_feature.nearest_precursor
+					if l_feature /= Void then
+						l_precursor := l_feature.nearest_precursor
+					end
 
 					-- Check type of feature
 					if l_feature.has_type then
@@ -2574,7 +2591,7 @@ feature -- Type checking, static diagrams
 
 				-- Add as unresolved
 				if an_element.has_class_type then
-					unresolved_generics.extend (create {TBON_TC_TUPLE[TBON_TC_GENERIC, CLASS_TYPE]}.make (generic, an_element.class_type))
+					unresolved_generics.extend ([generic, an_element.class_type])
 				end
 
 			elseif second_phase then
@@ -2640,7 +2657,7 @@ feature -- Type checking, static diagrams
 --				)
 		end
 
-	check_formal_generic_name (an_element: STRING; enclosing_class: TBON_TC_CLASS_TYPE; enclosing_type: TBON_TC_CLASS_TYPE; class_arg_no, type_arg_no: INTEGER): BOOLEAN
+	check_formal_generic_name (an_element: STRING; enclosing_class: TBON_TC_CLASS_TYPE): BOOLEAN
 			-- Does `an_element' type check as a type FORMAL_GENERIC_NAME?
 		note
 			rule: "[
@@ -2648,38 +2665,19 @@ feature -- Type checking, static diagrams
 				and the type bound of `an_element' conforms to the type instantiation in which it participates,
 				`an_element' is OK.
 				]"
-		local
-			elem_index: INTEGER
 		do
 			if first_phase then
 
 				Result := True
-
-				-- Check that formal generic name is not bounded by itself.
-				-- E.g. E -> LIST[E]
-				if enclosing_class.generics[class_arg_no].formal_generic_name ~ an_element then
-					-- Error - formal generic name is bounded by itself.
-					Result := False
-				end
+					-- Nothing to do for first phase.
 
 			elseif second_phase then
 
 				Result := True
 
-				if enclosing_class.has_generic_name (an_element) then
-					elem_index := enclosing_class.index_of_generic_name (an_element)
-					if (elem_index < class_arg_no and class_arg_no > 0) or class_arg_no = 0 then
-						-- Check that formal generic name participates consistently in bound
-						if not enclosing_type.generics[type_arg_no].is_valid_actual_type (enclosing_class.generics[elem_index].bounding_type) then
-							-- Error - Bound of formal generic name does not conform to bound of enclosing type
-							Result := False
-						end
-					else
-						-- Error - formal generic name appears before its definition
-						Result := False
-					end
-				else
+				if not enclosing_class.has_generic_name (an_element) then
 					-- Error - formal generic name does not exist in enclosing class
+					add_error (err_code_formal_generic_name_in_client_relation_does_not_exist, err_formal_generic_name_in_client_relation_does_not_exist (an_element, enclosing_class.name))
 					Result := False
 				end
 
@@ -2687,8 +2685,8 @@ feature -- Type checking, static diagrams
 				Result := True
 			end
 		ensure
-			not_bounded_by_itself:
-			(first_phase and Result) implies not (enclosing_class.generics[class_arg_no].formal_generic_name ~ an_element)
+			formal_generic_name_exists_in_enclosing_class:
+			(second_phase and Result) implies enclosing_class.has_generic_name (an_element)
 		end
 
 	check_formal_generics (an_element: FORMAL_GENERIC_LIST; enclosing_class: TBON_TC_CLASS_TYPE): BOOLEAN
@@ -2732,7 +2730,7 @@ feature -- Type checking, static diagrams
 			end
 		end
 
-	check_generic_indirection (an_element: GENERIC_INDIRECTION; enclosing_class: TBON_TC_CLASS_TYPE): BOOLEAN
+	check_generic_indirection (an_element: GENERIC_INDIRECTION; enclosing_class: TBON_TC_CLASS_TYPE; supplier: STATIC_REF): BOOLEAN
 			-- Does `an_element' type check as a type GENERIC_INDIRECTION?
 		note
 			rule: "[
@@ -2750,9 +2748,9 @@ feature -- Type checking, static diagrams
 				Result := True
 
 				if an_element.is_formal_generic_name then
-					Result := check_formal_generic_name (an_element.formal_generic_name, enclosing_class, Void, 0, 0)
+					Result := check_formal_generic_name (an_element.formal_generic_name, enclosing_class)
 				elseif an_element.is_named_indirection then
-					Result := check_named_indirection (an_element.named_indirection)
+					Result := check_named_indirection (an_element.named_indirection, supplier)
 				end
 
 			else
@@ -2760,7 +2758,7 @@ feature -- Type checking, static diagrams
 			end
 		end
 
-	check_indirection_list (an_element: INDIRECTION_LIST; indirection: NAMED_INDIRECTION): BOOLEAN
+	check_indirection_list (an_element: INDIRECTION_LIST; indirection: NAMED_INDIRECTION; supplier: STATIC_REF): BOOLEAN
 			-- Does `an_element' type check as a type ASSERTION_CLAUSE_LIST?
 		note
 			rule: "[
@@ -2785,21 +2783,28 @@ feature -- Type checking, static diagrams
 				until
 					an_element.after
 				loop
-					if not an_element.item_for_iteration.ellipses then
-						Result := check_named_indirection (an_element.item_for_iteration.named_indirection)
-						-- Get enclosing class
-						if Result and indirection.has_class_name and then attached {TBON_TC_CLASS_TYPE} type_with_name (indirection.class_name, formal_type_context) as enclosing_class then
-							-- Get indirection class
-							if attached {TBON_TC_CLASS_TYPE} type_with_name (an_element.item_for_iteration.class_name, formal_type_context) as indirection_class then
+					Result := check_named_indirection (an_element.item_for_iteration.named_indirection, supplier)
+					-- Get enclosing class
+					if Result and indirection.has_class_name and then attached {TBON_TC_CLASS_TYPE} type_with_name (indirection.class_name, formal_type_context) as enclosing_class then
+						-- Get indirection class
+						if not an_element.item_for_iteration.ellipses and attached {TBON_TC_CLASS_TYPE} type_with_name (an_element.item_for_iteration.class_name, formal_type_context) as indirection_class then
+							-- Check that type conforms to bound of type parameter of enclosing type.
+							if not enclosing_class.generics[arg_no].is_valid_actual_type (indirection_class) then
+								add_error (err_code_actual_type_does_not_match_bounding_type, err_actual_type_does_not_match_bounding_type (enclosing_class.generics[arg_no].formal_generic_name, indirection_class.name, enclosing_class.name))
+								Result := False
+							end
+						elseif an_element.item_for_iteration.ellipses then
+							-- Get supplier from context
+							if attached {TBON_TC_CLASS_TYPE} type_with_name (supplier.class_name, formal_type_context) as supplier_class then
 								-- Check that type conforms to bound of type parameter of enclosing type.
-								if not enclosing_class.generics[arg_no].is_valid_actual_type (indirection_class) then
-									add_error (err_code_actual_type_does_not_match_bounding_type, err_actual_type_does_not_match_bounding_type (enclosing_class.generics[arg_no].formal_generic_name, indirection_class.name, enclosing_class.name))
+								if not enclosing_class.generics[arg_no].is_valid_actual_type (supplier_class) then
+									add_error (err_code_actual_type_does_not_match_bounding_type, err_actual_type_does_not_match_bounding_type (enclosing_class.generics[arg_no].formal_generic_name, supplier_class.name, enclosing_class.name))
 									Result := False
 								end
 							end
 						end
 					end
-						-- If current item is an ellipses placeholder, do nothing.
+
 					arg_no := arg_no + 1
 					an_element.forth
 				end
@@ -2851,7 +2856,7 @@ feature -- Type checking, static diagrams
 			Result implies an_element > 0
 		end
 
-	check_named_indirection (an_element: NAMED_INDIRECTION): BOOLEAN
+	check_named_indirection (an_element: NAMED_INDIRECTION; supplier: STATIC_REF): BOOLEAN
 			-- Does `an_element' type check as a type NAMED_INDIRECTION?
 		note
 			rule: "[
@@ -2885,8 +2890,8 @@ feature -- Type checking, static diagrams
 					end
 				end
 
-				if an_element.has_indirection_list then
-					Result := Result and check_indirection_list (an_element.indirection_list, an_element)
+				if Result and an_element.has_indirection_list then
+					Result := Result and check_indirection_list (an_element.indirection_list, an_element, supplier)
 				end
 
 			else
@@ -3080,7 +3085,7 @@ feature -- Type checking, static diagrams
 			end
 		end
 
-	check_supplier_indirection (an_element: SUPPLIER_INDIRECTION; client_class: TBON_TC_CLASS_TYPE): BOOLEAN
+	check_supplier_indirection (an_element: SUPPLIER_INDIRECTION; client_class: TBON_TC_CLASS_TYPE; supplier: STATIC_REF): BOOLEAN
 			-- Does `an_element' type check as a type BOOLEAN_EXPRESSION?
 		note
 			rule: "[
@@ -3099,7 +3104,7 @@ feature -- Type checking, static diagrams
 
 				Result := an_element.indirection_feature_part.for_all (agent check_feature_name (?, client_class))
 
-				Result := Result and check_generic_indirection (an_element.generic_indirection, client_class)
+				Result := Result and check_generic_indirection (an_element.generic_indirection, client_class, supplier)
 
 			else
 				Result := False
@@ -3129,7 +3134,7 @@ feature -- Type checking, formal assertions
 					an_element.after
 				loop
 					-- Clear scope for new assertion
-					variable_context.wipe_out
+					create {HASH_TABLE[TBON_TC_CLASS_TYPE, STRING]} variable_context.make (5)
 
 					if attached {BOOLEAN_EXPRESSION} an_element.item_for_iteration as bool_expression then
 						Result := check_boolean_expression (bool_expression, enclosing_class, enclosing_feature) and Result
@@ -3195,9 +3200,19 @@ feature -- Type checking, formal assertions
 			elseif attached {CALL} an_element as call then
 				Result := check_call (call, enclosing_class, enclosing_feature)
 			elseif attached {OPERATOR_EXPRESSION} an_element as operator_expression then
-
+				Result := check_operator_expression (operator_expression, enclosing_class, enclosing_feature)
 			elseif attached {CONSTANT} an_element as constant then
-
+				if attached {TBON_TC_CLASS_TYPE} type_of_expression (constant, enclosing_class, enclosing_feature) as operator_type then
+					if not class_type_exists (operator_type.name, formal_type_context) then
+						-- Error - Type of constant does not exist
+						Result := False
+					end
+				elseif attached {VOID_CONSTANT} constant then
+					Result :=  True
+				else
+					-- Error - Type of constant does not exist					
+					Result := False
+				end
 			else
 				Result := False
 			end
@@ -3344,7 +3359,6 @@ feature -- Type checking, formal assertions
 				]"
 		local
 			seen_elements: LIST[STRING]
-			already_in_scope: BOOLEAN
 		do
 			create {ARRAYED_LIST[STRING]} seen_elements.make (10)
 			seen_elements.compare_objects
@@ -3362,14 +3376,7 @@ feature -- Type checking, formal assertions
 				end
 				seen_elements.extend (an_element.item_for_iteration)
 
-				already_in_scope := variable_context.there_exists (
-					agent (entry: TBON_TC_TUPLE[STRING, TBON_TC_CLASS_TYPE]; identifier: STRING): BOOLEAN
-						do
-							Result := entry.first ~ identifier
-						end (?, an_element.item_for_iteration)
-				)
-
-				if already_in_scope then
+				if variable_context.has (an_element.item_for_iteration) then
 					add_error (err_code_identifier_already_in_scope, err_identifier_already_in_scope (an_element.item_for_iteration, enclosing_class.name))
 					Result := False
 				end
@@ -3407,7 +3414,6 @@ feature -- Type checking, formal assertions
 				]"
 		local
 			identifier_type: TBON_TC_CLASS_TYPE
-			relation: TBON_TC_TUPLE[STRING, TBON_TC_CLASS_TYPE]
 		do
 			if first_phase then
 				Result := True
@@ -3433,12 +3439,23 @@ feature -- Type checking, formal assertions
 						-- If variable is not present in context, set its type to the type of the set expression
 						if identifier_type = Void then
 
-							create relation.make (an_element.identifiers.item_for_iteration, last_set_type)
-							variable_context.extend (relation)
+							if last_set_type.generics.count = 1 then
+								variable_context.extend (last_set_type.generics[1].actual_type, an_element.identifiers.item_for_iteration)
+							elseif last_set_type.generics.is_empty then
+								variable_context.extend (last_set_type.generics[1].actual_type, an_element.identifiers.item_for_iteration)
+							else
+								-- Warning - trying to iterate over type of unknown format
+							end
 
-						elseif identifier_type /= Void and then not identifier_type.conforms_to (last_set_type) then
-							add_error (err_code_identifier_in_member_range_expression_does_not_match_type_of_set, err_identifier_in_member_range_expression_does_not_match_type_of_set (an_element.identifiers.item_for_iteration, identifier_type.name, last_set_type.name, enclosing_class.name))
-							Result := False
+						elseif identifier_type /= Void then
+							if ((last_set_type.generics.is_empty and then not last_set_type.conforms_to (identifier_type)) or
+								(last_set_type.generics.count = 1 and then not last_set_type.generics[1].actual_type.conforms_to (identifier_type)))
+								then
+									add_error (err_code_identifier_in_member_range_expression_does_not_match_type_of_set, err_identifier_in_member_range_expression_does_not_match_type_of_set (an_element.identifiers.item_for_iteration, identifier_type.name, last_set_type.name, enclosing_class.name))
+									Result := False
+							else
+								-- Warning - trying to iterate over type of unknown format
+							end
 						end
 
 						an_element.identifiers.forth
@@ -3615,12 +3632,13 @@ feature -- Type checking, formal assertions
 
 				if Result then
 					-- Check that set type is enumerable
-					is_enumerable := enumerable_types.exists (
-						agent (enum_type, set_type: TBON_TC_CLASS_TYPE): BOOLEAN
-							do
-								Result := set_type.conforms_to (enum_type)
-							end (?, last_set_type)
-					)
+--					is_enumerable := enumerable_types.exists (
+--						agent (enum_type, set_type: TBON_TC_CLASS_TYPE): BOOLEAN
+--							do
+--								Result := set_type.conforms_to (enum_type)
+--							end (?, last_set_type)
+--					)
+					is_enumerable := last_set_type.conforms_to (type_with_name (enumerable_type_name, formal_type_context))
 
 					if not is_enumerable then
 						-- Warning - set type is not enumerable
@@ -3663,8 +3681,14 @@ feature -- Type checking, formal assertions
 								until
 									an_element.identifiers.after
 								loop
-									type_instance := Void --context_instance (enclosing_type, an_element.type.class_type, enclosing_class)
-									variable_context.extend (create {TBON_TC_TUPLE[STRING, TBON_TC_CLASS_TYPE]}.make (an_element.identifiers.item_for_iteration, type_instance))
+									type_instance := last_class_type
+
+									if not variable_context.has (an_element.identifiers.item_for_iteration) then
+										variable_context.extend (type_instance, an_element.identifiers.item_for_iteration)
+									else
+										-- Error - variable by that name is already defined
+										Result := False
+									end
 
 									an_element.identifiers.forth
 								end
@@ -3686,7 +3710,7 @@ feature -- Type checking, formal assertions
 							until
 								an_element.identifiers.after
 							loop
-								variable_context.extend (create {TBON_TC_TUPLE[STRING, TBON_TC_CLASS_TYPE]}.make (an_element.identifiers.item_for_iteration, l_class_type))
+								variable_context.extend (l_class_type, an_element.identifiers.item_for_iteration)
 
 								an_element.identifiers.forth
 							end
@@ -3756,21 +3780,22 @@ feature -- Type checking, formal assertions
 				if enclosing_feature /= Void and is_first_call then
 					if not (an_element.identifier ~ enclosing_feature.name) then
 						if enclosing_feature.is_infix or enclosing_feature.is_prefix then
-							-- Error - use of infix or prefix feature in assertion.
+							-- Error - use of infix or prefix feature in call.
 							Result := False
 						end
 
 						 -- Check if call is in interface of enclosing class
-						 filtered_features := enclosing_class.interface.filtered (
-						 	agent (l_feature: TBON_TC_FEATURE; call_id: STRING): BOOLEAN
-						 		do
-						 			Result := l_feature.name ~ call_id
-						 		end (?, an_element.identifier)
-						 )
+--						 filtered_features := enclosing_class.interface.filtered (
+--						 	agent (l_feature: TBON_TC_FEATURE; call_id: STRING): BOOLEAN
+--						 		do
+--						 			Result := l_feature.name ~ call_id
+--						 		end (?, an_element.identifier)
+--						 )
 
-						 if filtered_features.count = 1 then
-							called_feature := filtered_features.any_item
-						 end
+--						 if filtered_features.count = 1 then
+--							called_feature := filtered_features.any_item
+--						 end
+						 called_feature := enclosing_class.interface_feature_with_name (an_element.identifier, False, False)
 
 						 -- If call is not a feature, it must be an argument to enclosing feature.
 						 if called_feature = Void then
@@ -3785,6 +3810,9 @@ feature -- Type checking, formal assertions
 
 						 		enclosing_feature.arguments.forth
 						 	end
+						 else
+						 	-- Error - identifier in call does not exist
+						 	Result := False
 						 end
 
 					else
@@ -3794,16 +3822,15 @@ feature -- Type checking, formal assertions
 
 				else -- The call is in an invariant
 					-- Check if call is in interface of enclosing class
-					filtered_features := enclosing_class.interface.filtered (
-						agent (l_feature: TBON_TC_FEATURE; call_id: STRING): BOOLEAN
-							do
-								Result := l_feature.name ~ call_id
-							end (?, an_element.identifier)
-					)
+--					filtered_features := enclosing_class.interface.filtered (
+--						agent (l_feature: TBON_TC_FEATURE; call_id: STRING): BOOLEAN
+--							do
+--								Result := l_feature.name ~ call_id
+--							end (?, an_element.identifier)
+--					)
+					called_feature := enclosing_class.interface_feature_with_name (an_element.identifier, False, False)
 
-					if filtered_features.count = 1 then
-						called_feature := filtered_features.any_item
-					else
+					if called_feature = Void then
 						-- Error - call identifier does not exist or is not in scope.
 						Result := False
 					end

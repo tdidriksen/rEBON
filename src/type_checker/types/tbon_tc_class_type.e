@@ -187,14 +187,8 @@ feature {TBON_TC_CLASS_TYPE} -- Implementation
 												Result := False
 													-- If name and level is equal, include.
 													-- Duplicate names will be found in type checker.
-											elseif acc_level < l_current_level and acc_feature.enclosing_class.conforms_to (other_feature.enclosing_class) and
-												   not ((acc_feature.is_redefined and other_feature.is_deferred) or
-												   		(acc_feature.is_effective and other_feature.is_effective) or
-												   		(acc_feature.is_unclassified and other_feature.is_deferred) or
-												   		(acc_feature.is_unclassified and other_feature.is_effective) or
-												   		(acc_feature.is_unclassified and other_feature.is_redefined) or
-												   		(acc_feature.is_unclassified and other_feature.is_unclassified))
-												   then
+											elseif acc_level < l_current_level and
+												   acc_feature.enclosing_class.conforms_to (other_feature.enclosing_class) then
 												Result := True
 													-- Never include a feature that is higher up
 													-- in the same inheritance hierarchy than one we already know of.
@@ -381,45 +375,40 @@ feature -- Status report
 		local
 			l_ancestors: like Current.ancestors
 		do
-			if Current.name ~ other.name or other.name ~ any_type_name then -- @didriksen - changed from model equality to object equality, as generics have to match.
-				Result := True
-				if attached {TBON_TC_CLASS_TYPE} other as other_class then
-					if Current.generics.count = other_class.generics.count then
-						if Current.has_actual_type and other_class.has_actual_type then
-							Result := Current.is_instance_equal (other_class)
-						elseif Current.has_actual_type xor other_class.has_actual_type then
-							Result := False
-								-- If only one of the classes have actual types, they cannot be equal
+			Result := other.name ~ any_type_name
+			if not Result then -- Only go on if other is not ANY
+				if Current.name ~ other.name then
+					Result := True
+					if attached {TBON_TC_CLASS_TYPE} other as other_class then
+						if Current.generics.count = other_class.generics.count then
+							if Current.has_actual_type and other_class.has_actual_type then
+								Result := Current.is_instance_equal (other_class)
+							elseif Current.has_actual_type xor other_class.has_actual_type then
+								Result := False
+									-- If only one of the classes have actual types, they cannot be equal
+							else
+								Result := Current.generics |=| other_class.generics
+							end
 						else
-							Result := Current.generics |=| other_class.generics
+							Result := False
 						end
 					else
 						Result := False
 					end
-				else
+				elseif other.name ~ none_type_name then
+					-- You can never conform to NONE
 					Result := False
-				end
-			elseif other.name ~ none_type_name then
-				-- You can never conform to NONE
-				Result := False
-			elseif not attached {TBON_TC_CLUSTER_TYPE} other then
-				l_ancestors := Current.ancestors
-				Result := l_ancestors.exists (
-										agent (type: TBON_TC_CLASS_TYPE; l_other: TBON_TC_TYPE): BOOLEAN
-											do
-												Result := type |=| l_other
-											end (?, other)
-										)
-				if not Result then
+				elseif not attached {TBON_TC_CLUSTER_TYPE} other then
+					l_ancestors := Current.ancestors
 					Result := l_ancestors.exists (
 											agent (type: TBON_TC_CLASS_TYPE; l_other: TBON_TC_TYPE): BOOLEAN
 												do
 													Result := type.conforms_to (l_other)
 												end (?, other)
 											)
+				else
+					Result := False
 				end
-			else
-				Result := False
 			end
 		end
 

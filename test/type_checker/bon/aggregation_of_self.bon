@@ -1,0 +1,8 @@
+static_diagram AGGREGATION_OF_SELF
+component
+    class Z
+      feature
+        w:{ Z
+    end
+end
+
