@@ -1,31 +1,26 @@
 note
-	description: "An integer type for type checking of textual BON."
+	description: "A real type for type checking of textual BON."
 	author: "Sune Alkaersig <sual@itu.dk> and Thomas Didriksen <thdi@itu.dk>"
 	date: "$Date$"
 	revision: "$Revision$"
 
 class
-	TBON_TC_INTEGER_TYPE
+	TBON_TC_REAL_TYPE
 
 inherit
-	TBON_TC_REAL_TYPE
+	TBON_TC_CLASS_TYPE
 		redefine
-			make_default_type,
-			initialize_features,
-			initialize_unary_operators,
-			initialize_binary_operators,
 			is_model_equal
 		end
-
 
 create
 	make_default_type
 
 feature -- Initialization
 	make_default_type
-			-- Create an integer type for type checking.
+			-- Create a real type for type checking.
 		do
-			make (integer_type_name)
+			make (real_type_name)
 			initialize_features
 		end
 
@@ -34,9 +29,8 @@ feature -- Status report
 	is_model_equal alias "|=|" (other: TBON_TC_TYPE): BOOLEAN
 			-- Is this model mathematically equal to `other'?
 		do
-			Result := attached {TBON_TC_INTEGER_TYPE} other
+			Result := attached {TBON_TC_REAL_TYPE} other or Precursor {TBON_TC_CLASS_TYPE} (other)
 		end
-
 
 feature {NONE} -- Implementation
 
@@ -49,7 +43,7 @@ feature {NONE} -- Implementation
 
 	initialize_unary_operators
 			-- Initialize unary operators.
-			-- Integers have the following unary operators:
+			-- Reals have the following unary operators:
 			-- +, -
 		local
 			l_feature: TBON_TC_FEATURE
@@ -57,20 +51,20 @@ feature {NONE} -- Implementation
 		do
 			create l_feature.make ("+", Current, Current)
 			l_feature.set_is_prefix
-			l_feature.set_is_redefined
-			create l_argument.make ("an_integer", Current, l_feature)
+			create l_argument.make ("an_real", Current, l_feature)
 			l_feature.arguments.extend (l_argument)
+			add_feature (l_feature)
 
 			create l_feature.make ("-", Current, Current)
 			l_feature.set_is_prefix
-			l_feature.set_is_redefined
-			create l_argument.make ("an_integer", Current, l_feature)
+			create l_argument.make ("an_real", Current, l_feature)
 			l_feature.arguments.extend (l_argument)
+			add_feature (l_feature)
 		end
 
 	initialize_binary_operators
 			-- Initialize binary operators.
-			-- Integers have the following binary operators:
+			-- Reals have the following binary operators:
 			-- +, -, *, /, <, >, <=, >=, = , /=, //, \\, ^
 		local
 			l_feature: TBON_TC_FEATURE
@@ -82,120 +76,119 @@ feature {NONE} -- Implementation
 			-- Create plus
 			create l_feature.make ("+", Current, Current)
 			l_feature.set_is_infix
-			l_feature.set_is_redefined
-			create l_argument.make ("an_integer", Current, l_feature)
+			create l_argument.make ("an_real", Current, l_feature)
 			l_feature.arguments.extend (l_argument)
-			create l_argument.make ("another_integer", Current, l_feature)
+			create l_argument.make ("another_real", Current, l_feature)
 			l_feature.arguments.extend (l_argument)
+			add_feature (l_feature)
 
 			-- Create minus
 			create l_feature.make ("-", Current, Current)
 			l_feature.set_is_infix
-			l_feature.set_is_redefined
-			create l_argument.make ("an_integer", Current, l_feature)
+			create l_argument.make ("an_real", Current, l_feature)
 			l_feature.arguments.extend (l_argument)
-			create l_argument.make ("another_integer", Current, l_feature)
+			create l_argument.make ("another_real", Current, l_feature)
 			l_feature.arguments.extend (l_argument)
+			add_feature (l_feature)
 
 			-- Create times
 			create l_feature.make ("*", Current, Current)
 			l_feature.set_is_infix
-			l_feature.set_is_redefined
-			create l_argument.make ("an_integer", Current, l_feature)
+			create l_argument.make ("an_real", Current, l_feature)
 			l_feature.arguments.extend (l_argument)
-			create l_argument.make ("another_integer", Current, l_feature)
+			create l_argument.make ("another_real", Current, l_feature)
 			l_feature.arguments.extend (l_argument)
+			add_feature (l_feature)
 
 			-- Create division
 			create l_feature.make ("/", Current, Current)
 			l_feature.set_is_infix
-			l_feature.set_is_redefined
-			create l_argument.make ("an_integer", Current, l_feature)
+			create l_argument.make ("an_real", Current, l_feature)
 			l_feature.arguments.extend (l_argument)
-			create l_argument.make ("another_integer", Current, l_feature)
+			create l_argument.make ("another_real", Current, l_feature)
 			l_feature.arguments.extend (l_argument)
+			add_feature (l_feature)
 
 			-- Create less-than
 			create l_feature.make ("<", boolean_type, Current)
 			l_feature.set_is_infix
-			l_feature.set_is_redefined
-			create l_argument.make ("an_integer", Current, l_feature)
+			create l_argument.make ("an_real", Current, l_feature)
 			l_feature.arguments.extend (l_argument)
-			create l_argument.make ("another_integer", Current, l_feature)
+			create l_argument.make ("another_real", Current, l_feature)
 			l_feature.arguments.extend (l_argument)
+			add_feature (l_feature)
 
 			-- Create greater-than
 			create l_feature.make (">", boolean_type, Current)
 			l_feature.set_is_infix
-			l_feature.set_is_redefined
-			create l_argument.make ("an_integer", Current, l_feature)
+			create l_argument.make ("an_real", Current, l_feature)
 			l_feature.arguments.extend (l_argument)
-			create l_argument.make ("another_integer", Current, l_feature)
+			create l_argument.make ("another_real", Current, l_feature)
 			l_feature.arguments.extend (l_argument)
+			add_feature (l_feature)
 
 			-- Create less-than-equals
 			create l_feature.make ("<=", boolean_type, Current)
 			l_feature.set_is_infix
-			l_feature.set_is_redefined
-			create l_argument.make ("an_integer", Current, l_feature)
+			create l_argument.make ("an_real", Current, l_feature)
 			l_feature.arguments.extend (l_argument)
-			create l_argument.make ("another_integer", Current, l_feature)
+			create l_argument.make ("another_real", Current, l_feature)
 			l_feature.arguments.extend (l_argument)
+			add_feature (l_feature)
 
 			-- Create greater-than-equals
 			create l_feature.make (">=", boolean_type, Current)
 			l_feature.set_is_infix
-			l_feature.set_is_redefined
-			create l_argument.make ("an_integer", Current, l_feature)
+			create l_argument.make ("an_real", Current, l_feature)
 			l_feature.arguments.extend (l_argument)
-			create l_argument.make ("another_integer", Current, l_feature)
+			create l_argument.make ("another_real", Current, l_feature)
 			l_feature.arguments.extend (l_argument)
+			add_feature (l_feature)
 
 			-- Create equals
 			create l_feature.make ("=", boolean_type, Current)
 			l_feature.set_is_infix
-			l_feature.set_is_redefined
-			create l_argument.make ("an_integer", Current, l_feature)
+			create l_argument.make ("an_real", Current, l_feature)
 			l_feature.arguments.extend (l_argument)
-			create l_argument.make ("another_integer", Current, l_feature)
+			create l_argument.make ("another_real", Current, l_feature)
 			l_feature.arguments.extend (l_argument)
+			add_feature (l_feature)
 
 			-- Create not equals
 			create l_feature.make ("/=", boolean_type, Current)
 			l_feature.set_is_infix
-			l_feature.set_is_redefined
-			create l_argument.make ("an_integer", Current, l_feature)
+			create l_argument.make ("an_real", Current, l_feature)
 			l_feature.arguments.extend (l_argument)
-			create l_argument.make ("another_integer", Current, l_feature)
+			create l_argument.make ("another_real", Current, l_feature)
 			l_feature.arguments.extend (l_argument)
+			add_feature (l_feature)
 
-
-			-- Create integer division
+			-- Create real division
 			create l_feature.make ("//", Current, Current)
 			l_feature.set_is_infix
-			l_feature.set_is_redefined
-			create l_argument.make ("an_integer", Current, l_feature)
+			create l_argument.make ("an_real", Current, l_feature)
 			l_feature.arguments.extend (l_argument)
-			create l_argument.make ("another_integer", Current, l_feature)
+			create l_argument.make ("another_real", Current, l_feature)
 			l_feature.arguments.extend (l_argument)
+			add_feature (l_feature)
 
 			-- Create modulo
 			create l_feature.make ("\\", Current, Current)
 			l_feature.set_is_infix
-			l_feature.set_is_redefined
-			create l_argument.make ("an_integer", Current, l_feature)
+			create l_argument.make ("an_real", Current, l_feature)
 			l_feature.arguments.extend (l_argument)
-			create l_argument.make ("another_integer", Current, l_feature)
+			create l_argument.make ("another_real", Current, l_feature)
 			l_feature.arguments.extend (l_argument)
+			add_feature (l_feature)
 
 			-- Create power
 			create l_feature.make ("^", Current, Current)
 			l_feature.set_is_infix
-			l_feature.set_is_redefined
-			create l_argument.make ("an_integer", Current, l_feature)
+			create l_argument.make ("an_real", Current, l_feature)
 			l_feature.arguments.extend (l_argument)
-			create l_argument.make ("another_integer", Current, l_feature)
+			create l_argument.make ("another_real", Current, l_feature)
 			l_feature.arguments.extend (l_argument)
+			add_feature (l_feature)
 		end
 
 end

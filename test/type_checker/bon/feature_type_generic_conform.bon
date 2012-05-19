@@ -1,0 +1,22 @@
+static_diagram DUPLICATE_FEATURE
+component    
+    class TEST_SEQUENCE [E]
+    
+    class A
+        feature
+            id: TEST_SEQUENCE[CHARACTER]
+    end
+    
+    class B
+        inherit A
+        feature
+            redefined id: TEST_SEQUENCE[CHARACTER]
+    end
+    
+    class C
+        inherit B
+        feature
+            redefined id: TEST_SEQUENCE[CHARACTER]
+    end
+end
+

@@ -1,6 +1,6 @@
 note
 	description: "Shared items for all type checker test classes."
-	author: ""
+	author: "Sune Alkaersig <sual@itu.dk and Thomas Didriksen <thdi@itu.dk>"
 	date: "$Date$"
 	revision: "$Revision$"
 

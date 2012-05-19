@@ -1207,7 +1207,7 @@ debug ("GEYACC")
 	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 532")
 end
 
-create yyval8.make_from_elements (yyvs10.item (yyvsp10)); bon_specification := yyval8; io.put_string("BON SPEC CREATED!") 
+create yyval8.make_from_elements (yyvs10.item (yyvsp10)); bon_specification := yyval8 
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvsp8 := yyvsp8 + 1
@@ -3599,7 +3599,7 @@ debug ("GEYACC")
 	std.error.put_line ("Executing parser user-code from file 'bon_parser.y' at line 947")
 end
 
-io.put_string ("STATIC DIAGRAM!"); create yyval38.make_static_diagram (yyvs2.item (yyvsp2), yyvs39.item (yyvsp39), yyvs42.item (yyvsp42)) 
+create yyval38.make_static_diagram (yyvs2.item (yyvsp2), yyvs39.item (yyvsp39), yyvs42.item (yyvsp42)) 
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 6
 	yyvsp38 := yyvsp38 + 1

@@ -54,6 +54,7 @@ feature {NONE} -- Implementation
 			l_feature.set_is_prefix
 			create l_argument.make ("a_boolean", Current, l_feature)
 			l_feature.arguments.extend (l_argument)
+			add_feature (l_feature)
 		end
 
 	initialize_binary_operators
@@ -71,6 +72,7 @@ feature {NONE} -- Implementation
 			l_feature.arguments.extend (l_argument)
 			create l_argument.make ("another_boolean", Current, l_feature)
 			l_feature.arguments.extend (l_argument)
+			add_feature (l_feature)
 
 			-- Create or
 			create l_feature.make ("or", Current, Current)
@@ -79,6 +81,7 @@ feature {NONE} -- Implementation
 			l_feature.arguments.extend (l_argument)
 			create l_argument.make ("another_boolean", Current, l_feature)
 			l_feature.arguments.extend (l_argument)
+			add_feature (l_feature)
 
 			-- Create xor
 			create l_feature.make ("xor", Current, Current)
@@ -87,6 +90,7 @@ feature {NONE} -- Implementation
 			l_feature.arguments.extend (l_argument)
 			create l_argument.make ("another_boolean", Current, l_feature)
 			l_feature.arguments.extend (l_argument)
+			add_feature (l_feature)
 
 			-- Create implication
 			create l_feature.make ("->", Current, Current)
@@ -95,6 +99,7 @@ feature {NONE} -- Implementation
 			l_feature.arguments.extend (l_argument)
 			create l_argument.make ("another_boolean", Current, l_feature)
 			l_feature.arguments.extend (l_argument)
+			add_feature (l_feature)
 
 			-- Create logical equivalence
 			create l_feature.make ("<->", Current, Current)
@@ -103,6 +108,7 @@ feature {NONE} -- Implementation
 			l_feature.arguments.extend (l_argument)
 			create l_argument.make ("another_boolean", Current, l_feature)
 			l_feature.arguments.extend (l_argument)
+			add_feature (l_feature)
 
 			-- Create equals
 			create l_feature.make ("=", Current, Current)
@@ -111,6 +117,7 @@ feature {NONE} -- Implementation
 			l_feature.arguments.extend (l_argument)
 			create l_argument.make ("another_boolean", Current, l_feature)
 			l_feature.arguments.extend (l_argument)
+			add_feature (l_feature)
 
 			-- Create not equals
 			create l_feature.make ("/=", Current, Current)
@@ -119,6 +126,7 @@ feature {NONE} -- Implementation
 			l_feature.arguments.extend (l_argument)
 			create l_argument.make ("another_boolean", Current, l_feature)
 			l_feature.arguments.extend (l_argument)
+			add_feature (l_feature)
 		end
 
 end

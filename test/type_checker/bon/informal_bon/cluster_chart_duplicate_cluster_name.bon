@@ -1,0 +1,9 @@
+system_chart TEST_SYSTEM
+    cluster TEST_CLUSTER
+end
+
+cluster TEST_CLUSTER
+end
+
+cluster TEST_CLUSTER
+end

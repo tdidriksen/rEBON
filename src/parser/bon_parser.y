@@ -530,7 +530,7 @@ create
 
 -- @type BON_SPECIFICATION
 Bon_specification : At_least_one_Specification_element 
-                    { create $$.make_from_elements ($1); bon_specification := $$; io.put_string("BON SPEC CREATED!") } ;
+                    { create $$.make_from_elements ($1); bon_specification := $$ } ;
 
 -- @type SPECIFICATION_ELEMENTS
 At_least_one_Specification_element : Specification_element Optional_Specification_elements
@@ -950,7 +950,7 @@ Static_diagram_rule : STATIC_DIAGRAM_TOKEN
 							 COMPONENT_TOKEN 
 							 Static_block 
 							 END_TOKEN 
-							 { io.put_string ("STATIC DIAGRAM!"); create $$.make_static_diagram ($2, $3, $5) } ;
+							 { create $$.make_static_diagram ($2, $3, $5) } ;
 
 -- @type like Extended_id
 Optional_Extended_id : -- Empty

@@ -1,0 +1,23 @@
+system_chart TEST_SYSTEM
+    cluster TEST_CLUSTER
+    cluster OTHER_CLUSTER
+end
+
+cluster_chart TEST_CLUSTER
+class TEST_CLASS
+end
+
+class_chart TEST_CLASS
+end
+
+cluster_chart OTHER_CLUSTER
+class OTHER_CLASS
+end
+
+class_chart OTHER_CLASS
+end
+
+dictionary TEST_SYSTEM
+class TEST_CLASS cluster TEST_CLUSTER
+class OTHER_CLASS cluster OTHER_CLUSTER
+end
