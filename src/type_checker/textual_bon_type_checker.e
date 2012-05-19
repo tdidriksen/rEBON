@@ -739,12 +739,14 @@ feature -- Type checking, general
 				current_feature := unresolved_features.item.tc_feature
 				current_class_type := unresolved_features.item.class_type
 
-				error_count := errors.count
-				type_instance := context_instance (current_class_type, current_feature.enclosing_class, 0)
-				Result := (errors.count = error_count) and Result
+				if current_class_type /= Void then
+					error_count := errors.count
+					type_instance := context_instance (current_class_type, current_feature.enclosing_class, 0)
+					Result := (errors.count = error_count) and Result
 
-				if Result then
-					current_feature.set_type (type_instance)
+					if Result then
+						current_feature.set_type (type_instance)
+					end
 				end
 
 				-- Add type to arguments
@@ -756,11 +758,13 @@ feature -- Type checking, general
 				loop
 					current_argument := arguments.item
 
+					current_class_type := current_argument.associated_class_type
+
 					error_count := errors.count
 					type_instance := context_instance (current_class_type, current_argument.enclosing_feature.enclosing_class, 0)
 					Result := (errors.count = error_count) and Result
 
-					if not Result then
+					if Result then
 						current_argument.set_type (type_instance)
 					end
 
@@ -2090,6 +2094,7 @@ feature -- Type checking, static diagrams
 			seen_argument_names: LIST[STRING]
 			l_precursor: TBON_TC_FEATURE
 			type_instance: TBON_TC_CLASS_TYPE
+			identifiers: STRING_LIST
 		do
 			Result := True
 			if first_phase then
@@ -2100,27 +2105,45 @@ feature -- Type checking, static diagrams
 				-- Check all arguments in the argument list.
 				from an_element.start until an_element.after loop
 					argument := an_element.item_for_iteration
-
-					from argument.identifiers.start until argument.identifiers.after
+					from
+						identifiers := argument.identifiers
+						identifiers.start
+					until
+						identifiers.after
 					loop
 						-- Check for duplicate argument names
-						if seen_argument_names.has (argument.identifiers.item_for_iteration) then
-							add_error (err_code_duplicate_argument_name, err_duplicate_argument_name (argument.identifiers.item_for_iteration, enclosing_feature.name, enclosing_class.name))
+						if seen_argument_names.has (identifiers.item_for_iteration) then
+							add_error (err_code_duplicate_argument_name, err_duplicate_argument_name (identifiers.item_for_iteration, enclosing_feature.name, enclosing_class.name))
 							Result := False
 						end
-						seen_argument_names.extend (argument.identifiers.item_for_iteration.string)
+						seen_argument_names.extend (identifiers.item_for_iteration.string)
 
-						if argument.identifiers.item_for_iteration ~ enclosing_feature.name then
-							add_error (err_code_argument_has_same_name_as_feature, err_argument_has_same_name_as_feature (argument.identifiers.item_for_iteration, enclosing_feature.name, enclosing_class.name))
+						if identifiers.item_for_iteration ~ enclosing_feature.name then
+							add_error (err_code_argument_has_same_name_as_feature, err_argument_has_same_name_as_feature (identifiers.item_for_iteration, enclosing_feature.name, enclosing_class.name))
 							Result := False
 						end
 
-						create l_argument.make (argument.identifiers.item_for_iteration.string, Void, enclosing_feature)
+						if identifiers.item_for_iteration.as_lower ~ current_keyword.as_lower then
+							add_error (err_code_feature_argument_name_is_keyword_current, err_feature_arguments_name_is_keyword (enclosing_feature.name.string, enclosing_class.name.string, "Current"))
+							Result := False
+						end
+
+						if identifiers.item_for_iteration.as_lower ~ result_keyword.as_lower then
+							add_error (err_code_feature_argument_name_is_keyword_result, err_feature_arguments_name_is_keyword (enclosing_feature.name.string, enclosing_class.name.string, "Result"))
+							Result := False
+						end
+
+						if identifiers.item_for_iteration.as_lower ~ void_keyword.as_lower then
+							add_error (err_code_feature_argument_name_is_keyword_void, err_feature_arguments_name_is_keyword (enclosing_feature.name.string, enclosing_class.name.string, "Void"))
+							Result := False
+						end
+
+						create l_argument.make (identifiers.item_for_iteration.string, Void, enclosing_feature)
 						l_argument.set_associated_class_type (argument.type.class_type)
 
 						enclosing_feature.arguments.extend (l_argument)
 
-						argument.identifiers.forth
+						identifiers.forth
 					end
 
 					an_element.forth
@@ -2130,19 +2153,24 @@ feature -- Type checking, static diagrams
 
 				from an_element.start until an_element.after
 				loop
-					from an_element.item_for_iteration.identifiers.start until an_element.item_for_iteration.identifiers.after
+					from
+						identifiers := an_element.item_for_iteration.identifiers
+						identifiers.start
+					until
+						identifiers.after
 					loop
-						l_argument := enclosing_feature.argument_with_name (an_element.item_for_iteration.identifiers.item_for_iteration)
+						l_argument := enclosing_feature.argument_with_name (identifiers.item_for_iteration)
 
 						-- Check type of argument
 						if enclosing_feature.nearest_precursor /= Void then
+							l_precursor := enclosing_feature.nearest_precursor
 							Result := Result and l_argument.type.conforms_to (l_argument.enclosing_feature.nearest_precursor.argument_with_name (l_argument.formal_name).type)
 							if not Result then
 								add_error (err_code_argument_types_do_not_match_precursor, err_argument_types_do_not_match_precursor (enclosing_feature.name, l_precursor.name, enclosing_class.name))
 							end
 						end
 
-						an_element.item_for_iteration.identifiers.forth
+						identifiers.forth
 					end
 
 					an_element.forth
@@ -2278,6 +2306,7 @@ feature -- Type checking, static diagrams
 			type_instance: TBON_TC_CLASS_TYPE
 			error_count: INTEGER
 		do
+
 			if first_phase then
 
 				create {ARRAYED_LIST[STRING]} seen_feature_names.make (5)
@@ -2331,15 +2360,19 @@ feature -- Type checking, static diagrams
 					end
 
 					-- Check that infix feature has exactly one argument
-					if l_feature.is_infix and then an_element.arguments.count /= 1 then
-						-- Error - infix feature must have one arguments
+					if l_feature.is_infix and then an_element.has_arguments and then an_element.arguments.count /= 1 then
+						-- Error - infix feature must have two arguments
 						add_error (err_code_infix_feature_must_have_one_argument, err_infix_feature_must_have_one_argument (l_feature.name, enclosing_class.name))
 						Result := False
 					end
 
 					-- Add feature to enclosing class
 					if enclosing_class.feature_with_name (current_feature_name.feature_name, current_feature_name.is_prefix, current_feature_name.is_infix) = Void then
-						unresolved_features.extend ([l_feature, an_element.type.class_type])
+						if an_element.has_type then
+							unresolved_features.extend ([l_feature, an_element.type.class_type])
+						else
+							unresolved_features.extend ([l_feature, Void])
+						end
 						enclosing_class.add_feature (l_feature)
 					else
 						add_error (err_code_duplicate_feature_name, err_duplicate_feature_name (current_feature_name.feature_name, enclosing_class.name))
@@ -2502,8 +2535,8 @@ feature -- Type checking, static diagrams
 			(second_phase and Result) implies an_element.feature_names.for_all (
 				agent (l_feature_name: FEATURE_NAME; l_enclosing_class: TBON_TC_CLASS_TYPE): BOOLEAN
 					do
-						Result := class_type_exists (l_enclosing_class.feature_with_name (l_feature_name.feature_name, l_feature_name.is_prefix, l_feature_name.is_infix).type.name, formal_type_context) xor
-									l_enclosing_class.has_generic_name (l_enclosing_class.feature_with_name (l_feature_name.feature_name, l_feature_name.is_prefix, l_feature_name.is_infix).formal_generic_name)
+						Result := l_enclosing_class.feature_with_name (l_feature_name.feature_name, l_feature_name.is_prefix, l_feature_name.is_infix).type /= Void implies
+									 class_type_exists (l_enclosing_class.feature_with_name (l_feature_name.feature_name, l_feature_name.is_prefix, l_feature_name.is_infix).type.name, formal_type_context)
 					end (?, enclosing_class)
 			)
 
