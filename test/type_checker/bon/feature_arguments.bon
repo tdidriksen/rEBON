@@ -1,0 +1,22 @@
+static_diagram FEATURE_ARGUMENTS
+component
+	class X
+	end
+	class Y
+		inherit Y
+	end
+    class Z
+      	feature
+			deferred f
+				-> a: X
+				-> b: STRING
+	end
+	class W
+		inherit Z
+		feature 
+			effective f
+				-> a: Y
+				-> b: STRING
+	end
+end
+

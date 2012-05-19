@@ -1,0 +1,9 @@
+static_diagram KEYWORD_VOID
+component
+    class Z
+      feature
+			f
+				-> void: Z
+    end
+end
+

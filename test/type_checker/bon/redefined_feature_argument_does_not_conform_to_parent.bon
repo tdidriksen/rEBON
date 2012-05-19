@@ -1,0 +1,16 @@
+static_diagram ARGUMENT_DOES_NOT_CONFORM
+component
+    class Z
+      	feature
+			f
+				-> a: BOOLEAN
+    end
+	class Y
+		inherit Z
+		feature
+			redefined f
+				-> a: STRING
+	end
+			
+end
+

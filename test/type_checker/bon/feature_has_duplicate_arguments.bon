@@ -1,0 +1,10 @@
+static_diagram DUPLICATE_FEATURE
+component
+    class Z
+      feature
+			f
+      			-> a: Z
+				-> a: Z
+    end
+end
+

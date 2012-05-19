@@ -1,0 +1,9 @@
+static_diagram KEYWORD_RESULT
+component
+    class Z
+      feature
+			f
+				-> result: Z
+    end
+end
+

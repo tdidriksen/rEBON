@@ -1,0 +1,9 @@
+static_diagram UNKNOWN_ARGUMENT_TYPE
+component
+    class Z
+      feature
+			f
+				-> a: K
+    end
+end
+
