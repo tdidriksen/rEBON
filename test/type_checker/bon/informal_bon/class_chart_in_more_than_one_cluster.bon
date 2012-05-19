@@ -1,13 +1,17 @@
 system_chart TEST_SYSTEM
     cluster TEST_CLUSTER description ""
+    cluster TEST_CLUSTER_TWO description ""
 end
 
 cluster_chart TEST_CLUSTER
 class CLASS_ONE description ""
 class CLASS_TWO description ""
 cluster CLUSTER_ONE description ""
-cluster TEST_CLUSTER description ""
 cluster CLUSTER_TWO description ""
+end
+
+cluster_chart TEST_CLUSTER_TWO
+class CLASS_ONE
 end
 
 class_chart CLASS_ONE

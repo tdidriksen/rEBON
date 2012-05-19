@@ -1,6 +1,6 @@
 system_chart TEST_SYSTEM
-    cluster TEST_CLUSTER
-    cluster OTHER_CLUSTER
+    cluster TEST_CLUSTER description ""
+    cluster OTHER_CLUSTER description ""
 end
 
 cluster_chart TEST_CLUSTER

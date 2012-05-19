@@ -1,9 +1,9 @@
 system_chart TEST_SYSTEM
-    cluster TEST_CLUSTER
+    cluster TEST_CLUSTER description ""
 end
 
-cluster TEST_CLUSTER
+cluster_chart TEST_CLUSTER
 end
 
-cluster TEST_CLUSTER
+cluster_chart TEST_CLUSTER
 end

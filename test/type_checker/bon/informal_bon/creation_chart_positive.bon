@@ -5,8 +5,8 @@ end
 cluster_chart TEST_CLUSTER
 class CLASS_ONE description ""
 class CLASS_TWO description ""
+class CLASS_THREE description ""
 cluster CLUSTER_ONE description ""
-cluster TEST_CLUSTER description ""
 cluster CLUSTER_TWO description ""
 end
 
@@ -16,8 +16,16 @@ end
 class_chart CLASS_TWO
 end
 
+class_chart CLASS_THREE
+end
+
 cluster_chart CLUSTER_ONE
 end
 
 cluster_chart CLUSTER_TWO
+end
+
+creation_chart TEST_SYSTEM
+creator CLASS_ONE creates CLASS_TWO
+creator CLASS_TWO creates CLASS_ONE, CLASS_THREE
 end

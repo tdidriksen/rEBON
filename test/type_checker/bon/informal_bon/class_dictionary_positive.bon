@@ -1,17 +1,17 @@
 system_chart TEST_SYSTEM
-    cluster TEST_CLUSTER
-    cluster OTHER_CLUSTER
+    cluster TEST_CLUSTER description ""
+    cluster OTHER_CLUSTER description ""
 end
 
 cluster_chart TEST_CLUSTER
-class TEST_CLASS
+class TEST_CLASS description ""
 end
 
 class_chart TEST_CLASS
 end
 
 cluster_chart OTHER_CLUSTER
-class OTHER_CLASS
+class OTHER_CLASS description ""
 end
 
 class_chart OTHER_CLASS

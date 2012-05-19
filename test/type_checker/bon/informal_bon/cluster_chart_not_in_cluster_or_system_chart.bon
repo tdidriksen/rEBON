@@ -6,7 +6,6 @@ cluster_chart TEST_CLUSTER
 class CLASS_ONE description ""
 class CLASS_TWO description ""
 cluster CLUSTER_ONE description ""
-cluster TEST_CLUSTER description ""
 cluster CLUSTER_TWO description ""
 end
 
@@ -20,4 +19,7 @@ cluster_chart CLUSTER_ONE
 end
 
 cluster_chart CLUSTER_TWO
+end
+
+cluster_chart CLUSTER_THREE
 end

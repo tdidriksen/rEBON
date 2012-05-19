@@ -5,8 +5,8 @@ end
 cluster_chart TEST_CLUSTER
 class CLASS_ONE description ""
 class CLASS_TWO description ""
+class CLASS_THREE description ""
 cluster CLUSTER_ONE description ""
-cluster TEST_CLUSTER description ""
 cluster CLUSTER_TWO description ""
 end
 
@@ -20,4 +20,7 @@ cluster_chart CLUSTER_ONE
 end
 
 cluster_chart CLUSTER_TWO
+end
+
+event_chart TEST_SYSTEM
 end

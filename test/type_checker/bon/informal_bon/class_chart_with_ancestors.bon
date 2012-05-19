@@ -5,8 +5,8 @@ end
 cluster_chart TEST_CLUSTER
 class CLASS_ONE description ""
 class CLASS_TWO description ""
+class CLASS_THREE description ""
 cluster CLUSTER_ONE description ""
-cluster TEST_CLUSTER description ""
 cluster CLUSTER_TWO description ""
 end
 
@@ -14,6 +14,10 @@ class_chart CLASS_ONE
 end
 
 class_chart CLASS_TWO
+end
+
+class_chart CLASS_THREE
+inherit CLASS_ONE, CLASS_TWO
 end
 
 cluster_chart CLUSTER_ONE

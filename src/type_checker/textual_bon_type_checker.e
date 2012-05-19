@@ -655,6 +655,7 @@ feature -- Type checking, general
 		local
 			types: like informal_type_context
 			type: TBON_TC_TYPE
+			current_cluster: TBON_TC_CLUSTER_TYPE
 		do
 			Result := True
 
@@ -673,8 +674,26 @@ feature -- Type checking, general
 					Result := check_ancestors (class_type, class_type) and Result
 				elseif attached {TBON_TC_CLUSTER_TYPE} type as cluster_type then
 
-					Result := True
-							-- No structure restrictions on clusters
+					-- Check that cluster is not subcluster of itself.
+					from
+						current_cluster := cluster_type.parent
+					until
+						current_cluster = Void
+					loop
+						if current_cluster.types.exists (
+							agent (l_type: TBON_TC_TYPE; cluster_name: STRING): BOOLEAN
+								do
+									Result := attached {TBON_TC_CLUSTER_TYPE} l_type as cluster and then
+											  cluster.name ~ cluster_name
+								end (?, current_cluster.name)
+						) then
+							add_error (err_code_cluster_contains_itself, err_cluster_contains_itself (cluster_type.name))
+							Result := False
+						end
+
+						current_cluster := current_cluster.parent
+					end
+
 				end
 
 				types := types / type
@@ -686,6 +705,7 @@ feature -- Type checking, general
 		local
 			types: like informal_type_context
 			type: TBON_TC_TYPE
+			current_cluster: TBON_TC_CLUSTER_TYPE
 		do
 			Result := True
 
@@ -713,6 +733,26 @@ feature -- Type checking, general
 					elseif cluster_type.parent /= Void and cluster_type.is_in_system_chart then
 						add_error (err_code_cluster_in_both_cluster_and_system, err_cluster_in_both_cluster_and_system (cluster_type.name))
 						Result := False
+					end
+
+					-- Check that cluster is not subcluster of itself.
+					from
+						current_cluster := cluster_type.parent
+					until
+						current_cluster = Void
+					loop
+						if current_cluster.types.exists (
+							agent (l_type: TBON_TC_TYPE; cluster_name: STRING): BOOLEAN
+								do
+									Result := attached {TBON_TC_CLUSTER_TYPE} l_type as cluster and then
+											  cluster.name ~ cluster_name
+								end (?, current_cluster.name)
+						) then
+							add_error (err_code_cluster_contains_itself, err_cluster_contains_itself (cluster_type.name))
+							Result := False
+						end
+
+						current_cluster := current_cluster.parent
 					end
 				end
 
@@ -1022,18 +1062,6 @@ feature -- Type checking, informal
 								add_error (err_code_class_already_in_cluster, err_class_already_in_cluster (current_cluster.name, class_type.name, class_type.cluster.name))
 								Result := False
 							end
-						elseif attached {TBON_TC_CLUSTER_TYPE} type_with_name (class_entries.item_for_iteration.name, informal_type_context) as cluster then
-							-- Add class to cluster types
-							current_cluster.add_type (cluster)
-							-- Check that no class is in more than one cluster
-							-- If cluster is not Void, then the class is already in a cluster, and hence is in more than one cluster.
-							if cluster.parent = Void then
-								cluster.set_parent (current_cluster)
-							else
-								add_error (err_code_cluster_already_in_cluster, err_cluster_already_in_cluster (current_cluster.name, cluster.name, cluster.parent.name))
-								Result := False
-							end
-
 						else
 							add_error (err_code_class_does_not_exist, err_class_does_not_exist (class_entries.item_for_iteration.name))
 							Result := False

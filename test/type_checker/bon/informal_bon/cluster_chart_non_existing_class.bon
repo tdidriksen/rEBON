@@ -1,12 +1,12 @@
 system_chart TEST_SYSTEM
-    cluster TEST_CLUSTER
+    cluster TEST_CLUSTER description ""
 end
 
-cluster TEST_CLUSTER
-class CLASS_ONE
-class CLASS_TWO
-cluster CLUSTER_ONE
-cluster CLUSTER_TWO
+cluster_chart TEST_CLUSTER
+class CLASS_ONE description ""
+class CLASS_TWO description ""
+cluster CLUSTER_ONE description ""
+cluster CLUSTER_TWO description ""
 end
 
 class_chart CLASS_TWO

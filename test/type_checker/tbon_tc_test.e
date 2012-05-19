@@ -7,8 +7,28 @@ note
 class
 	TBON_TC_TEST
 
-inherit
+inherit {NONE}
 	TBON_TC_ERROR
+		rename
+			make as make_error,
+			code as error_code,
+			message as error_message
+		export
+			{NONE} make_error, error_code, error_message
+		undefine
+			is_equal
+		end
+
+	TBON_TC_WARNING
+		rename
+			make as make_warning,
+			code as warning_code,
+			message as warning_message
+		export
+			{NONE} make_warning, warning_code, warning_message
+		undefine
+			is_equal
+		end
 
 feature -- Access
 	parser: BON_PARSER
@@ -73,6 +93,11 @@ feature -- Status report
 	error_occurred (an_error_code: INTEGER): BOOLEAN
 		do
 			Result := type_checker.errors.has (create {TBON_TC_ERROR}.make (an_error_code, Void))
+		end
+
+	warning_occurred (a_warning_code: INTEGER): BOOLEAN
+		do
+			Result := type_checker.warnings.has (create {TBON_TC_WARNING}.make (a_warning_code, Void))
 		end
 
 end
