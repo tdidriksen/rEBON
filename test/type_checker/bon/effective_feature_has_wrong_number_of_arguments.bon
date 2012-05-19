@@ -1,0 +1,17 @@
+static_diagram ARGUMENT_DOES_NOT_CONFORM
+component
+    class Z
+      	feature
+			deferred f
+				-> a: BOOLEAN
+    end
+	class Y
+		inherit Z
+		feature
+			effective f
+				-> a: STRING
+				-> b: BOOLEAN
+	end
+			
+end
+

@@ -1,0 +1,9 @@
+static_diagram KEYWORD_CURRENT
+component
+    class Z
+      feature
+			f
+				-> current: Z
+    end
+end
+
