@@ -1,0 +1,11 @@
+dynamic_diagram OBJECT_GROUP_DUPLICATES
+	component
+		object_group DUPLICATE
+		component
+			object THINGONE
+		end
+		object_group DUPLICATE
+		component
+			object THINGTWO
+		end
+	end

@@ -1,0 +1,8 @@
+static_diagram formal_generic_name_does_not_exist
+component
+    cluster LETTERS
+    class A
+    class B [G]
+    end
+    A client {G} B 
+end

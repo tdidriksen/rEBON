@@ -1,0 +1,15 @@
+dynamic_diagram SCENARIO_MESSAGE_CALLER_DYNAMIC_REF_DOES_NOT_EXIST
+	component
+		scenario "SCENARIO"
+		action 
+			"1"		"Do stuff..."
+		end
+		object A
+		object B
+		object_group H
+			Object C
+		end
+		A calls B "1"
+		A calls H "1"
+		B calls H.C "1"
+	end

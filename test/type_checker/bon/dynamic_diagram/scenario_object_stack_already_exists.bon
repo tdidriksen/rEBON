@@ -1,0 +1,5 @@
+dynamic_diagram OBJECT_STACK_DUPLICATES
+	component
+		object_STACK DUPLICATE
+		object_STACK DUPLICATE
+	end

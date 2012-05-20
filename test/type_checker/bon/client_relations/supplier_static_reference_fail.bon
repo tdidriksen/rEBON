@@ -1,0 +1,9 @@
+static_diagram supplier_static_ref_fail
+component
+    cluster LETTERS
+    components
+        class A
+    end
+    class B
+    A client LETTERS.B
+end

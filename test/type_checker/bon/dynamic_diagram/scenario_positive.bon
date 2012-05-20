@@ -1,0 +1,7 @@
+dynamic_diagram SCENARIO_POSITIVE
+	component
+		scenario "SCENARIO"
+		action 
+			"1"		"Test scenarios!"
+		end
+	end

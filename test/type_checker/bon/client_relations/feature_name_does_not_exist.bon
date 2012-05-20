@@ -1,0 +1,7 @@
+static_diagram feature_name_does_not_exist
+component
+    cluster LETTERS
+    class A
+    class B
+    A client {c} B 
+end

@@ -1,0 +1,13 @@
+static_diagram named_indirection_list
+component
+    cluster LETTERS
+    class A
+    class B [G]
+    feature
+        f: A
+    end
+    class D
+    class C [H]
+    end
+    C client {f: D} B 
+end

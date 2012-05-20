@@ -225,6 +225,13 @@ feature -- Error messages
 			Result.append_string (" is both in a system chart and is a subcluster of a cluster.")
 		end
 
+	err_cluster_in_prefix_does_not_exist (a_name: STRING): STRING
+		do
+			Result := "Cluster "
+			Result.append_string (a_name.string)
+			Result.append_string (" metioned in a prefix does not exist")
+		end
+
 	err_cluster_not_in_cluster_or_system (a_name: STRING): STRING
 		do
 			Result := "Cluster "
@@ -306,6 +313,15 @@ feature -- Error messages
 			Result.append_string (" specifies a generic name ")
 			Result.append_string (a_generic_name.string)
 			Result.append_string (", but class is not generic.")
+		end
+
+	err_feature_argument_type_does_not_conform (a_feature_name, a_class_name: STRING): STRING
+		do
+			Result := "Argument in "
+			Result.append_string (a_feature_name)
+			Result.append_string (" in class ")
+			Result.append_string (a_class_name)
+			Result.append_string ("does not conform.")
 		end
 
 	err_feature_arguments_name_is_keyword (a_feature_name, a_class_name, a_keyword: STRING): STRING

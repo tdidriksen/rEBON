@@ -3100,6 +3100,7 @@ feature -- Type checking, static diagrams
 							end
 						else
 							-- Error - cluster in prefix does not exist
+							add_error (err_code_cluster_in_prefix_does_not_exist, err_cluster_in_prefix_does_not_exist (current_cluster.name.string))
 							Result := False
 						end
 

@@ -1,0 +1,10 @@
+dynamic_diagram SCENARIO_MESSAGE_CALLER_DOES_NOT_EXIST
+	component
+		scenario "SCENARIO"
+		action 
+			"1"		"Do stuff..."
+		end
+		object SOMETHING
+		object SOMETHING_ELSE
+		SOMETHING_ELSE calls SOMETHING "2"
+	end
