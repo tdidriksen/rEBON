@@ -1,0 +1,20 @@
+static_diagram
+component
+    class C
+        feature
+            test: BOOLEAN
+        end
+        
+    class B
+        feature
+            f: INTEGER
+        end
+    
+    class A
+        inherit B
+        feature
+            id: A
+        invariant
+            not (f = false)
+        end
+end

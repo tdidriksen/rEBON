@@ -1,0 +1,12 @@
+static_diagram
+component
+    class CAR
+    class PREFIXED
+        feature
+            prefix "@": BOOLEAN
+            
+            car: CAR
+        invariant
+            +car
+        end
+end

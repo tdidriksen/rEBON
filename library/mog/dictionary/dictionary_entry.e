@@ -23,9 +23,9 @@ feature -- Initialization
 			create my_cluster.make_from_string (a_cluster)
 			create my_description.make_from_string (a_description)
 		ensure
-			class_name = a_class
-			cluster = a_cluster
-			description = a_description
+			class_name.is_equal(a_class)
+			cluster.is_equal (a_cluster)
+			description.is_equal (a_description)
 		end
 
 feature -- Access

@@ -133,7 +133,7 @@ feature -- Test, cluster charts
 			set_up_test
 			bon_spec := bon_specification_from_file ("informal_bon/cluster_chart_non_existing_cluster.bon")
 			assert_false ("Type checking fails because of non-existing cluster", type_checker.check_bon_specification (bon_spec))
-		    assert ("Error: class does not exist", error_occurred (err_code_class_does_not_exist))
+		    assert ("Error: class does not exist", error_occurred (err_code_cluster_does_not_exist))
 		end
 
     test_cluster_chart_subcluster_of_self

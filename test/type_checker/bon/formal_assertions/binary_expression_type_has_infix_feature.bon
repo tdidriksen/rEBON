@@ -1,0 +1,13 @@
+static_diagram
+component
+    class CAR
+    class INFIXED
+        feature
+            infix "@": BOOLEAN
+                -> other: INFIXED
+            
+            id: INFIXED
+        invariant
+            Current @ id
+        end
+end

@@ -1,0 +1,9 @@
+static_diagram
+component
+    class A
+        feature
+            a: A
+        invariant
+            exists i member_of { "test", 2, 3.0 } it_holds true
+        end
+end

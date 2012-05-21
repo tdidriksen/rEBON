@@ -7,7 +7,7 @@ note
 class
 	TBON_TC_TEST
 
-inherit {NONE}
+inherit
 	TBON_TC_ERROR
 		rename
 			make as make_error,
@@ -15,8 +15,6 @@ inherit {NONE}
 			message as error_message
 		export
 			{NONE} make_error, error_code, error_message
-		undefine
-			is_equal
 		end
 
 	TBON_TC_WARNING

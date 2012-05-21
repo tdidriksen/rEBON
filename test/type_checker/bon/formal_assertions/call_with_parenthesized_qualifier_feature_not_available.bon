@@ -1,0 +1,19 @@
+static_diagram
+component
+    class C
+        feature
+            test: BOOLEAN
+        end
+        
+    class B
+    
+    class A
+        feature
+            infix "+": C
+                -> other: B
+            
+            b: B
+        invariant
+            (Current + b).b = false
+        end
+end

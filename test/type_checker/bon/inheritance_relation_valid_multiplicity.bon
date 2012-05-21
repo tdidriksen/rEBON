@@ -4,8 +4,9 @@ component
     
     class A
         inherit B
-        feature a: INTEGER
-    end
+        feature 
+            a: INTEGER
+        end
 end
 
 static_diagram STATIC_RELATIONS

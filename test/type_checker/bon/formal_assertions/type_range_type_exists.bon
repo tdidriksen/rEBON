@@ -1,0 +1,15 @@
+static_diagram
+component
+    class SEQUENCE[E]
+        inherit ENUMERABLE
+        feature
+            count: INTEGER
+        end
+
+    class A
+        feature
+            seq: SEQUENCE[INTEGER]
+        invariant
+            for_all i: INTEGER; i member_of seq it_holds true
+        end
+end

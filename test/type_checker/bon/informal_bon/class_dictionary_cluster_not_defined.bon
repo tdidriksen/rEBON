@@ -14,6 +14,6 @@ class_chart OTHER_CLASS
 end
 
 dictionary TEST_SYSTEM
-class TEST_CLASS cluster TEST_CLUSTER
-class OTHER_CLASS cluster OTHER_CLUSTER
+class TEST_CLASS cluster TEST_CLUSTER description ""
+class OTHER_CLASS cluster OTHER_CLUSTER description ""
 end

@@ -1,0 +1,9 @@
+static_diagram
+component
+    class A
+        feature
+            a: A
+        invariant
+            for_all i member_of { 1..5, 10 } it_holds true
+        end
+end

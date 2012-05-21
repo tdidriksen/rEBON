@@ -86,7 +86,7 @@ feature -- Test, inheritance relations
 		do
 			set_up_test
 			bon_spec := bon_specification_from_file ("inheritance_relation_valid_multiplicity.bon")
-			assert_false ("Type checking succeeds", type_checker.check_bon_specification (bon_spec))
+			assert ("Type checking succeeds", type_checker.check_bon_specification (bon_spec))
 		end
 
 feature -- Test, client relations

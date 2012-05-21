@@ -1,0 +1,15 @@
+static_diagram
+component
+    class COLOUR
+    class VEHICLE
+        feature
+            wheels: INTEGER
+        end
+    class CAR
+        inherit VEHICLE 
+        feature
+            colour: COLOUR
+        invariant
+            wheels = 4
+        end
+end

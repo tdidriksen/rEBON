@@ -37,6 +37,7 @@ feature -- Access
 				my_call_chain.after
 			loop
 				Result := Result + my_call_chain.item_for_iteration.hash_code
+				my_call_chain.forth
 			end
 		end
 

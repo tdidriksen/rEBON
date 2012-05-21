@@ -27,5 +27,5 @@ end
 
 event_chart TEST_SYSTEM
 event "Test event 1" involves CLASS_ONE, CLASS_TWO
-event "Test event 1" invovles CLASS_THREE
+event "Test event 1" involves CLASS_THREE
 end

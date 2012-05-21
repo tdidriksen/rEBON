@@ -1,0 +1,9 @@
+static_diagram
+component
+    class A
+        feature
+            a: A
+        invariant
+            for_all i member_of { 'a'..'c', 'j' } such_that true it_holds "true"
+        end
+end

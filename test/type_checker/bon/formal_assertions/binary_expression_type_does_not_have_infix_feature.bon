@@ -1,0 +1,10 @@
+static_diagram
+component
+    class CAR
+    class INFIXED
+        feature
+            id: INFIXED
+        invariant
+            Current @ id
+        end
+end

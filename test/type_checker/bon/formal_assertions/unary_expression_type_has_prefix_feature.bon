@@ -1,0 +1,9 @@
+static_diagram
+component
+    class PREFIXED
+        feature
+            prefix "@": BOOLEAN
+        invariant
+            @Current
+        end
+end

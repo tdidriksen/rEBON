@@ -31,11 +31,9 @@ feature -- Initialization
 			-- Initialize `Current'.
 		require
 			a_name /= Void
-			--an_explanation /= Void --@changed didriksen - explanations are optional
-			--a_part /= Void --@changed didriksen - parts are optional
 		do
 			make_informal_chart (a_name, an_index, an_explanation, a_part)
-			--@changed didriksen - Added conditionals
+
 			if some_parents /= Void then
 				my_parents := some_parents.twin
 			end
@@ -517,10 +515,5 @@ feature {CLASS_CHART} -- Implementation
 invariant
 
 	name /= Void
-	--parents /= Void
-	--queries /= Void
-	--commands /= Void
-	--constraints /= Void
-		--@changed didriksen - Only 'name' is not optional
 
 end

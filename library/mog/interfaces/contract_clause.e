@@ -14,8 +14,13 @@ feature -- Initialization
 	make (a_precondition, a_postcondition: ASSERTION_CLAUSE_LIST)
 			-- Initialize `Current'.
 		do
-			my_precondition := a_precondition.twin
-			my_postcondition := a_postcondition.twin
+			if a_precondition /= Void then
+				my_precondition := a_precondition.twin
+			end
+
+			if a_postcondition /= Void then
+				my_postcondition := a_postcondition.twin
+			end
 		end
 
 feature -- Access

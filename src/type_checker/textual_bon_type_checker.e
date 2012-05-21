@@ -90,8 +90,8 @@ feature -- Initialization
 			add_to_informal_type_context (string_type)
 			add_to_informal_type_context (any_type)
 
-			add_to_formal_type_context (boolean_type)
 			add_to_formal_type_context (character_type)
+			add_to_formal_type_context (boolean_type)
 			add_to_formal_type_context (real_type)
 			add_to_formal_type_context (integer_type)
 			add_to_formal_type_context (string_type)
@@ -587,15 +587,15 @@ feature -- Type checking, general
 
 			if first_phase then
 				-- Resolve generics
-				Result := Result and resolve_generics
+				Result := resolve_generics and Result
 
 				-- Resolve features
-				Result := Result and resolve_features
+				Result := resolve_features and Result
 
 				first_phase := False
 				second_phase := True
 
-				Result := Result and check_bon_specification (a_bon_spec)
+				Result := check_bon_specification (a_bon_spec) and Result
 			elseif second_phase then
 				Result := check_informal_structure and Result
 				Result := check_formal_structure and Result
@@ -605,12 +605,10 @@ feature -- Type checking, general
 			end
 			if not errors.is_empty then
 				print_error_messages_to_stderr
-				errors.wipe_out
 				Result := False
 			end
 			if not warnings.is_empty then
 				print_warnings_to_stdout
-				warnings.wipe_out
 			end
 		end
 
@@ -1158,6 +1156,7 @@ feature -- Type checking, informal
 			current_entry: CREATION_ENTRY
 			current_target: STRING
 			seen_entries: LIST[CREATION_ENTRY]
+			targets: CLASS_NAME_LIST
 		do
 			if first_phase then
 
@@ -1177,35 +1176,41 @@ feature -- Type checking, informal
 				seen_entries.compare_objects
 
 				-- For each creation entry
-				from creation_entries.start until creation_entries.after
-				loop
-					current_entry := creation_entries.item_for_iteration
-					-- Check that creator class exists
-					if not class_type_exists (current_entry.creator, informal_type_context) then
-						add_error (err_code_creator_does_not_exist, err_creator_does_not_exist (an_element.name, current_entry.creator))
-						Result := False
-					end
-
-					-- Check that all created classes exist
-					from current_entry.targets.start until current_entry.targets.after
+				if creation_entries /= Void then
+					from creation_entries.start until creation_entries.after
 					loop
-						current_target := current_entry.targets.item_for_iteration
-						if not class_type_exists (current_target, informal_type_context) then
-							add_error (err_code_target_does_not_exist, err_target_does_not_exist (an_element.name, current_target))
+						current_entry := creation_entries.item_for_iteration
+						-- Check that creator class exists
+						if not class_type_exists (current_entry.creator, informal_type_context) then
+							add_error (err_code_creator_does_not_exist, err_creator_does_not_exist (an_element.name, current_entry.creator))
 							Result := False
 						end
 
-						current_entry.targets.forth
+						-- Check that all created classes exist
+						from
+							targets := current_entry.targets
+							targets.start
+						until
+							targets.after
+						loop
+							current_target := targets.item_for_iteration
+							if not class_type_exists (current_target, informal_type_context) then
+								add_error (err_code_target_does_not_exist, err_target_does_not_exist (an_element.name, current_target))
+								Result := False
+							end
+
+							targets.forth
+						end
+
+
+						-- Check for duplicate entries - emit warning if found
+						if seen_entries.has (current_entry) then
+							add_warning (warn_code_duplicate_creation_entry, warn_duplicate_creation_entry (an_element.name, current_entry.creator))
+						end
+						seen_entries.extend (current_entry)
+
+						creation_entries.forth
 					end
-
-
-					-- Check for duplicate entries - emit warning if found
-					if seen_entries.has (current_entry) then
-						add_warning (warn_code_duplicate_creation_entry, warn_duplicate_creation_entry (an_element.name, current_entry.creator))
-					end
-					seen_entries.extend (current_entry)
-
-					creation_entries.forth
 				end
 
 			else
@@ -1225,14 +1230,17 @@ feature -- Type checking, informal
 				agent (entry: CREATION_ENTRY): BOOLEAN
 					local
 						target: STRING
+						l_targets: CLASS_NAME_LIST
 					do
 						Result := True
-
-						from entry.targets.start until entry.targets.after
-						loop
-							target := entry.targets.item_for_iteration
-							Result := Result and class_type_exists (target, informal_type_context)
-							entry.targets.forth
+						if entry.targets /= Void then
+							l_targets := entry.targets
+							from l_targets.start until l_targets.after
+							loop
+								target := l_targets.item_for_iteration
+								Result := Result and class_type_exists (target, informal_type_context)
+								l_targets.forth
+							end
 						end
 					end
 			)
@@ -1252,7 +1260,7 @@ feature -- Type checking, informal
 				Result := False
 					-- Shouldn't be called in first phase
 			else
-
+				Result := True
 				if attached {TBON_TC_CLASS_TYPE} type_with_name (an_element.class_name, informal_type_context) as class_type then
 					if attached {TBON_TC_CLUSTER_TYPE} type_with_name (an_element.cluster, informal_type_context) as cluster then
 						if not (class_type.cluster.name ~ cluster.name) then
@@ -1285,6 +1293,7 @@ feature -- Type checking, informal
 			event_entries: EVENT_ENTRIES
 			current_entry: EVENT_ENTRY
 			seen_entries: LIST[STRING]
+			classes_involved: CLASS_NAME_LIST
 		do
 			if first_phase then
 
@@ -1303,28 +1312,34 @@ feature -- Type checking, informal
 				seen_entries.compare_objects
 
 				-- For each event entry
-				from event_entries.start until event_entries.after
-				loop
-					current_entry := event_entries.item_for_iteration
-					-- Check that all involved classes exist
-					from current_entry.classes_involved.start until current_entry.classes_involved.after
+				if event_entries /= Void then
+					from event_entries.start until event_entries.after
 					loop
-						if not (class_type_exists (current_entry.classes_involved.item_for_iteration, informal_type_context))
-						then
-							add_error (err_code_involved_class_does_not_exist, err_involved_class_does_not_exist (an_element.name, current_entry.name, current_entry.classes_involved.item_for_iteration))
-							Result := False
+						current_entry := event_entries.item_for_iteration
+						-- Check that all involved classes exist
+						from
+							classes_involved := current_entry.classes_involved
+							classes_involved.start
+						until
+							classes_involved.after
+						loop
+							if not (class_type_exists (classes_involved.item_for_iteration, informal_type_context))
+							then
+								add_error (err_code_involved_class_does_not_exist, err_involved_class_does_not_exist (an_element.name, current_entry.name, current_entry.classes_involved.item_for_iteration))
+								Result := False
+							end
+
+							classes_involved.forth
 						end
 
-						current_entry.classes_involved.forth
-					end
+						-- Check for duplicate event names - emit warnings if found.
+						if seen_entries.has (current_entry.name) then
+							add_warning (warn_code_duplicate_event_entry, warn_duplicate_event_entry (an_element.name, current_entry.name))
+						end
+						seen_entries.extend (current_entry.name)
 
-					-- Check for duplicate event names - emit warnings if found.
-					if seen_entries.has (current_entry.name) then
-						add_warning (warn_code_duplicate_event_entry, warn_duplicate_event_entry (an_element.name, current_entry.name))
+						event_entries.forth
 					end
-					seen_entries.extend (current_entry.name)
-
-					event_entries.forth
 				end
 
 			else
@@ -1336,11 +1351,15 @@ feature -- Type checking, informal
 				an_element.entries.for_all (
 					agent (entry: EVENT_ENTRY): BOOLEAN
 							-- Check if all classes exist in context and are class types.
+						local
+							l_classes_involved: CLASS_NAME_LIST
 						do
 							Result := True
-							from entry.classes_involved.start until entry.classes_involved.after
+							l_classes_involved := entry.classes_involved
+							from l_classes_involved.start until l_classes_involved.after
 							loop
-								Result := Result and class_type_exists (entry.classes_involved.item_for_iteration, informal_type_context)
+								Result := Result and class_type_exists (l_classes_involved.item_for_iteration, informal_type_context)
+								l_classes_involved.forth
 							end
 						end
 				)
@@ -2190,8 +2209,8 @@ feature -- Type checking, static diagrams
 						l_argument := enclosing_feature.argument_with_name (identifiers.item_for_iteration)
 
 						-- Check type of argument
-						if enclosing_feature.nearest_precursor /= Void then
-							l_precursor := enclosing_feature.nearest_precursor
+						l_precursor := enclosing_feature.nearest_precursor
+						if l_precursor /= Void then
 							Result := Result and l_argument.type.conforms_to (l_argument.enclosing_feature.nearest_precursor.argument_with_name (l_argument.formal_name).type)
 							if not Result then
 								add_error (err_code_argument_types_do_not_match_precursor, err_argument_types_do_not_match_precursor (enclosing_feature.name, l_precursor.name, enclosing_class.name))
@@ -3293,6 +3312,7 @@ feature -- Type checking, formal assertions
 		local
 			prev_call_type: like last_call_type
 			is_first_call: BOOLEAN
+			call_chain: UNQUALIFIED_CALLS
 		do
 			if an_element.has_parenthesized_qualifier then
 				prev_call_type := type_of_expression (an_element.parenthesized_qualifier, enclosing_class, enclosing_feature)
@@ -3304,19 +3324,20 @@ feature -- Type checking, formal assertions
 			-- First call must be in interface of enclosing class
 			-- or, if enclosing feature is present, an argument of that feature - but NOT the feature itself!
 			from
-				an_element.call_chain.start
+				call_chain := an_element.call_chain
+				call_chain.start
 				is_first_call := not an_element.has_parenthesized_qualifier
 					-- Only if no qualifier is present is the first call in the chain _the_ first call.
 			until
-				an_element.call_chain.after
+				call_chain.after
 			loop
 				-- Check unqualified call - will update last_call_type
-				Result := check_unqualified_call (an_element.call_chain.item_for_iteration, prev_call_type, enclosing_feature, is_first_call) and Result
+				Result := check_unqualified_call (call_chain.item_for_iteration, prev_call_type, enclosing_feature, is_first_call) and Result
 
 				is_first_call := False
 				prev_call_type := last_call_type
 
-				an_element.call_chain.forth
+				call_chain.forth
 			end
 		end
 
@@ -3368,7 +3389,7 @@ feature -- Type checking, formal assertions
 						end
 
 					elseif attached {CHARACTER_INTERVAL} current_element as char_interval then
-						if attached {TBON_TC_CHARACTER_TYPE} type_with_name (integer_type_name, formal_type_context) as character_type then
+						if attached {TBON_TC_CHARACTER_TYPE} type_with_name (character_type_name, formal_type_context) as character_type then
 							-- Set ref_type if not set.
 							if ref_type = Void then
 								ref_type := character_type
@@ -3475,6 +3496,7 @@ feature -- Type checking, formal assertions
 				]"
 		local
 			identifier_type: TBON_TC_CLASS_TYPE
+			identifiers: STRING_LIST
 		do
 			if first_phase then
 				Result := True
@@ -3490,20 +3512,21 @@ feature -- Type checking, formal assertions
 					-- Each identifier must either not be present in the variable context,
 					-- or if present, it must a have a type that conforms to the type of the set.
 					from
-						an_element.identifiers.start
+						identifiers := an_element.identifiers
+						identifiers.start
 					until
-						an_element.identifiers.after
+						identifiers.after
 					loop
 						-- Get type of variable
-						identifier_type := type_of_variable (an_element.identifiers.item_for_iteration)
+						identifier_type := type_of_variable (identifiers.item_for_iteration)
 
 						-- If variable is not present in context, set its type to the type of the set expression
 						if identifier_type = Void then
 
 							if last_set_type.generics.count = 1 then
-								variable_context.extend (last_set_type.generics[1].actual_type, an_element.identifiers.item_for_iteration)
+								variable_context.extend (last_set_type.generics[1].actual_type, identifiers.item_for_iteration)
 							elseif last_set_type.generics.is_empty then
-								variable_context.extend (last_set_type.generics[1].actual_type, an_element.identifiers.item_for_iteration)
+								variable_context.extend (last_set_type, identifiers.item_for_iteration)
 							else
 								-- Warning - trying to iterate over type of unknown format
 							end
@@ -3512,14 +3535,14 @@ feature -- Type checking, formal assertions
 							if ((last_set_type.generics.is_empty and then not last_set_type.conforms_to (identifier_type)) or
 								(last_set_type.generics.count = 1 and then not last_set_type.generics[1].actual_type.conforms_to (identifier_type)))
 								then
-									add_error (err_code_identifier_in_member_range_expression_does_not_match_type_of_set, err_identifier_in_member_range_expression_does_not_match_type_of_set (an_element.identifiers.item_for_iteration, identifier_type.name, last_set_type.name, enclosing_class.name))
+									add_error (err_code_identifier_in_member_range_expression_does_not_match_type_of_set, err_identifier_in_member_range_expression_does_not_match_type_of_set (identifiers.item_for_iteration, identifier_type.name, last_set_type.name, enclosing_class.name))
 									Result := False
 							else
 								-- Warning - trying to iterate over type of unknown format
 							end
 						end
 
-						an_element.identifiers.forth
+						identifiers.forth
 					end
 				end
 			end
@@ -3578,12 +3601,14 @@ feature -- Type checking, formal assertions
 				-- Check restriction
 				if an_element.has_restriction and then not is_boolean_expression (an_element.restriction, enclosing_class, enclosing_feature) then
 					-- Error - restriction is not a boolean expression
+					add_error (err_code_type_of_restriction_is_non_boolean, err_type_of_restriction_is_non_boolean (enclosing_class.name))
 					Result := False
 				end
 
 				-- Check proposition
 				if not is_boolean_expression (an_element.proposition, enclosing_class, enclosing_feature) then
 					-- Error - proposition is not a boolean expression
+					add_error (err_code_type_of_proposition_is_non_boolean, err_type_of_proposition_is_non_boolean (enclosing_class.name))
 					Result := False
 				end
 			else
@@ -3720,6 +3745,9 @@ feature -- Type checking, formal assertions
 		local
 			l_class_type: TBON_TC_CLASS_TYPE
 			type_instance: TBON_TC_CLASS_TYPE
+			identifiers: STRING_LIST
+			generic: TBON_TC_GENERIC
+			any_type: TBON_TC_CLASS_TYPE
 		do
 			if first_phase then
 
@@ -3738,50 +3766,49 @@ feature -- Type checking, formal assertions
 
 							if Result then
 								from
-									an_element.identifiers.start
+									identifiers := an_element.identifiers
+									identifiers.start
 								until
-									an_element.identifiers.after
+									identifiers.after
 								loop
 									type_instance := last_class_type
 
-									if not variable_context.has (an_element.identifiers.item_for_iteration) then
-										variable_context.extend (type_instance, an_element.identifiers.item_for_iteration)
+									if not variable_context.has (identifiers.item_for_iteration) then
+										variable_context.extend (type_instance, identifiers.item_for_iteration)
 									else
 										-- Error - variable by that name is already defined
+										-- This error is emitted by check_identifier_list
 										Result := False
 									end
 
-									an_element.identifiers.forth
+									identifiers.forth
+								end
+							end
+						 elseif enclosing_class.has_generic_name (an_element.type.class_type.class_name) then
+							generic := enclosing_class.generics[enclosing_class.index_of_generic_name (an_element.type.class_type.class_name)]
+							if Result then
+								from
+									identifiers := an_element.identifiers
+									identifiers.start
+								until
+									identifiers.after
+								loop
+									if generic.has_bounding_type then
+										variable_context.extend (generic.bounding_type, an_element.identifiers.item_for_iteration)
+									else
+										any_type ?= type_with_name ("ANY", formal_type_context)
+										variable_context.extend (any_type, an_element.identifiers.item_for_iteration)
+									end
+
+									identifiers.forth
 								end
 							end
 						else
 							add_error (err_code_class_does_not_exist, err_class_does_not_exist (an_element.type.class_type.class_name))
 							Result := False
 						end
-
-					elseif an_element.type.is_formal_generic_name then
-
-						Result := Result and enclosing_class.has_generic_name (an_element.type.formal_generic_name)
-
-						if Result then
-							create l_class_type.make (an_element.type.formal_generic_name)
-
-							from
-								an_element.identifiers.start
-							until
-								an_element.identifiers.after
-							loop
-								variable_context.extend (l_class_type, an_element.identifiers.item_for_iteration)
-
-								an_element.identifiers.forth
-							end
-						end
-
 					end
 				end
-
-			else
-				Result := False
 			end
 		ensure
 			enclosing_class_has_generic_name:
@@ -3803,8 +3830,13 @@ feature -- Type checking, formal assertions
 			Result := True
 			expression_type := type_of_expression (an_element.expression, enclosing_class, enclosing_feature)
 			-- Check that expression has prefix feature that matches the string representation
-			if expression_type.interface_feature_with_name (an_element.operator.string_representation, True, False) = Void then
+			if expression_type = Void or else expression_type.interface_feature_with_name (an_element.operator.string_representation, True, False) = Void then
 				-- Error unary operator 'operator' is not defined for type in assertion
+				if expression_type /= Void then
+					add_error (err_code_unary_operator_is_not_defined_for_type, err_unary_operator_is_not_defined_for_type (an_element.operator.string_representation, expression_type.name))
+				else
+					add_error (err_code_unary_operator_is_not_defined_for_type, err_unary_operator_is_not_defined_for_type (an_element.operator.string_representation, Void))
+				end
 				Result := False
 			end
 		ensure
@@ -3826,6 +3858,7 @@ feature -- Type checking, formal assertions
 			called_argument: TBON_TC_FEATURE_ARGUMENT
 			filtered_features: MML_SET[TBON_TC_FEATURE]
 			arg_no: INTEGER
+			arg_count: INTEGER
 		do
 			if first_phase then
 
@@ -3878,6 +3911,7 @@ feature -- Type checking, formal assertions
 
 					else
 						-- Error - Feature calls itself in pre- or postcondition.
+						add_error (err_code_feature_calls_itself_in_pre_or_postcondition, err_feature_calls_itself_in_pre_or_postcondition (enclosing_feature.name, enclosing_class.name))
 						Result := False
 					end
 
@@ -3893,47 +3927,63 @@ feature -- Type checking, formal assertions
 
 					if called_feature = Void then
 						-- Error - call identifier does not exist or is not in scope.
+						add_error (err_code_called_identifier_does_not_exist, err_called_identifier_does_not_exist (an_element.identifier, enclosing_class.name))
 						Result := False
 					end
 				end
 
 				-- If call is a feature call
 				if called_feature /= Void then
-					if called_feature.arguments.count = an_element.actual_arguments.count then
+					if an_element.has_actual_arguments then
+						arg_count := an_element.actual_arguments.count
+					else
+						arg_count := 0
+					end
+					if called_feature.arguments.count = arg_count then
 
 						-- Check if expression types match argument types
-						from
-							arg_no := 1
-							called_feature.arguments.start
-							an_element.actual_arguments.start
-						until
-							called_feature.arguments.exhausted or
-							an_element.actual_arguments.after
-						loop
-							if not type_of_expression (an_element.actual_arguments.at (arg_no), enclosing_class, enclosing_feature).conforms_to (called_feature.arguments.i_th (arg_no).type) then
-								-- Error - Type of actual argument does not conform to type of argument										
-								Result := False
+						if an_element.has_actual_arguments then
+							from
+								arg_no := 1
+								called_feature.arguments.start
+								an_element.actual_arguments.start
+							until
+								called_feature.arguments.exhausted or
+								an_element.actual_arguments.after
+							loop
+								if not type_of_expression (an_element.actual_arguments.at (arg_no), enclosing_class, enclosing_feature).conforms_to (called_feature.arguments.i_th (arg_no).type) then
+									-- Error - Type of actual argument does not conform to type of argument										
+									add_error (err_code_type_of_actual_argument_does_not_conform_to_defined_type, err_type_of_actual_argument_does_not_conform_to_defined_type (called_feature.name, enclosing_class.name))
+									Result := False
+								end
+
+								arg_no := arg_no + 1
+								called_feature.arguments.forth
+								an_element.actual_arguments.forth
 							end
 
-							called_feature.arguments.forth
-							an_element.actual_arguments.forth
+							last_call_type := called_feature.type
 						end
-
-						last_call_type := called_feature.type
 					else
 						-- Error - number of arguments in called feature an call in assertion do not match
+						add_error (err_code_number_of_arguments_to_feature_in_call_is_wrong, err_number_of_arguments_to_feature_in_call_is_wrong (called_feature.name, enclosing_class.name))
 						Result := False
 					end
 				elseif called_argument /= Void then -- Call is an argument to enclosing feature
 					last_call_type := called_argument.type
 				else
 				 	-- Error - called identifier does not exist or is not in scope.
+				 	add_error (err_code_called_identifier_does_not_exist, err_called_identifier_does_not_exist (an_element.identifier, enclosing_class.name))
 				 	Result := False
 				end
 
 				if last_call_type = Void then
 					-- Error - assertion involves call without type
-					add_error (err_code_assertion_involves_call_with_no_type, err_assertion_involves_call_with_no_type (an_element.identifier, enclosing_feature.name, enclosing_class.name))
+					if enclosing_feature /= Void then
+						add_error (err_code_assertion_involves_call_with_no_type, err_assertion_involves_call_with_no_type (an_element.identifier, enclosing_feature.name, enclosing_class.name))
+					else
+						add_error (err_code_assertion_involves_call_with_no_type, err_assertion_involves_call_with_no_type (an_element.identifier, Void, enclosing_class.name))
+					end
 					Result := False
 				end
 			else
@@ -4027,8 +4077,8 @@ feature -- Type checking, formal assertions
 				end
 
 			elseif attached {BINARY_EXPRESSION} an_expression as binary_expression then
-				left_type := type_of_expression (binary_expression, enclosing_class, enclosing_feature)
-				right_type := type_of_expression (binary_expression, enclosing_class, enclosing_feature)
+				left_type := type_of_expression (binary_expression.left_expression, enclosing_class, enclosing_feature)
+				right_type := type_of_expression (binary_expression.right_expression, enclosing_class, enclosing_feature)
 
 				if left_type /= Void then
 					operator_feature := left_type.interface_feature_with_name (binary_expression.operator.string_representation, False, True)
@@ -4047,6 +4097,10 @@ feature -- Type checking, formal assertions
 				end
 				last_set_type := l_last_set_type
 
+			elseif attached {CHARACTER_INTERVAL} an_expression and then attached {TBON_TC_CHARACTER_TYPE} type_with_name (character_type_name, formal_type_context) as character_type then
+				Result := character_type
+			elseif attached {INTEGER_INTERVAL} an_expression and then attached {TBON_TC_INTEGER_TYPE} type_with_name (integer_type_name, formal_type_context) as integer_type then
+				Result := integer_type
 			else
 				Result := Void
 			end

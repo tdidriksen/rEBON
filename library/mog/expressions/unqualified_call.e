@@ -25,7 +25,7 @@ feature -- Initialization
 			end
 		ensure
 			equal (identifier, an_identifier)
-			equal (actual_arguments, some_actual_arguments)
+			some_actual_arguments /= Void implies equal (actual_arguments, some_actual_arguments)
 		end
 
 feature -- Access
@@ -45,6 +45,12 @@ feature -- Access
 			-- What are the actual arguments of `Current'?
 		do
 			Result := my_actual_arguments.twin
+		end
+
+feature -- Status report
+	has_actual_arguments: BOOLEAN
+		do
+			Result := my_actual_arguments /= Void
 		end
 
 feature {NONE} -- Implementation

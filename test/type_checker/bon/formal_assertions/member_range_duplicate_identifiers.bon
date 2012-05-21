@@ -1,0 +1,9 @@
+static_diagram
+component
+    class A
+        feature
+            a: A
+        invariant
+            for_all i, i member_of { 1, 2, 3 } it_holds i < 4
+        end
+end

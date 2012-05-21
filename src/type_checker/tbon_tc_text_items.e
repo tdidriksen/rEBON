@@ -117,6 +117,15 @@ feature -- Error messages
 			Result.append_string (", but feature does not have a type.")
 		end
 
+	err_called_identifier_does_not_exist (an_identifier_name, a_class_name: STRING): STRING
+		do
+			Result := "Called identifier "
+			Result.append_string (an_identifier_name.string)
+			Result.append_string (" in assertion in class ")
+			Result.append_string (a_class_name.string)
+			Result.append_string (" does not exist or is not in scope.")
+		end
+
 	err_class_already_in_cluster (a_cluster_name, a_class_name, a_class_parent_name: STRING): STRING
 		do
 			Result := "Error defining cluster "
@@ -319,6 +328,15 @@ feature -- Error messages
 			Result.append_string (").")
 		end
 
+	err_feature_calls_itself_in_pre_or_postcondition (a_feature_name, a_class_name: STRING): STRING
+		do
+			Result := "Feature "
+			Result.append_string (a_feature_name.string)
+			Result.append_string (" in class ")
+			Result.append_string (a_class_name.string)
+			Result.append_string (" calls itself in its pre- or postcondition")
+		end
+
 	err_feature_introduces_aggregation_with_enclosing_class (a_feature_name, a_class_name: STRING): STRING
 		do
 			Result := "Feature "
@@ -510,6 +528,15 @@ feature -- Error messages
 			Result.append_string (" but is not declared as deferred.")
 		end
 
+	err_number_of_arguments_to_feature_in_call_is_wrong (a_feature_name, a_class_name: STRING): STRING
+		do
+			Result := "The number of arguments to called feature "
+			Result.append_string (a_feature_name.string)
+			Result.append_string (" in class ")
+			Result.append_string (a_class_name.string)
+			Result.append_string (" is not equal to the number of arguments in the feature specification.")
+		end
+
 	err_number_of_parameters_in_named_indirection_does_not_match_number_of_type_parameters_in_class (a_class_name, a_type_name: STRING): STRING
 		do
 			Result := "The number of parameters in named indirection involving class "
@@ -656,11 +683,46 @@ feature -- Error messages
 			Result.append_string (" does not exist.")
 		end
 
+	err_type_of_actual_argument_does_not_conform_to_defined_type (a_feature_name, a_class_name: STRING): STRING
+		do
+			Result := "The actual arguments of feature "
+			Result.append_string (a_feature_name.string)
+			Result.append_string (" in class ")
+			Result.append_string (a_class_name.string)
+			Result.append_string (" do not conform to the defined types of the arguments.")
+		end
+
+	err_type_of_proposition_is_non_boolean (a_class_name: STRING): STRING
+		do
+			Result := "The type of a proposition in a quantification in class "
+			Result.append_string (a_class_name.string)
+			Result.append_string (" is not boolean. The type of a proposition must be boolean.")
+		end
+
+	err_type_of_restriction_is_non_boolean (a_class_name: STRING): STRING
+		do
+			Result := "The type of a restriction in a quantification in class "
+			Result.append_string (a_class_name.string)
+			Result.append_string (" is not boolean. The type of a restriction must be boolean.")
+		end
+
 	err_types_in_enumerated_set_do_not_match (a_class_name: STRING): STRING
 		do
 			Result := "The elements in an enumerated set in class "
 			Result.append_string (a_class_name.string)
 			Result.append_string (" do not conform to a common type.")
+		end
+
+	err_unary_operator_is_not_defined_for_type (an_operator, a_type: STRING): STRING
+		do
+			Result := "The prefix operator "
+			Result.append_string (an_operator.string)
+			if a_type /= Void then
+				Result.append_string (" is not defined for type ")
+				Result.append_string (a_type.string)
+			else
+				Result.append_string (" is not a valid prefix operator.")
+			end
 		end
 
 	err_unclassified_feature_has_precursor (a_feature_name, a_class_name: STRING): STRING

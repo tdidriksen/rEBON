@@ -17,7 +17,7 @@ inherit
 			wipe_out
 		end
 
-creation
+create
 	make
 
 feature -- Initialization
@@ -91,7 +91,10 @@ feature -- Measurement
 
 	entries_count: INTEGER
 		do
-			Result := my_entries.count
+			Result := 0
+			if my_entries /= Void then
+				Result := my_entries.count
+			end
 		ensure
 			non_negative_result: Result >= 0
 		end

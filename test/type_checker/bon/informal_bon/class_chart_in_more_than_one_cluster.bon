@@ -11,7 +11,7 @@ cluster CLUSTER_TWO description ""
 end
 
 cluster_chart TEST_CLUSTER_TWO
-class CLASS_ONE
+class CLASS_ONE description ""
 end
 
 class_chart CLASS_ONE
