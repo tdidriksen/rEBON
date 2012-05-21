@@ -1,0 +1,12 @@
+dynamic_diagram SCENARIO_ALREADY_EXISTS
+	component
+		scenario "scenario"
+		action 
+			"1"		"Test scenarios!"
+			"1"     "A completely different scenario"
+		end
+		scenario "scenario"
+		action 
+			"1"		"Test scenarios!"
+		end
+	end

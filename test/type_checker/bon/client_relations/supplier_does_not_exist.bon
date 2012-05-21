@@ -1,0 +1,5 @@
+static_diagram client_does_not_exist
+component
+    class A
+    A client B
+end

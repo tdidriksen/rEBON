@@ -1,0 +1,16 @@
+dynamic_diagram SCENARIO_POSITIVE
+	component
+		scenario "SCENARIO"
+		action 
+			"1-3"		"Drive the car!"
+		end
+		object FOOT
+		object_stack GAS_PEDAL
+		object_group group
+			object ENGINE
+			object WHEEL
+		end
+		FOOT calls GAS_PEDAL "1"
+		GAS_PEDAL calls ENGINE "2"
+		ENGINE calls WHEEL "3"
+	end

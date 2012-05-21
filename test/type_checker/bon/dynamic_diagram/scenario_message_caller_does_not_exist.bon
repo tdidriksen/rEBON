@@ -1,0 +1,9 @@
+dynamic_diagram SCENARIO_MESSAGE_CALLER_DOES_NOT_EXIST
+	component
+		scenario "SCENARIO"
+		action 
+			"1"		"Do stuff..."
+		end
+		object SOMETHING
+		UNDEFINED calls SOMETHING "1"
+	end
