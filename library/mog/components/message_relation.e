@@ -34,6 +34,9 @@ feature -- Access
 	hash_code: INTEGER
 		do
 			Result := my_caller.hash_code + my_receiver.hash_code
+			if Result < 0 then
+				Result := 1
+			end
 		end
 
 	caller: DYNAMIC_REF

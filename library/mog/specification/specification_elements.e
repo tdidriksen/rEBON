@@ -13,8 +13,8 @@ inherit
 		end
 
 creation
-	make, make_set, make_optional_rest, make_optional_first,
-	make_from_set, make_from_list
+	make, make_from_set, make_set, make_optional_rest, make_optional_first,
+	make_from_list
 
 feature -- Status report
 

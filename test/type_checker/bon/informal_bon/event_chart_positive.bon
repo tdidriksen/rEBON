@@ -5,7 +5,6 @@ end
 cluster_chart TEST_CLUSTER
 class CLASS_ONE description ""
 class CLASS_TWO description ""
-class CLASS_THREE description ""
 cluster CLUSTER_ONE description ""
 cluster CLUSTER_TWO description ""
 end
@@ -16,9 +15,6 @@ end
 class_chart CLASS_TWO
 end
 
-class_chart CLASS_THREE
-end
-
 cluster_chart CLUSTER_ONE
 end
 
@@ -27,5 +23,5 @@ end
 
 event_chart TEST_SYSTEM
 event "Test event 1" involves CLASS_ONE, CLASS_TWO
-event "Test event 2" involves CLASS_THREE
+event "Test event 2" involves CLASS_ONE
 end

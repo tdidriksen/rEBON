@@ -1,0 +1,77 @@
+note
+	description: "Streams where values can be output one by one."
+	author: "Nadia Polikarpova"
+	date: "$Date$"
+	revision: "$Revision$"
+	model: off
+
+deferred class
+	V_OUTPUT_STREAM [G]
+
+feature -- Status report
+	off: BOOLEAN
+			-- Is current position off scope?
+		deferred
+		end
+
+feature -- Replacement
+	output (v: G)
+			-- Put `v' into the stream and move to the next position.
+		require
+			not_off: not off
+		deferred
+		ensure
+			off_effect: relevant (off)
+		end
+
+	pipe (input: V_INPUT_STREAM [G])
+			-- Copy values from `input' until either `Current' or `input' is `off'.
+		require
+			input_exists: input /= Void
+			input_not_current: input /= Current
+		do
+			from
+			until
+				off or input.off
+			loop
+				output (input.item)
+				input.forth
+			end
+		ensure
+			off_effect: off or input.off
+		end
+
+	pipe_n (input: V_INPUT_STREAM [G]; n: INTEGER)
+			-- Copy `n' elements from `input'; stop if either `Current' or `input' is `off'.
+		require
+			input_exists: input /= Void
+			input_not_current: input /= Current
+			n_non_negative: n >= 0
+		local
+			i: INTEGER
+		do
+			from
+				i := 1
+			until
+				i > n or off or input.off
+			loop
+				output (input.item)
+				input.forth
+				i := i + 1
+			end
+		ensure
+			off_effect: relevant (off)
+			input_off_effect: relevant (input.off)
+		end
+
+feature -- Specification
+	relevant (x: ANY): BOOLEAN
+			-- Always true.
+		note
+			status: specification
+		do
+			Result := True
+		ensure
+			definition: Result
+		end
+end

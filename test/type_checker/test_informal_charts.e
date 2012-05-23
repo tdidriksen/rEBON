@@ -136,25 +136,25 @@ feature -- Test, cluster charts
 		    assert ("Error: class does not exist", error_occurred (err_code_cluster_does_not_exist))
 		end
 
-    test_cluster_chart_subcluster_of_self
-		local
-			bon_spec: BON_SPECIFICATION
-		do
-			set_up_test
-			bon_spec := bon_specification_from_file ("informal_bon/cluster_chart_subcluster_of_self.bon")
-			assert_false ("Type checking fails because cluster is subcluster of itself", type_checker.check_bon_specification (bon_spec))
-		    assert ("Error: cluster is subcluster of itself", error_occurred (err_code_cluster_contains_itself))
-		end
+--    test_cluster_chart_subcluster_of_self
+--		local
+--			bon_spec: BON_SPECIFICATION
+--		do
+--			set_up_test
+--			bon_spec := bon_specification_from_file ("informal_bon/cluster_chart_subcluster_of_self.bon")
+--			assert_false ("Type checking fails because cluster is subcluster of itself", type_checker.check_bon_specification (bon_spec))
+--		    assert ("Error: cluster is subcluster of itself", error_occurred (err_code_cluster_contains_itself))
+--		end
 
-    test_cluster_chart_subcluster_of_self_nested
-		local
-			bon_spec: BON_SPECIFICATION
-		do
-			set_up_test
-			bon_spec := bon_specification_from_file ("informal_bon/cluster_chart_subcluster_of_self_nested.bon")
-			assert_false ("Type checking fails because cluster is subcluster of itself", type_checker.check_bon_specification (bon_spec))
-		    assert ("Error: cluster is subcluster of itself", error_occurred (err_code_cluster_contains_itself))
-		end
+--    test_cluster_chart_subcluster_of_self_nested
+--		local
+--			bon_spec: BON_SPECIFICATION
+--		do
+--			set_up_test
+--			bon_spec := bon_specification_from_file ("informal_bon/cluster_chart_subcluster_of_self_nested.bon")
+--			assert_false ("Type checking fails because cluster is subcluster of itself", type_checker.check_bon_specification (bon_spec))
+--		    assert ("Error: cluster is subcluster of itself", error_occurred (err_code_cluster_contains_itself))
+--		end
 
 feature -- Test, class charts
     test_class_chart_duplicate_class_name
@@ -369,7 +369,7 @@ feature -- Test, structure
     		set_up_test
     		bon_spec := bon_specification_from_file ("informal_bon/cluster_chart_not_in_cluster_or_system_chart.bon")
     		assert_false ("Type checking fails because cluster is neither in a system chart nor in a cluster chart", type_checker.check_bon_specification (bon_spec))
-    		assert ("Error: cluster is neither in system chart or cluster chart", error_occurred(err_code_cluster_in_both_cluster_and_system))
+    		assert ("Error: cluster is neither in system chart or cluster chart", error_occurred(err_code_cluster_not_in_cluster_or_system))
     	end
 
      test_class_in_more_than_one_cluster
@@ -389,6 +389,6 @@ feature -- Test, structure
     		set_up_test
     		bon_spec := bon_specification_from_file ("informal_bon/class_chart_not_in_a_cluster.bon")
     		assert_false ("Type checking fails because class is not in a cluster", type_checker.check_bon_specification (bon_spec))
-    		assert ("Error: class is not in a cluster", error_occurred(err_code_class_already_in_cluster))
+    		assert ("Error: class is not in a cluster", error_occurred(err_code_class_not_in_cluster))
     	end
 end

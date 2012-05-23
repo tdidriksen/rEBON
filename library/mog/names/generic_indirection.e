@@ -97,8 +97,7 @@ feature {GENERIC_INDIRECTION} -- Implementation
 	my_named_indirection: NAMED_INDIRECTION
 
 invariant
-	(my_formal_generic_name /= Void and then not my_formal_generic_name.is_empty) xor
-	my_named_indirection /= Void
+	(my_formal_generic_name /= Void and then not my_formal_generic_name.is_empty) xor my_named_indirection /= Void
 	is_formal_generic_name xor is_named_indirection
 
 end -- class GENERIC_INDIRECTION

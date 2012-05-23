@@ -143,6 +143,6 @@ component
                         -> index: INTEGER
                 end
     
-            class TUPLE
+            class TUPLE[G, H]
         end
 end

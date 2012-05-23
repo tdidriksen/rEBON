@@ -93,7 +93,7 @@ feature -- Parsing
 			n := Arguments.argument_count
 			if n = 0 then
 				stderror.put_string ("usage: bon_parser filename ...%N")
-				Exceptions.die (1)
+				--Exceptions.die (1)
 			else
 				from j := 1 until j > n loop
 					a_filename := Arguments.argument (j)
@@ -170,36 +170,10 @@ feature -- Parsed specification elements
 		end
 
 	process_specification_elements
+		local
+			success: BOOLEAN
 		do
 			io.put_boolean (type_checker.check_bon_specification (bon_specification))
-
---			from
---				class_charts.start
---			until
---				class_charts.exhausted
---			loop
---				io.put_string ("%NClass name: ")
---				io.put_string (class_charts.item.name)
-
---				class_charts.forth
---			end
-
---			from
---				cluster_charts.start
---			until
---				cluster_charts.exhausted
---			loop
---				io.put_string ("%NCluster name: ")
---				io.put_string (cluster_charts.item.name)
---				io.put_string ("%NClass count: ")
---				io.put_integer (cluster_charts.item.classes_count)
---				io.put_string ("%NIndex: ")
---				io.put_string (cluster_charts.first.index.first.property)
---				io.put_string (": ")
---				io.put_string (cluster_charts.first.index.first.value.first)
-
---				cluster_charts.forth
---			end
 		end
 
 	bon_specification: BON_SPECIFICATION

@@ -3,11 +3,11 @@ component
     class CAR
     class INFIXED
         feature
-            infix "@": BOOLEAN
+            infix "+": BOOLEAN
                 -> other: INFIXED
             
             id: INFIXED
         invariant
-            Current @ id
+            Current + id
         end
 end

@@ -24,7 +24,7 @@ create
 feature -- Test, static references
 
 feature -- Test, inheritance relations
-	test_inheritance_realtion_child_inherits_from_parent
+	test_inheritance_relation_child_inherits_from_parent
 		local
 			bon_spec: BON_SPECIFICATION
 		do
@@ -77,7 +77,7 @@ feature -- Test, inheritance relations
 			set_up_test
 			bon_spec := bon_specification_from_file ("inheritance_relation_invalid_multiplicity.bon")
 			assert_false ("Type checking fails because an invalid multiplicity relation was specified", type_checker.check_bon_specification (bon_spec))
-			assert ("Error: an invalid multiplicity relation was specified", False) --error_occurred (err_code_class_does_not_exist))
+			assert ("Error: an invalid multiplicity relation was specified", error_occurred (err_code_invalid_multiplicity))
 		end
 
 	test_inheritance_relation_valid_multiplicity
@@ -138,9 +138,9 @@ feature -- Test, client relations
 			set_up_test
 			bon_spec := bon_specification_from_file ("client_relations/feature_name_does_exist.bon")
 			assert ("Type checking is successful.", type_checker.check_bon_specification (bon_spec))
-			assert ("A is in context.", type_checker.type_with_name ("A", type_checker.formal_type_context))
+			assert ("A is in context.", type_checker.class_type_exists ("A", type_checker.formal_type_context))
 			if attached {TBON_TC_CLASS_TYPE} type_checker.type_with_name ("B", type_checker.formal_type_context) as type then
-				type.features.exists (agent (a_feature: TBON_TC_FEATURE) do	Result := a_feature.name ~ "c" end)
+				assert ("Feature C exists in A", type.features.exists (agent (a_feature: TBON_TC_FEATURE): BOOLEAN do Result := a_feature.name ~ "c" end))
 			else
 				assert ("B is in context.", False)
 			end
@@ -208,8 +208,7 @@ feature -- Test, client relations
 			bon_spec := bon_specification_from_file ("client_relations/supplier_ind_formal_generic_name_does_exist.bon")
 			assert ("Type checking passes", type_checker.check_bon_specification (bon_spec))
 			if attached {TBON_TC_CLASS_TYPE} type_checker.type_with_name ("B", type_checker.formal_type_context) as a_class then
-				create l_formal_generic_name.make ("G", Void, a_class)
-				assert("B has generic type G", a_class.generics.has (l_formal_generic_name))
+				assert("B has generic type G", a_class.has_generic_name ("G"))
 			end
 		end
 

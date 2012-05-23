@@ -4,7 +4,7 @@ component
     class A
     class B [G]
     feature
-        c
+        c: B
     end
     A client {U} B 
 end

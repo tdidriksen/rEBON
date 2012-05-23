@@ -169,16 +169,17 @@ feature -- Comparison
 
 	is_equal (other: like Current): BOOLEAN
 		do
-			Result := Precursor (other) and
-				my_parents.is_equal (other.my_parents) and
-				my_queries.is_equal (other.my_queries) and
-				my_commands.is_equal (other.my_commands) and
-				my_constraints.is_equal (other.my_constraints)
+			Result := Precursor (other) and then
+				((my_parents /= Void)implies my_parents.is_equal (other.my_parents)) and then
+				((my_queries /= Void)implies my_queries.is_equal (other.my_queries)) and then
+				((my_commands /= Void)implies my_commands.is_equal (other.my_commands)) and then
+				((my_constraints /= Void)implies my_constraints.is_equal (other.my_constraints))
 			ensure then
-				Result implies parents.count = other.parents.count and
-					queries.count = other.queries.count and
-					commands.count = other.commands.count and
-					constraints.count = other.constraints.count
+				Result implies
+					(my_parents /= Void implies parents.count = other.parents.count) and then
+					(my_queries /= Void implies queries.count = other.queries.count) and then
+					(my_commands /= Void implies commands.count = other.commands.count) and then
+					(my_constraints /= Void implies constraints.count = other.constraints.count)
 		end
 
 feature -- Element change

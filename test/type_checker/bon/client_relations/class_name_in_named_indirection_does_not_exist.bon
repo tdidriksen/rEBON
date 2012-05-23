@@ -1,8 +1,9 @@
 static_diagram class_name_in_named_indirection_does_not_exist
 component
     cluster LETTERS
-    class A
-    class B [G]
+    component
+        class A
+        class B [G]
     end
-    A client {C[H]} B 
+    A client { C[...] } B 
 end

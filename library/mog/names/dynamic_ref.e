@@ -35,7 +35,7 @@ feature -- Initialization
 			an_object_name /= Void
 			contains_only_valid_characters (an_object_name.class_name) and not an_object_name.class_name.has ('.')
 			an_object_name /= Void implies
-				(an_object_name.extended_id /= Void implies an_object_name.extended_id.has ('.'))
+				(an_object_name.has_extended_id implies not an_object_name.extended_id.has ('.'))
 
 			a_group_prefix /= Void implies
 				contains_only_valid_characters (a_group_prefix) and
@@ -110,6 +110,10 @@ feature -- Access
 			if my_group_prefix /= Void then
 				Result := Result + my_group_prefix.hash_code
 			end
+
+			if Result < 0 then
+				Result := 1
+			end
 		end
 
 feature -- Measurement
@@ -169,6 +173,12 @@ feature -- Status Report
 			Result := my_group_name /= Void and then not my_group_name.is_empty
 		end
 
+	has_group_prefix: BOOLEAN
+			-- Does this reference have a group name?
+		do
+			Result := my_group_prefix /= Void
+		end
+
 	has_object_name: BOOLEAN
 			-- Does this reference have an object name?
 		do
@@ -216,7 +226,7 @@ feature -- Status Report
 			end
 			if my_object_name /= Void then
 				Result := Result and contains_only_valid_characters (my_object_name.class_name) and
-					contains_only_valid_characters (my_object_name.extended_id)
+					(my_object_name.has_extended_id implies contains_only_valid_characters (my_object_name.extended_id))
 			end
 			if my_group_prefix /= Void then
 				Result := Result and contains_only_valid_characters (my_group_prefix) and
@@ -283,7 +293,7 @@ invariant
 	my_group_name /= Void implies not my_group_name.has ('.')
 	my_object_name /= Void implies not my_object_name.class_name.is_empty
 	my_object_name /= Void implies not my_object_name.class_name.has ('.')
-	my_object_name /= Void implies (my_object_name.extended_id /= Void implies my_object_name.extended_id.has ('.'))
+	my_object_name /= Void implies (my_object_name.has_extended_id implies not my_object_name.extended_id.has ('.'))
 	my_group_prefix /= Void implies not my_group_prefix.is_empty
 	valid_dynamic_reference
 

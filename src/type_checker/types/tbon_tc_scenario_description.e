@@ -43,7 +43,7 @@ feature -- Status report
 				agent (action: TBON_TC_TUPLE[STRING, STRING]; action_label: STRING): BOOLEAN
 					do
 						Result := action.first ~ action_label
-					end
+					end (?, an_action_label)
 			)
 		end
 

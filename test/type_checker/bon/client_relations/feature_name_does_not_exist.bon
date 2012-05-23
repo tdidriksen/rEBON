@@ -3,5 +3,5 @@ component
     cluster LETTERS
     class A
     class B
-    A client {c} B 
+    A client { c } B 
 end

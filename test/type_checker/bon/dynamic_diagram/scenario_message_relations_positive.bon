@@ -7,7 +7,7 @@ dynamic_diagram SCENARIO_MESSAGE_CALLER_DYNAMIC_REF_DOES_NOT_EXIST
 		object A
 		object B
 		object_group H
-			Object C
+			object C
 		end
 		A calls B "1"
 		A calls H "1"

@@ -19,7 +19,7 @@
 		</cluster>
 		<cluster name="bon_scanner" location="$REBON\src\scanner\"/>
 		<cluster name="type_checker" location="$REBON\src\type_checker\">
-			<cluster name="types" location="$REBON\src\type_checker\types\"/>
+			<cluster name="types" location="$REBON\src\type_checker\types\" recursive="true"/>
 		</cluster>
 	</target>
 </system>

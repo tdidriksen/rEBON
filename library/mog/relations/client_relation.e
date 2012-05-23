@@ -128,6 +128,11 @@ feature -- Status report
 			Result := my_type_mark /= Void
 		end
 
+	has_client_entities: BOOLEAN
+		do
+			Result := my_client_entities /= Void and then not my_client_entities.is_empty
+		end
+
 	is_part_of (other: like Current): BOOLEAN
 		do
 			check false end

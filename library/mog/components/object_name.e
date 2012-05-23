@@ -30,7 +30,10 @@ feature -- Initialize
 feature -- Access
 	hash_code: INTEGER
 		do
-			Result := my_class_name.hash_code + my_extended_id.hash_code
+			Result := my_class_name.hash_code
+			if my_extended_id /= Void then
+				Result := Result + my_extended_id.hash_code
+			end
 		end
 
 	class_name: STRING
@@ -48,6 +51,7 @@ feature -- Access
 	string_representation: STRING
 			-- What is the string representation of `Current'?
 		do
+			Result := ""
 			Result.append_string (class_name)
 			if has_extended_id then
 				Result.append_character ('.')

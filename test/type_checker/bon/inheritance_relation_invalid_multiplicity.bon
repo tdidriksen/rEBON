@@ -10,6 +10,6 @@ end
 
 static_diagram STATIC_RELATIONS
 component  
-    A inherit { 0 } B  
+    A inherit { -1 } B  
 end
 

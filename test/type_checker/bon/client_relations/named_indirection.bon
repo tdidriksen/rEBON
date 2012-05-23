@@ -1,9 +1,10 @@
 static_diagram named_indirection_list
 component
     cluster LETTERS
-    class A
-    class B [G]
-    class C [H]
+    component
+        class A
+        class B [G]
+        class C [H]
     end
     C client {-> A [G,...]} B 
 end

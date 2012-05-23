@@ -1,5 +1,5 @@
 note
-	description: "An container type for type checking of textual BON."
+	description: "A container type for type checking of textual BON."
 	author: "Sune Alkaersig <sual@itu.dk> and Thomas Didriksen <thdi@itu.dk>"
 	date: "$Date$"
 	revision: "$Revision$"
@@ -25,13 +25,13 @@ feature -- Initialization
 			l_feature: TBON_TC_FEATURE
 			int_type: TBON_TC_INTEGER_TYPE
 		do
-			make (enumerable_type_name)
+			make (container_type_name)
 			set_is_deferred
 
 			create generic.make ("E", Void, Current)
 			add_type_parameter (generic)
 
-			create int_type.default_create
+			create int_type.make_default_type
 			create l_feature.make ("count", int_type, Current)
 			add_feature (l_feature)
 		end
@@ -41,7 +41,7 @@ feature -- Status report
 	is_model_equal alias "|=|" (other: TBON_TC_TYPE): BOOLEAN
 			-- Is this model mathematically equal to `other'?
 		do
-			Result := attached {TBON_TC_ENUMERABLE_TYPE} other
+			Result := attached {TBON_TC_CONTAINER_TYPE} other
 		end
 
 end

@@ -192,6 +192,10 @@ feature -- Output
 		end
 
 feature -- Status Report
+	has_cluster_prefix: BOOLEAN
+		do
+			Result := my_cluster_prefix /= Void
+		end
 
 	contains_only_valid_characters (a_string: STRING): BOOLEAN
 			-- Since a STATIC_REF is a concatenation of cluster names and (possibly) a

@@ -25,7 +25,7 @@ feature -- Initialization
 		require
 			a_child /= Void
 			a_parent /= Void
-			a_multiplicity >= 0
+			--a_multiplicity >= 0
 		do
 			my_child := a_child.twin
 			my_multiplicity := a_multiplicity
@@ -54,8 +54,6 @@ feature -- Access
 			-- The multiplicity of this inheritance relation.
 		do
 			Result := my_multiplicity
-		ensure
-			Result >= 0
 		end
 
 	parent: STATIC_REF
@@ -157,7 +155,7 @@ feature { INHERITANCE_RELATION } -- Implementation
 invariant
 
 	my_child /= Void
-	my_multiplicity >= 0
+	--my_multiplicity >= 0
 	my_parent /= Void
 
 end -- class INHERITANCE_RELATION

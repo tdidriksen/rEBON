@@ -3,7 +3,7 @@ component
 	class TEST_SEQUENCE [E]
     class TEST_TABLE [K, V]
     class TEMPLATE [G, H, I]
-    class CONTAINER [E -> REAL]
+    class TCONTAINER [E -> REAL]
     class BOUNDED_CONTAINER [E, F -> TEST_TABLE[E, INTEGER], G -> STRING]
-    class CONFORMING_CONTAINER [J -> INTEGER, K -> CONTAINER[J]]
+    class CONFORMING_CONTAINER [J -> INTEGER, K -> TCONTAINER[J]]
 end

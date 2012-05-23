@@ -198,9 +198,9 @@ feature -- Test, generics - bounded
 			set_up_test
 			bon_spec := bon_specification_from_file ("generic_class_spec_simple_bound.bon")
 			assert ("Type checking succeeded", type_checker.check_bon_specification (bon_spec))
-			if attached {TBON_TC_CLASS_TYPE} type_checker.type_with_name ("CONTAINER", type_checker.formal_type_context) as class_type then
-				assert ("First generic parameter E of class CONTAINER is bounded by INTEGER",
-						class_type.name.is_equal ("CONTAINER") and
+			if attached {TBON_TC_CLASS_TYPE} type_checker.type_with_name ("TCONTAINER", type_checker.formal_type_context) as class_type then
+				assert ("First generic parameter E of class TCONTAINER is bounded by INTEGER",
+						class_type.name.is_equal ("TCONTAINER") and
 						class_type.generics.count = 1 and
 						class_type.generics[1].formal_generic_name.is_equal ("E") and
 						class_type.generics[1].bounding_type.name.is_equal ("INTEGER"))
@@ -400,13 +400,13 @@ feature -- Test, generics - bounds conformance
 			bon_spec := bon_specification_from_file ("generic_class_simple_bounds_conform.bon")
 			assert ("Type checking succeeded", type_checker.check_bon_specification (bon_spec))
 			if attached {TBON_TC_CLASS_TYPE} type_checker.type_with_name ("CONFORMING_CONTAINER", type_checker.formal_type_context) as class_type then
-				assert ("class CONFORMING_CONTAINER bound INTEGER first parameter J conforms to parameter bound REAL of first parameter of CONTAINER",
+				assert ("class CONFORMING_CONTAINER bound INTEGER first parameter J conforms to parameter bound REAL of first parameter of TCONTAINER",
 						class_type.name.is_equal ("CONFORMING_CONTAINER") and
 						class_type.generics.count = 2 and
 						class_type.generics[1].formal_generic_name.is_equal ("J") and
 						class_type.generics[1].bounding_type.name.is_equal ("INTEGER") and
 
-						(class_type.generics[2].bounding_type.name.is_equal ("CONTAINER") and
+						(class_type.generics[2].bounding_type.name.is_equal ("TCONTAINER") and
 						class_type.generics[2].bounding_type.generics.count = 1) and then
 						(class_type.generics[2].bounding_type.generics[1].bounding_type.name.is_equal ("REAL") and
 						class_type.generics[2].bounding_type.generics[1].is_valid_actual_type (class_type.generics[1].bounding_type)
@@ -434,14 +434,14 @@ feature -- Test, generics - bounds conformance
 			bon_spec := bon_specification_from_file ("generic_class_nested_bounds_conform.bon")
 			assert ("Type checking succeeds", type_checker.check_bon_specification (bon_spec))
 			if attached {TBON_TC_CLASS_TYPE} type_checker.type_with_name ("CONFORMING_CONTAINER", type_checker.formal_type_context) as class_type then
-				assert ("class CONFORMING_CONTAINER bound INTEGER first parameter J of type TEST_SEQUENCE[INTEGER] conforms to parameter bound TEST_SEQUENCE[INTEGER] of first parameter of CONTAINER",
+				assert ("class CONFORMING_CONTAINER bound INTEGER first parameter J of type TEST_SEQUENCE[INTEGER] conforms to parameter bound TEST_SEQUENCE[INTEGER] of first parameter of TCONTAINER",
 						class_type.name.is_equal ("CONFORMING_CONTAINER") and
 						class_type.generics.count = 2 and
 						class_type.generics[1].formal_generic_name.is_equal ("J") and
 						class_type.generics[1].bounding_type.name.is_equal ("TEST_SEQUENCE") and
 						class_type.generics[1].bounding_type.generics[1].actual_type.name.is_equal ("INTEGER") and
 
-						(class_type.generics[2].bounding_type.name.is_equal ("CONTAINER") and
+						(class_type.generics[2].bounding_type.name.is_equal ("TCONTAINER") and
 						class_type.generics[2].bounding_type.generics.count = 1) and then
 						(class_type.generics[2].bounding_type.generics[1].bounding_type.name.is_equal ("TEST_SEQUENCE") and
 						class_type.generics[2].bounding_type.generics[1].bounding_type.generics[1].actual_type.name.is_equal ("INTEGER") and

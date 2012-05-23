@@ -9,6 +9,12 @@ cluster CLUSTER_ONE description ""
 cluster CLUSTER_TWO description ""
 end
 
+cluster_chart CLUSTER_ONE
+end
+
+cluster_chart CLUSTER_TWO
+end
+
 class_chart CLASS_ONE
 end
 
@@ -16,10 +22,4 @@ class_chart CLASS_TWO
 end
 
 class_chart CLASS_ONE
-end
-
-cluster_chart CLUSTER_ONE
-end
-
-cluster_chart CLUSTER_TWO
 end

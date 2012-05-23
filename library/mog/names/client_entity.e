@@ -88,6 +88,22 @@ feature -- Access
 			Result := my_undefined
 		end
 
+feature -- Status report
+	has_feature_name: BOOLEAN
+		do
+			Result := my_feature_name /= Void
+		end
+
+	has_supplier_indirection: BOOLEAN
+		do
+			Result := my_supplier_indirection /= Void
+		end
+
+	has_parent_indirection: BOOLEAN
+		do
+			Result := my_parent_indirection /= Void
+		end
+
 feature {CLIENT_ENTITY} -- Implementation
 
 	my_feature_name: FEATURE_NAME

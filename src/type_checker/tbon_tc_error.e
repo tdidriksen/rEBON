@@ -85,6 +85,7 @@ feature -- Error codes
 	err_code_infix_feature_must_have_one_argument,
 	err_code_infix_feature_not_defined_in_class,
 	err_code_input_type_does_not_conform_to_argument_type,
+	err_code_invalid_multiplicity,
 	err_code_involved_class_does_not_exist,
 	err_code_labeled_action_already_exists_in_context,
 	err_code_message_label_in_dynamic_reference_does_not_exist,

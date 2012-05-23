@@ -1,7 +1,7 @@
 static_diagram client_static_ref_fail
 component
     cluster LETTERS
-    components
+    component
         class A
     end
     class B

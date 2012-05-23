@@ -3,8 +3,8 @@ component
     cluster LETTERS
     class A
     class B
-    feature
-        c
-    end
+        feature
+            c: B
+        end
     A client {c, d} B 
 end

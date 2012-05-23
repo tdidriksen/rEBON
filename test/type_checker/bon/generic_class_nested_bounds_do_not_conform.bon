@@ -3,7 +3,7 @@ component
 	class TEST_SEQUENCE [E]
     class TEST_TABLE [K, V]
     class TEMPLATE [G, H, I]
-    class CONTAINER [E -> TEST_SEQUENCE[REAL]]
+    class TCONTAINER [E -> TEST_SEQUENCE[REAL]]
     class BOUNDED_CONTAINER [E, F -> TEST_TABLE[E, INTEGER], G -> STRING]
-    class NON_CONFORMING_CONTAINER [J -> TEST_SEQUENCE[INTEGER], K -> CONTAINER[J]] -- Fails because LIST[INTEGER] does not conform to LIST[REAL] 
+    class NON_CONFORMING_CONTAINER [J -> TEST_SEQUENCE[INTEGER], K -> TCONTAINER[J]] -- Fails because LIST[INTEGER] does not conform to LIST[REAL] 
 end

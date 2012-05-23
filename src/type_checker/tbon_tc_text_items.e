@@ -499,6 +499,12 @@ feature -- Error messages
 			Result.append_string (" does not conform to type of argument.")
 		end
 
+	err_invalid_multiplicity (a_multiplicity: INTEGER): STRING
+		do
+			Result := "Invalid multiplicity marker :"
+			Result.append_string (a_multiplicity.out)
+		end
+
 	err_involved_class_does_not_exist (a_chart_name, an_entry_name, a_class_name: STRING): STRING
 		do
 			Result := "Specified class "

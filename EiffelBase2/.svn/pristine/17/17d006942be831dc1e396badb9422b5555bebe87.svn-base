@@ -1,0 +1,118 @@
+note
+	description: "Iterators over arrayed lists."
+	author: "Nadia Polikarpova"
+	date: "$Date$"
+	revision: "$Revision$"
+	model: target, index
+
+class
+	V_ARRAYED_LIST_ITERATOR [G]
+
+inherit
+	V_LIST_ITERATOR [G]
+		undefine
+			go_to
+		redefine
+			copy
+		end
+
+	V_INDEX_ITERATOR [G]
+		redefine
+			copy
+		end
+
+create {V_ARRAYED_LIST}
+	make
+
+feature {NONE} -- Initialization
+	make (list: V_ARRAYED_LIST [G]; i: INTEGER)
+			-- Create an iterator at position `i' in `list'.
+		require
+			list_exists: list /= Void
+			i_valid: 0 <= i and i <= list.count + 1
+		do
+			target := list
+			index := i
+		ensure
+			target_effect: target = list
+			index_effect: index = i
+		end
+
+feature -- Initialization
+	copy (other: like Current)
+			-- Initialize with the same `target' and position as in `other'.
+		do
+			target := other.target
+			index := other.index
+		ensure then
+			target_effect: target = other.target
+			index_effect: index = other.index
+			other_target_effect: other.target = old other.target
+			other_index_effect: other.index = old other.index
+		end
+
+feature -- Access
+	target: V_ARRAYED_LIST [G]
+			-- Container to iterate over.
+
+feature -- Replacement
+	put (v: G)
+			-- Replace item at current position with `v'.
+		do
+			target.put (v, target.lower + index - 1)
+		end
+
+feature -- Extension
+	extend_left (v: G)
+			-- Insert `v' to the left of current position. Do not move cursor.
+		do
+			target.extend_at (v, index)
+			index := index + 1
+		end
+
+	extend_right (v: G)
+			-- Insert `v' to the right of current position. Do not move cursor.
+		do
+			target.extend_at (v, index + 1)
+		end
+
+	insert_left (other: V_ITERATOR [G])
+			-- Append sequence of values, over which `input' iterates to the left of current position. Do not move cursor.
+		local
+			old_other_count: INTEGER
+		do
+			old_other_count := other.count
+			target.insert_at (other, index)
+			index := index + old_other_count
+		end
+
+	insert_right (other: V_ITERATOR [G])
+			-- Append sequence of values, over which `input' iterates to the right of current position. Move cursor to the last element of inserted sequence.
+		local
+			old_other_count: INTEGER
+		do
+			old_other_count := other.count
+			target.insert_at (other, index + 1)
+			index := index + old_other_count
+		end
+
+feature -- Removal
+	remove
+			-- Remove element at current position. Move cursor to the next position.
+		do
+			target.remove_at (index)
+		end
+
+	remove_left
+			-- Remove element to the left current position. Do not move cursor.
+		do
+			target.remove_at (index - 1)
+			index := index - 1
+		end
+
+	remove_right
+			-- Remove element to the right current position. Do not move cursor.
+		do
+			target.remove_at (index + 1)
+		end
+end

@@ -5,6 +5,6 @@ component
         feature
             id: INFIXED
         invariant
-            Current @ id
+            Current + id
         end
 end
